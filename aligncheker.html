@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(to right, #1a2a6c, #b21f1f, #fdbb2d);
+      background-size: 400% 400%;
+      animation: gradientMovement 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      z-index: 1;
+    }
+
+    /* Moving gradient animation */
+    @keyframes gradientMovement {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Snowflake styles */
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      color: #ffffff;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      animation: snowfall 10s linear infinite;
+    }
+
+    @keyframes snowfall {
+      0% {
+        transform: translateX(0) translateY(-10px);
+      }
+      100% {
+        transform: translateX(50px) translateY(100vh);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Dynamic snowflakes will be appended here -->
+  <h1 class="text-4xl text-white font-bold bg-black bg-opacity-50 p-6 rounded-lg shadow-lg">
+    No Content, I'm just here to check lines
+  </h1>
+
+  <script>
+    // Function to create and animate snowflakes with random sizes and positions
+    function createSnowflake() {
+      const snowflake = document.createElement('div');
+      snowflake.classList.add('snowflake');
+      snowflake.innerHTML = '❄';  // Snowflake character
+
+      // Set random horizontal position (left)
+      const randomLeft = Math.random() * 100; // 0% to 100%
+      snowflake.style.left = `${randomLeft}%`;
+
+      // Define 5 different snowflake sizes
+      const sizes = ['0.5rem', '0.75rem', '1rem', '1.5rem', '2rem'];
+      const randomSize = sizes[Math.floor(Math.random() * sizes.length)]; // Randomly select one size
+      snowflake.style.fontSize = randomSize;
+
+      // Set random animation duration (between 8s and 15s)
+      const randomDuration = Math.random() * 7 + 8; // Random duration between 8s and 15s
+      snowflake.style.animationDuration = `${randomDuration}s`;
+
+      // Set random animation delay (to stagger the start of snowfall)
+      const randomDelay = Math.random() * 3; // Random delay between 0 and 3 seconds
+      snowflake.style.animationDelay = `${randomDelay}s`;
+
+      // Append snowflake to the body
+      document.body.appendChild(snowflake);
+
+      // Remove the snowflake after its animation ends to keep the DOM clean
+      setTimeout(() => {
+        document.body.removeChild(snowflake);
+      }, randomDuration * 1000); // Remove after animation ends
+    }
+
+    // Function to add three snowflakes every second
+    function startSnowfall() {
+      setInterval(() => {
+        // Add 3 snowflakes every second with random properties
+        for (let i = 0; i < 3; i++) {
+          createSnowflake();
+        }
+      }, 1000); // Execute every 1 second
+    }
+
+    // Start the snowfall loop
+    startSnowfall();
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body{
+  background-color: alabaster;
+margin: 0;
+padding: 0;
+}
+
+/* Align logo and title */
+.top {
+  margin: 0px;
+  padding: 0px;
+  width: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+}
+
+
+/* Logo styling */
+.top img {
+  width: 100px;
+  margin-right: 10px;
+}
+
+.login {
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: block;
+  font-weight: bold;
+  font-size: x-large;
+  font-family: 'Libre Baskerville', serif;
+
+}
+.alert{
+  margin: -20px;
+}
+
+.card {
+  margin-top: 10vh;
+      padding:10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  max-width: 400px;
+  flex-direction: column;
+  gap: 35px;
+  background: #e3e3e3;
+  box-shadow: 16px 16px 32px #c8c8c8,
+        -16px -16px 32px #fefefe;
+  border-radius: 8px;
+}
+
+input{
+  padding: 10px;
+}
+
+.inputBox {
+  position: relative;
+  width: 250px;
+  
+}
+
+.inputBox a{
+  color: #000;
+  text-decoration: none;
+}
+
+.inputBox a:hover{
+  color: #fefefe;
+  background-color: #000;
+  transition: ease 0.3s;
+  padding: 0px;
+  margin: 0;
+  border-radius: 25%;
+}
+.inputBox input {
+  width: 100%;
+  padding: 10px;
+  outline: none;
+  color: #000;
+  font-size: 1em;
+  font-family: 'Libre Baskerville', serif;
+  background: transparent;
+  border-left: 2px solid #000;
+  border-bottom: 2px solid #000;
+  transition: 0.1s;
+  border-bottom-left-radius: 8px;
+  border: 2px solid #000;
+  border-radius: 8px;
+
+}
+
+.inputBox span {
+  margin-top:7px;
+  position: absolute;
+  left: 0;
+  transform: translateY(-4px);
+  margin-left: 10px;
+  padding: 10px;
+  pointer-events: none;
+  font-size: 12px;
+  font-family: 'Libre Baskerville', serif;
+  color: #000;
+  text-transform: uppercase;
+  transition: 0.5s;
+  letter-spacing: 3px;
+  border-radius: 8px;
+}
+
+.inputBox input:valid~span,
+.inputBox input:focus~span {
+  transform: translateX(113px) translateY(-15px);
+  font-size: 0.8em;
+  font-family: 'Libre Baskerville', serif;
+  padding: 5px 10px;
+  background: #000;
+  letter-spacing: 0.2em;
+  color: #fff;
+  border: 2px;
+}
+
+.enter {
+  height: 45px;
+  width: 100px;
+  border-radius: 5px;
+  border: 2px solid #000;
+  cursor: pointer;
+  background-color: transparent;
+  transition: 0.5s;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-bottom: 1em;
+}
+
+.enter:hover {
+  background-color: rgb(0, 0, 0);
+  color: white;
+}
+

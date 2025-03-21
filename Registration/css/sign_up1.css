@@ -1,0 +1,402 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Ensure padding and borders are included in element's total width and height */
+}
+
+body {
+    padding: 50px;
+    background-image: url(../pic/logo.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    background-attachment: fixed;
+    background-color: alabaster;
+    font-family: Arial, sans-serif; /* Default font for the body */
+    justify-content: center;
+    align-items: center;
+}
+
+.form-step {
+  display: none ;
+}
+
+.form-step-active {
+  display: block;
+}
+
+.plus{
+    background-color: alabaster;
+    border-radius: 24px;
+}
+
+header p {
+    text-shadow: 10px 6px 10px #3d392955;
+    justify-content: center;
+    text-align: center;
+    font-size: 40px;
+    font-family: 'Times New Roman', serif; /* Font for paragraph text */
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 350px;
+    background-color: alabaster;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+  }
+  
+  .message {
+    color: rgba(88, 87, 87, 0.822);
+    font-size: 14px;
+  }
+  
+  .flex {
+    display: flex;
+    width: 100%;
+    gap: 6px;
+  }
+  
+  .form label {
+    position: relative;
+  }
+  
+.top {
+  border-radius: 25px 25px 0 0 ;
+  margin: 0;
+  padding: 10px;
+    text-align: start;
+    text-decoration: none;
+    background-color: #f2f2f2;
+    font-size: x-large;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+p {
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+}
+a:hover {
+  text-decoration: none;
+  background-color: #555D50;
+  padding: 0px;
+  border-radius:  5px;
+}
+
+.container {
+    border: 1px solid rgb(25, 0, 255);
+    margin: 10px;
+    border-radius: 25px;
+    box-shadow: 5px 10px 8px 10px rgba(25, 0, 255, 0.323);
+    background-color: #edeade55;
+    padding: 20px; /* Adjust as needed */
+    font-family: 'Georgia', serif; /* Font for text inside the container */
+}
+
+h3 {
+    color: black;
+    font-family: 'Helvetica Neue', sans-serif; /* Font for h3 elements */
+}
+
+.group1, .group-1 {
+    display: flex;
+    flex-wrap: wrap; /* Fixed 'rap' to 'wrap' */
+    gap: 20px; /* Adjust as needed */
+    justify-content: center;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 20px 0;
+}
+
+.group-box {
+    align-items: center;
+  
+    justify-content: center;
+    padding: 20px; /* Optional: add some padding for better spacing */
+    margin: 10px 25px; /* Optional: add margin for spacing between boxes */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for depth */    
+}
+
+.text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  padding: 0;
+  position: relative; /* Ensure proper positioning for password toggle icon */
+}
+
+.box {
+    margin: 0;
+    padding: 0 1rem;
+    width: 19rem;
+    height: 2rem;
+    border-radius: 5px 5px 5px 5px;
+    border: 1px solid #1d1d29;
+}
+
+
+
+.button-container {
+    display: flex;
+    margin: 10px;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 10px; /* Adds space between buttons */
+}
+button {
+  font-size: 13px;
+  padding: 0.5em 2em;
+  border: transparent;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+  background: #f2f2f2;
+  color: rgb(15, 15, 15);
+  border-radius: 4px;
+ }
+ 
+ button:hover {
+  background: rgb(2,0,36);
+  background: linear-gradient(45deg, #242124 0%, #f2f2f2 25%,  #333333 100%);
+ }
+ 
+ button:active {
+  transform: translate(0em, 0.2em);
+ }
+
+
+/* Additional Styles for Password Visibility Toggle */
+.show-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px; /* Increased font size for a larger icon */
+    width: 16px; /* Set width to match font size */
+    height: 16px; /* Set height to match font size */
+    text-align: center; /* Center the icon */
+    line-height: 1; /* Adjust line height */
+    padding: 0; /* Remove any default padding */
+}
+
+.error {
+    color: red;
+    margin-top: 5px;
+}
+
+
+.radio-inputs {
+    position: relative;
+    display: flex;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    font-size: 14px;
+    width: 90%;
+    padding: 1rem 1rem 0 1rem;
+      display: flex;
+      justify-content: flex-end; /* Aligns the radio buttons to the right */
+      width: 100%; /* Full width of the container */
+    
+    
+}
+  
+  .radio-inputs .radio input {
+    display: none;
+
+  }
+  
+  
+  .radio-inputs .radio .name {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: end;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    transition: all 0.15s ease-in-out;
+    position: relative;
+    background-color: #d8d8d8;
+  }
+  
+  .radio-inputs .radio input:checked + .name {
+    background-color: #f2f2f2;
+    font-weight: 600;
+  }
+  .radio-inputs .radio input + .name:hover {
+    color: #919090;
+  }
+  .radio-inputs .radio input:checked + .name:hover {
+    color: #1d1d29;
+  }
+  
+  .radio-inputs .radio input:checked + .name::after,
+  .radio-inputs .radio input:checked + .name::before {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    bottom: 0;
+  }
+  
+  .radio-inputs .radio input:checked + .name::after {
+    right: -10px;
+    border-bottom-left-radius: 300px;
+    box-shadow: -3px 3px 0px 3px #f2f2f2;
+  }
+  .radio-inputs .radio input:checked + .name::before {
+    left: -10px;
+    border-bottom-right-radius: 300px;
+    box-shadow: 3px 3px 0px 3px #f2f2f2;
+  }
+    
+/* Mobile Styles */
+  @media (max-width: 488px) {
+      body { 
+        display: grid;
+        justify-content: center;
+        align-items: center;       
+          padding: 20px; /* Reduced padding for mobile */
+      }
+
+      .container {
+          padding: 15px; /* Adjust padding for smaller screens */
+      }
+
+      .group-box {
+          width: 100%; /* Full width for mobile */
+          margin: 0 0 15px 0; /* Margin adjustments */
+      }
+
+      .top, h3, p {
+          font-size: 1.2em; /* Adjust font sizes for readability */
+      }
+
+      .button {
+          font-size: 12px; /* Adjust button font size */
+          padding: 10px; /* Larger touch area */
+      }
+
+      .show-password {
+          font-size: 14px; /* Larger icon for mobile */
+      }
+  }
+
+  @media (max-width: 414px) {
+    body {
+      
+      display: grid;
+      justify-content: center;
+      align-items: center;
+        padding: 10px; /* Reduced padding for mobile */
+    }
+
+    .container {
+        padding: 8px; /* Adjust padding for smaller screens */
+    }
+
+    .group-box {
+        width: 100%; /* Full width for mobile */
+        margin: 0 0 8px 0; /* Margin adjustments */
+    }
+
+    .top, h3, p {
+        font-size: 1.2em; /* Adjust font sizes for readability */
+    }
+
+    .button {
+        font-size: 6px; /* Adjust button font size */
+        padding: 5px; /* Larger touch area */
+    }
+
+    .show-password {
+        font-size: 7px; /* Larger icon for mobile */
+    }
+}
+/* Mobile Styles */
+
+/* Small Tablets or Landscape Phones (up to 768px wide) */
+@media (max-width: 768px) {
+  body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      flex-direction: column;
+  }
+
+  .container {
+      padding: 15px;
+  }
+
+  .top, h3, p {
+      font-size: 1.5em;
+  }
+
+  .button {
+      font-size: 14px;
+      padding: 8px;
+  }
+}
+
+/* Small Devices (up to 640px wide) */
+@media (max-width: 640px) {
+  body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+  }
+
+  .container {
+      padding: 12px;
+  }
+
+  .top, h3, p {
+      font-size: 1.3em;
+  }
+
+  .button {
+      font-size: 12px;
+      padding: 6px;
+  }
+}
+
+/* Extra Small Devices (up to 414px wide) */
+@media (max-width: 486px) {
+  body {
+      height: 100vh;
+      display: grid;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+  }
+
+  .container {
+      padding: 10px;
+  }
+
+  .top, h3, p {
+      font-size: 1.2em;
+  }
+
+  .button {
+      font-size: 10px;
+      padding: 5px;
+  }
+
+  .show-password {
+      font-size: 14px;
+  }
+}
+
+/* Extra Extra Small Devices (up

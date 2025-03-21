@@ -1,0 +1,228 @@
+/* Basic Reset */
+* {
+    padding: 0;
+    margin: 0;
+}
+body{
+    overflow: scroll;
+}
+
+.top {
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Logo styling */
+.top img {
+    width: 100px;
+    margin-right: 10px;
+}
+
+/* Navbar Styles */
+.navbar {
+    width: 100vw;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px 0;
+    margin: 0px;
+    position: sticky;
+    color: white;
+    z-index: 100;
+}
+
+
+/* Brand Styles */
+.navbar-brand h1 {
+    margin-left: 10px;
+    font-size: 24px;
+    color: white;
+}
+
+/* Navbar Links */
+.navbar-nav {
+    margin-right:10px;
+    list-style: none;    flex-direction: row;
+    align-items: center;
+}
+
+/* Spacing between list items */
+.navbar-nav li {
+    margin: 0;
+    position: relative;
+}
+
+/* General Link Styling */
+.navbar-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+.navbar-nav a:active{
+    background-color: #585757;
+    color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+}
+
+/* Styling for .link class */
+.link {
+    font-weight: bold;
+    padding: 12px 16px;
+    background-color: transparent;
+    color: #f0f0f0;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+
+
+/* Mobile Menu Styles */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.bar {
+    height: 4px;
+    width: 25px;
+    background-color: white;
+    margin: 3px 0;
+}
+
+/* Mobile View (777px and below) */
+@media (max-width: 949px) {
+
+    /* Hide the navbar items initially on mobile */
+    .navbar-nav {
+        justify-content: space-between;
+        height: auto;
+        display: none;
+        flex-direction: column;
+        background-color: #333;
+        position: absolute;
+        top: 5vh;  /* Position below the navbar */
+        justify-content: space-between;
+        right: 0;
+        padding: 0px;
+        margin: 10px 0;
+        z-index: 1000;
+    }
+
+    /* Show navbar when active */
+    .navbar-nav.active {
+        display: flex;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .navbar-nav li {
+        width: 25vw;
+        border-bottom: 1px solid white;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    /* Hover effect for links on mobile */
+    .navbar-nav li:hover {
+        background-color: #262424;
+    }
+
+    /* Toggle Button */
+    .menu-toggle {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+    }
+
+    .bar {
+        height: 4px;
+        width: 25px;
+        background-color: white;
+        margin: 3px 0;
+    }
+
+    /* Brand and Link Adjustments */
+    .navbar-brand h1 {
+        font-size: 18px;
+    }
+
+    .navbar-nav a {
+        font-size: 12px;
+    }
+
+       
+}
+
+
+/* Mobile View (777px and below) */
+@media (max-width: 457px) {
+
+    /* Hide the navbar items initially on mobile */
+    .navbar-nav {
+        justify-content: space-between;
+        height: auto;
+        display: none;
+        flex-direction: column;
+        background-color: #333;
+        position: absolute;
+        top: 5vh;  /* Position below the navbar */
+        justify-content: space-between;
+        right: 0;
+        padding: 0px;
+        margin: 0;
+        z-index: 1000;
+    }
+
+    /* Show navbar when active */
+    .navbar-nav.active {
+        display: flex;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .navbar-nav li {
+        width: 25vw;
+        border-bottom: 1px solid white;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    /* Hover effect for links on mobile */
+    .navbar-nav li:hover {
+        background-color: #262424;
+    }
+
+    /* Toggle Button */
+    .menu-toggle {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+    }
+
+    .bar {
+        height: 4px;
+        width: 25px;
+        background-color: white;
+        margin: 3px 0;
+    }
+
+    /* Brand and Link Adjustments */
+    .navbar-brand h1 {
+        font-size: 18px;
+    }
+
+    .navbar-nav a {
+        font-size: 12px;
+    }
+
+       
+}
+
