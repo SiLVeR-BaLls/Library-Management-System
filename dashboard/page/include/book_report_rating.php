@@ -6,17 +6,14 @@
         .chart-container {
             width: 100%;
             margin: 0 auto;
-            /* Center the container */
             height: 50%;
-            /* Reduced height */
         }
 
         .ratingsChart {
             width: 100%;
             height: 30%;
-            /* Reduced canvas height */
+            background-color: #f2f2f2;
             margin: 0 auto;
-            /* Center the container */
 
         }
     </style>

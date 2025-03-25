@@ -2,10 +2,11 @@
 session_start();
 
 // Redirect to dashboard if already logged in
-if (isset($_SESSION['admin' || 'student' || 'librarian' || 'faculty'])) {
+if (isset($_SESSION['admin']) || isset($_SESSION['student']) || isset($_SESSION['librarian']) || isset($_SESSION['faculty'])) {
     header("Location: ../dashboard/page/index.php");
     exit();
-} 
+}
+
 
 // Database configuration and connection
 $db_host = 'localhost';
@@ -65,20 +66,21 @@ if (isset($_POST['submit'])) {
 
         if ($row = mysqli_fetch_assoc($result)) {
             if ($row['password'] === $password) {
-                // Reset failed attempts on successful login
-                $_SESSION['failed_attempts'] = 0;
-                $_SESSION['last_failed_attempt'] = 0;
-                $_SESSION['cooldown_multiplier'] = 1; // Reset cooldown multiplier on successful login
-
-                if ($row['status'] == 'pending') {
+                // Check the account status
+                if ($row['status_log'] == 'pending') {
                     $_SESSION['status_message'] = "Your account is still pending.";
-                } elseif ($row['status'] == 'rejected') {
-                    $_SESSION['status_message'] = "Your account has been rejected. Please sign in again.";
-                } else {
+                } elseif ($row['status_log'] == 'approved') {
+                    // Reset failed attempts on successful login
+                    $_SESSION['failed_attempts'] = 0;
+                    $_SESSION['last_failed_attempt'] = 0;
+                    $_SESSION['cooldown_multiplier'] = 1; // Reset cooldown multiplier on successful login
+
                     $_SESSION[$row['U_Type']] = $row;
                     // Redirect to the dashboard/page/index.php after successful login
                     header("Location: ../dashboard/page/index.php");
                     exit();
+                } else {
+                    $_SESSION['status_message'] = "Your account has been rejected.";
                 }
             } else {
                 // Increment failed attempt counter and log the time of the failed attempt

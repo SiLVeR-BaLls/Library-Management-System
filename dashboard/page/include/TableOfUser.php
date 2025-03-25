@@ -11,23 +11,30 @@ if (isset($_GET['U_Type']) && !empty($_GET['U_Type'])) {
   $usersQuery .= " AND users_info.U_Type = '$U_Type'";
 }
 
+// Fetch users without pagination (no LIMIT clause)
 $usersResult = mysqli_query($conn, $usersQuery);
 
 // Handle delete request
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
-  $id = $_POST['id'];
-  $deleteQuery = "DELETE FROM users_info WHERE IDno = '$id'";
-  $deleteResult = mysqli_query($conn, $deleteQuery);
+  // Ensure ID is passed and sanitize it to prevent SQL injection
+  if (isset($_POST['id']) && !empty($_POST['id'])) {
+    $id = mysqli_real_escape_string($conn, $_POST['id']);
+    
+    // SQL DELETE query to remove the user from the database
+    $deleteQuery = "DELETE FROM users_info WHERE IDno = '$id'";  
+    $deleteResult = mysqli_query($conn, $deleteQuery);
 
-  if ($deleteResult) {
-    echo json_encode(['success' => true]);
+    if ($deleteResult) {
+      echo json_encode(['success' => true]);
+    } else {
+      echo json_encode(['success' => false, 'message' => 'Failed to delete user.']);
+    }
   } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to delete user.']);
+    echo json_encode(['success' => false, 'message' => 'No ID provided.']);
   }
-  exit;
+  exit;  // Exit after the response to prevent further output
 }
 ?>
-
 
 <div class="container mx-auto ">
 
@@ -75,8 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </div>
       </div>
     </div>
-
-
   </div>
 
   <!-- Table -->
@@ -120,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <button id="nextBtn" onclick="nextPage()" class="btn-pagination px-6 py-2 bg-gray-800 text-white rounded-lg cursor-pointer transition duration-300 hover:bg-gray-600">Next</button>
   </div>
 </div>
-
 
 <script>
   // JavaScript for managing search and pagination
@@ -245,38 +249,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   document.addEventListener("DOMContentLoaded", function() {
     updatePagination(); // Initialize the table with current page and filter
   });
+
+  // Delete user via AJAX
+  function deleteUser(id) {
+    if (confirm('Are you sure you want to delete this user?')) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '', true);  // Make a POST request to the same page
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    alert('User deleted successfully');
+                    location.reload();  // Reload the page to reflect the deletion
+                } else {
+                    alert('Failed to delete user: ' + response.message);
+                }
+            }
+        };
+        xhr.send('action=delete&id=' + encodeURIComponent(id)); // Send the delete action and user ID
+    }
+  }
 </script>
-
-<style>
-  /* Active (selected) state */
-  .radio-input label:has(input:checked) {
-    background-color: #1D4ED8;
-    color: #fff;
-  }
-
-  .radio-input label:has(input:checked)~.selection {
-    display: inline-block;
-    background-color: #1D4ED8;
-  }
-
-  /* Active state for each label */
-  .radio-input label:nth-child(1):has(input:checked)~.selection {
-    transform: translateX(calc(var(--container_width) * 0 / 5));
-  }
-
-  .radio-input label:nth-child(2):has(input:checked)~.selection {
-    transform: translateX(calc(var(--container_width) * 1 / 5));
-  }
-
-  .radio-input label:nth-child(3):has(input:checked)~.selection {
-    transform: translateX(calc(var(--container_width) * 2 / 5));
-  }
-
-  .radio-input label:nth-child(4):has(input:checked)~.selection {
-    transform: translateX(calc(var(--container_width) * 3 / 5));
-  }
-
-  .radio-input label:nth-child(5):has(input:checked)~.selection {
-    transform: translateX(calc(var(--container_width) * 4 / 5));
-  }
-</style>

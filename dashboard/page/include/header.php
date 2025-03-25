@@ -12,11 +12,11 @@
 
 <body class="flex flex-col w-full h-screen max-w-full max-h-screen" style="background-color: <?= $background ?>">
 
-    <div style="background-color: <?= $header ?>; color : <?= $text1 ?>;" class="flex sticky top-0 shadow-md items-center justify-between w-full h-[4rem] shadow-md">
+    <div style="background-color: <?= $header ?>; color : <?= $text1 ?>;" class="flex z-1000 sticky top-0 shadow-md items-center justify-between w-full h-[4rem] shadow-md">
         <!-- Left side: Logo and Title -->
         <div class="flex items-center gap-4 p-4">
             <a href="#">
-                <img src="<?= $logo ?>" alt="Logo" class="w-auto h-auto max-w-xs max-h-16">
+                <img src="<?= $logo ?>" alt="Logo" class="w-auto  h-auto max-w-xs max-h-16">
             </a>
             <strong class="text-lg font-semibold">
                 Library Management System
@@ -25,7 +25,7 @@
 
 
         <!-- Right side: User's First Name and Login Button -->
-        <div class="flex items-center space-x-4 m-4">
+        <div class="flex items-center space-x-4  m-4">
             <?php if ($userData): ?>
                 <span class="text-sm font-medium">Hello,
                     <strong><?php echo htmlspecialchars($userData['Fname']); ?></strong>
@@ -33,9 +33,12 @@
                 <!-- Logout Button (Icon Changes on Hover) -->
                 <div class="py-4 px-4">
                     <a href="logout.php" id="logoutBtn" class="b p-2 rounded-md transition flex items-center justify-center">
-                        <img id="logoutIcon" src="../../pic/scr/exit_door.png" alt="Logout" class="w-6 h-6">
+                        <div class="bg-white rounded-full p-1 flex items-center justify-center">
+                            <img id="logoutIcon" src="../../pic/scr/exit_door.png" alt="Logout" class="w-6 h-6">
+                        </div>
                     </a>
                 </div>
+
 
                 <!-- JavaScript for Hover Effect -->
                 <script>
@@ -106,32 +109,31 @@
         });
     </script>
 
-    
-<style>
-    /* Apply custom button colors */
-    .btn {
-        background-color: <?= $button ?>;
-        color: white;
-    }
 
-    /* Button hover state based on DB value */
-    .btn:hover {
-        background-color: <?= $button_hover ?>;
-    }
+    <style>
+        /* Apply custom button colors */
+        .btn {
+            background-color: <?= $button ?>;
+            color: white;
+        }
 
-    /* Button active state based on DB value */
-    .btn:active {
-        background-color: <?= $button_active ?>;
-    }
+        /* Button hover state based on DB value */
+        .btn:hover {
+            background-color: <?= $button_hover ?>;
+        }
 
-    /* Sidebar item hover color from DB */
-    .sidebar-item:hover {
-        background-color: <?= $sidebar_hover ?>;
-    }
+        /* Button active state based on DB value */
+        .btn:active {
+            background-color: <?= $button_active ?>;
+        }
 
-    /* Sidebar item active color from DB */
-    .sidebar-item.active {
-        background-color: <?= $sidebar_active ?>;
-    }
-</style>
+        /* Sidebar item hover color from DB */
+        .sidebar-item:hover {
+            background-color: <?= $sidebar_hover ?>;
+        }
 
+        /* Sidebar item active color from DB */
+        .sidebar-item.active {
+            background-color: <?= $sidebar_active ?>;
+        }
+    </style>

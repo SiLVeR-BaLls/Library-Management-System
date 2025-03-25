@@ -4,7 +4,7 @@
     <div class="sticky top-0" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;">
 
         <div class="flex items-center justify-between p-4 border-b ">
-            <p style="color : <?= $text1 ?>;" class="font-bold text-lg">Librarian Panel</p>
+            <p style="color : <?= $text2 ?>;" class="font-bold text-lg">Librarian Panel</p>
         </div>
 
         <nav class="flex-grow ">

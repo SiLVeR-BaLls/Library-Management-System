@@ -1,108 +1,106 @@
+
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$dbname = "lms";
+      include '../config.php';
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
 
-$conn = new mysqli($host, $user, $pass, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+        // Create the uploads directory if it doesn't exist
+        $uploadDir = '../../../pic/scr/';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true); // create the directory with proper permissions
+        }
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+        // Handle theme settings update
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Retrieve new colors
+            $background = $_POST['background_color'] ?? '#ffffff';
+            $text1 = $_POST['text_color1'] ?? '#000000';
+            $text2 = $_POST['text_color2'] ?? '#000000';
+            $header = $_POST['header_color'] ?? '#333333';
+            $footer = $_POST['footer_color'] ?? '#333333';
+            $sidebar = $_POST['sidebar_color'] ?? '#333333';
+            $button = $_POST['button_color'] ?? '#007bff';  // Default button color
+            $button_hover = $_POST['button_hover_color'] ?? '#0056b3';  // Default hover color
+            $button_active = $_POST['button_active_color'] ?? '#0056b3'; // Default active color
 
-// Create the uploads directory if it doesn't exist
-$uploadDir = '../../../pic/scr/';
-if (!file_exists($uploadDir)) {
-    mkdir($uploadDir, 0777, true); // create the directory with proper permissions
-}
+            // Handle logo upload (same as before)
+            $logo = '';
+            if (!empty($_FILES['logoUpload']['name']) && $_FILES['logoUpload']['error'] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['logoUpload']['tmp_name'];
+                $fileName = $_FILES['logoUpload']['name'];
+                $fileSize = $_FILES['logoUpload']['size'];
+                $fileType = $_FILES['logoUpload']['type'];
+                $allowedExtensions = ['jpg', 'jpeg', 'png'];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-// Handle theme settings update
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve new colors
-    $background = $_POST['background_color'] ?? '#ffffff';
-    $text1 = $_POST['text_color1'] ?? '#000000';
-    $text2 = $_POST['text_color2'] ?? '#000000';
-    $header = $_POST['header_color'] ?? '#333333';
-    $footer = $_POST['footer_color'] ?? '#333333';
-    $sidebar = $_POST['sidebar_color'] ?? '#333333';
-    $button = $_POST['button_color'] ?? '#007bff';  // Default button color
-    $button_hover = $_POST['button_hover_color'] ?? '#0056b3';  // Default hover color
-    $button_active = $_POST['button_active_color'] ?? '#0056b3'; // Default active color
+                // Validate the file format and size
+                if (!in_array($fileExtension, $allowedExtensions)) {
+                    echo "<script>alert('Error: Image format is not accepted. Only JPG, JPEG, PNG allowed.');</script>";
+                    exit;
+                }
 
-    // Handle logo upload (same as before)
-    $logo = '';
-    if (!empty($_FILES['logoUpload']['name']) && $_FILES['logoUpload']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['logoUpload']['tmp_name'];
-        $fileName = $_FILES['logoUpload']['name'];
-        $fileSize = $_FILES['logoUpload']['size'];
-        $fileType = $_FILES['logoUpload']['type'];
-        $allowedExtensions = ['jpg', 'jpeg', 'png'];
-        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                if ($fileSize > 2097152) { // 2MB limit
+                    echo "<script>alert('Error: File size is too large. Max size is 2MB.');</script>";
+                    exit;
+                }
 
-        // Validate the file format and size
-        if (!in_array($fileExtension, $allowedExtensions)) {
-            echo "<script>alert('Error: Image format is not accepted. Only JPG, JPEG, PNG allowed.');</script>";
+                $newFileName = uniqid('logo_', true) . '.' . $fileExtension;
+                $uploadPath = $uploadDir . $newFileName;
+                if (move_uploaded_file($fileTmpPath, $uploadPath)) {
+                    $logo = ", logo='$newFileName'";
+                }
+            }
+
+            // Update query to include new button color
+            $updateQuery = "UPDATE settings SET 
+                            background_color='$background', 
+                            text_color1='$text1', 
+                            text_color2='$text2', 
+                            header_color='$header', 
+                            footer_color='$footer', 
+                            sidebar_color='$sidebar', 
+                            button_color='$button',  -- Added button_color
+                            button_hover_color='$button_hover',
+                            button_active_color='$button_active'
+                            $logo 
+                            LIMIT 1";
+
+            if ($conn->query($updateQuery)) {
+                echo 'success';
+            } else {
+                echo 'error: ' . $conn->error;
+            }
             exit;
         }
 
-        if ($fileSize > 2097152) { // 2MB limit
-            echo "<script>alert('Error: File size is too large. Max size is 2MB.');</script>";
-            exit;
-        }
+        // Fetch existing settings from the database
+        $result = $conn->query("SELECT * FROM settings LIMIT 1");
+        $settings = $result->fetch_assoc();
 
-        $newFileName = uniqid('logo_', true) . '.' . $fileExtension;
-        $uploadPath = $uploadDir . $newFileName;
-        if (move_uploaded_file($fileTmpPath, $uploadPath)) {
-            $logo = ", logo='$newFileName'";
-        }
-    }
+        // Retrieve color settings
+        $background = $settings['background_color'] ?? '';
+        $text1 = $settings['text_color1'] ?? '';
+        $text2 = $settings['text_color2'] ?? '';
+        $button = $settings['button_color'] ?? '';
+        $button_hover = $settings['button_hover_color'] ?? '';
+        $button_active = $settings['button_active_color'] ?? '';
+        $sidebar_hover = $settings['sidebar_hover_color'] ?? '';
+        $sidebar_active = $settings['sidebar_active_color'] ?? '';
+        $header = $settings['header_color'] ?? '';
+        $footer = $settings['footer_color'] ?? '';
+        $sidebar = $settings['sidebar_color'] ?? '';
+        $logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : 'default-logo.png';
 
-    // Update query to include new button color
-    $updateQuery = "UPDATE settings SET 
-                    background_color='$background', 
-                    text_color1='$text1', 
-                    text_color2='$text2', 
-                    header_color='$header', 
-                    footer_color='$footer', 
-                    sidebar_color='$sidebar', 
-                    button_color='$button',  -- Added button_color
-                    button_hover_color='$button_hover',
-                    button_active_color='$button_active'
-                    $logo 
-                    LIMIT 1";
-
-    if ($conn->query($updateQuery)) {
-        echo 'success';
-    } else {
-        echo 'error: ' . $conn->error;
-    }
-    exit;
-}
-
-// Fetch existing settings from the database
-$result = $conn->query("SELECT * FROM settings LIMIT 1");
-$settings = $result->fetch_assoc();
-
-// Retrieve color settings
-$background = $settings['background_color'] ?? '';
-$text1 = $settings['text_color1'] ?? '';
-$text2 = $settings['text_color2'] ?? '';
-$button = $settings['button_color'] ?? '';
-$button_hover = $settings['button_hover_color'] ?? '';
-$button_active = $settings['button_active_color'] ?? '';
-$sidebar_hover = $settings['sidebar_hover_color'] ?? '';
-$sidebar_active = $settings['sidebar_active_color'] ?? '';
-$header = $settings['header_color'] ?? '';
-$footer = $settings['footer_color'] ?? '';
-$sidebar = $settings['sidebar_color'] ?? '';
-$logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : 'default-logo.png';
-
+            // Redirect if no valid user is logged in
+            if (!$idno) {
+                header("Location: /lms");
+                exit();
+            }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 
 <head>
     <meta charset="UTF-8">
@@ -239,17 +237,17 @@ $logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : 'd
                             <label class="block font-semibold mb-2">Choose Default Theme:</label>
                             <div class="grid grid-cols-2 gap-4">
                                 <a href="#" onclick="setTheme('#f8f9fa', '#FFFFFF', '#212529', '#6c757d', '#6c757d', '#e0e0e0', '#007bff', '#0056b3', '#003366')" class="block px-4 py-2 bg-gray-200 text-center rounded-md">Dark White</a>
-                                <a href="#" onclick="setTheme('#a67b5b', '#FFFFFF', '#000000', '#654321', '#654321', '#3e2723', '#f39c12', '#e67e22', '#3c8e40')" class="block px-4 py-2 bg-yellow-700 text-center rounded-md">Off Brown</a>
+                                <a href="#" onclick="setTheme('#a67b5b', '#FFFFFF', '#FFFFFF', '#654321', '#654321', '#3e2723', '#f39c12', '#e67e22', '#3c8e40')" class="block px-4 py-2 bg-yellow-700 text-center rounded-md">Off Brown</a>
                                 <a href="#" onclick="setTheme('#ffcc00', '#FFFFFF', '#333333', '#ff9900', '#ff9900', '#ff6f00', '#f39c12', '#e74c3c', '#c0392b')" class="block px-4 py-2 bg-yellow-500 text-center rounded-md">Dark Yellow</a>
-                                <a href="#" onclick="setTheme('#001f3f', '#FFFFFF', '#000000', '#007bff', '#007bff', '#003366', '#27ae60', '#2980b9', '#0072bb')" class="block px-4 py-2 bg-blue-900 text-center rounded-md">Navy Blue</a>
+                                <a href="#" onclick="setTheme('#001f3f', '#FFFFFF', '#FFFFFF', '#007bff', '#007bff', '#003366', '#27ae60', '#2980b9', '#0072bb')" class="block px-4 py-2 bg-blue-900 text-center rounded-md">Navy Blue</a>
                                 <a href="#" onclick="setTheme('#f2f2f2', '#FFFFFF', '#FFFFFF', '#FFD700', '#FFD700', '#1905A3', '#1905A3', '#0056b3', '#003580')" class="block px-4 py-2 bg-blue-900 text-center rounded-md">Sample</a>
                             </div>
                         </div>
                     </div>  <!-- Action Buttons -->
-            <div class="mt-6 flex-col justify-between m-3 gap-4">
-                <button type="button" onclick="location.reload()" class="btn px-6 py-3 m- bg-red-500 text-white rounded-md">Reset</button>
-                <button type="button" onclick="saveTheme()" class="btn px-6 py-3 m- bg-green-500 text-white rounded-md">Save</button>
-                <button type="button" onclick="window.location.href='index.php'" class="btn px-6 py-3 m- bg-blue-500 text-white rounded-md">Return</button>
+            <div class="mt-6 flex-col justify-between p-5 gap-4">
+                <button type="button" onclick="location.reload()" class="btn px-6 py-3 m-2 bg-red-500 text-white rounded-md">Reset</button>
+                <button type="button" onclick="saveTheme()" class="btn px-6 py-3 m-2 bg-green-500 text-white rounded-md">Save</button>
+                <button type="button" onclick="window.location.href='index.php'" class="btn px-6 py-3 m-2 bg-blue-500 text-white rounded-md">Return</button>
             </div>
                 </div>
                 

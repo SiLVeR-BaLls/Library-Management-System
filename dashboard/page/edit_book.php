@@ -1,236 +1,236 @@
 <?php
-include '../config.php';
+    include '../config.php';
 
-// Initialize message variables
-$message = "";
-$message_type = "";
+    // Initialize message variables
+    $message = "";
+    $message_type = "";
 
-// Get the book title from the query string
-$title = $_GET['title'] ?? ''; // Use null coalescing operator to handle missing 'title'
+    // Get the book title from the query string
+    $title = $_GET['title'] ?? ''; // Use null coalescing operator to handle missing 'title'
 
-if ($title) {
+    if ($title) {
 
-  // Fetch book
-  $sql = "SELECT * FROM book WHERE book_id = ?";
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("s", $title);
-  if ($stmt->execute()) {
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-      // Fetch the book details
-      $book = $result->fetch_assoc();
-    } else {
-      // No book found with the provided book_id
-      $message = "No book found with that ID.";
-      $message_type = "error";
-    }
-  }
-  $stmt->close();
-  // Get co-authors data
-  $coAuthorsQuery = "SELECT * FROM coauthor WHERE book_id = ?";
-  $stmt = $conn->prepare($coAuthorsQuery);
-  $stmt->bind_param("s", $title);  // Ensure $title is passed
-  $stmt->execute();
-  $coAuthorsResult = $stmt->get_result();
-
-  // Get subject data
-  $subjectQuery = "SELECT * FROM subject WHERE book_id = ?";
-  $stmt = $conn->prepare($subjectQuery);
-  $stmt->bind_param("s", $title);  // Ensure $title is passed
-  $stmt->execute();
-  $subjectResult = $stmt->get_result();
-} else {
-  // No book title provided
-  $message = "No book title provided.";
-  $message_type = "error";
-}
-
-// Handle form submission for updating book details, co-authors, and subjects
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
-
-  // Variables to hold any message or error
-  $message = '';
-  $message_type = '';
-
-  // ** Handle Co-authors Update **
-  if (!empty($_POST['Co_Name']) && !empty($_POST['Co_Date']) && !empty($_POST['Co_Role']) && !empty($_POST['co_author_ids'])) {
-    $Co_Name = $_POST['Co_Name'];
-    $Co_Date = $_POST['Co_Date'];
-    $Co_Role = $_POST['Co_Role'];
-    $co_author_ids = $_POST['co_author_ids'];
-
-    for ($i = 0; $i < count($Co_Name); $i++) {
-      $name = $conn->real_escape_string($Co_Name[$i]);
-      $date = $conn->real_escape_string($Co_Date[$i]);
-      $role = $conn->real_escape_string($Co_Role[$i]);
-      $co_author_id = (int)$co_author_ids[$i]; // Get the co_author_id from the form
-
-      // Update co-author based on book_id and co_author_id
-      $updateQuery = "UPDATE coauthor 
-                            SET Co_Name='$name', Co_Date='$date', Co_Role='$role' 
-                            WHERE co_author_id=$co_author_id AND book_id=" . (int)$book['book_id'];
-
-      if ($conn->query($updateQuery) !== TRUE) {
-        $message = "Error updating co-author: " . $conn->error;
-        $message_type = "error";
-      }
-    }
-  }
-
-  // ** Handle Subjects Update **
-  if (!empty($_POST['subject_heads']) && !empty($_POST['subject_inputs']) && !empty($_POST['subject_ids'])) {
-    $subject_heads = $_POST['subject_heads'];
-    $subject_inputs = $_POST['subject_inputs'];
-    $subject_ids = $_POST['subject_ids'];
-
-    for ($i = 0; $i < count($subject_heads); $i++) {
-      $head = $conn->real_escape_string($subject_heads[$i]);
-      $input = $conn->real_escape_string($subject_inputs[$i]);
-      $subject_id = (int)$subject_ids[$i];
-
-      // Update subject based on book_id and subject_id
-      $updateQuery = "UPDATE subject 
-                            SET Sub_Head='$head', Sub_Head_input='$input' 
-                            WHERE subject_id=$subject_id AND book_id=" . (int)$book['book_id'];
-
-      if ($conn->query($updateQuery) !== TRUE) {
-        $message = "Error updating subject: " . $conn->error;
-        $message_type = "error";
-      }
-    }
-  }
-
-  // ** Handle Book Details Update and File Upload **
-  if (empty($message)) {
-    // Process file upload for book photo
-    $photoPath = $book['photo']; // Default to existing photo
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Allowed MIME types
-
-    if (isset($_FILES['photo']) && $_FILES['photo']['error'] == UPLOAD_ERR_OK) {
-      $fileType = mime_content_type($_FILES['photo']['tmp_name']);
-      $fileSize = $_FILES['photo']['size'];
-
-      if (!in_array($fileType, $allowedTypes) || $fileSize > 2 * 1024 * 1024) { // 2 MB limit
-        $message = "Invalid image format or file too large.";
-        $message_type = "error";
-      } else {
-        $uploadDir = '../../pic/Book/';
-        if (!is_dir($uploadDir)) {
-          mkdir($uploadDir, 0755, true);
-        }
-
-        // Delete existing photo if present
-        if (!empty($book['photo'])) {
-          unlink($uploadDir . $book['photo']);
-        }
-
-        // Handle new file upload
-        $fileName = uniqid() . '_' . basename($_FILES['photo']['name']);
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadDir . $fileName)) {
-          $photoPath = $fileName;
+      // Fetch book
+      $sql = "SELECT * FROM book WHERE book_id = ?";
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param("s", $title);
+      if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+          // Fetch the book details
+          $book = $result->fetch_assoc();
         } else {
-          $message = "Failed to upload photo.";
+          // No book found with the provided book_id
+          $message = "No book found with that ID.";
           $message_type = "error";
         }
       }
+      $stmt->close();
+      // Get co-authors data
+      $coAuthorsQuery = "SELECT * FROM coauthor WHERE book_id = ?";
+      $stmt = $conn->prepare($coAuthorsQuery);
+      $stmt->bind_param("s", $title);  // Ensure $title is passed
+      $stmt->execute();
+      $coAuthorsResult = $stmt->get_result();
+
+      // Get subject data
+      $subjectQuery = "SELECT * FROM subject WHERE book_id = ?";
+      $stmt = $conn->prepare($subjectQuery);
+      $stmt->bind_param("s", $title);  // Ensure $title is passed
+      $stmt->execute();
+      $subjectResult = $stmt->get_result();
+    } else {
+      // No book title provided
+      $message = "No book title provided.";
+      $message_type = "error";
     }
 
-    // ** Update Book Information **
-    if (empty($message)) {
-      $sql = "UPDATE book SET subtitle=?, author=?, edition=?, LCCN=?, ISBN=?, ISSN=?, MT=?, ST=?, place=?, publisher=?, Pdate=?, copyright=?, extent=?, Odetail=?, size=?, Description=?, url=?, UTitle=?, VForm=?, SUTitle=?, photo=? WHERE book_id=?";
-      $stmt = $conn->prepare($sql);
-      $stmt->bind_param("ssssssssssssssssssssss", $_POST['subtitle'], $_POST['author'], $_POST['edition'], $_POST['LCCN'], $_POST['ISBN'], $_POST['ISSN'], $_POST['MT'], $_POST['ST'], $_POST['place'], $_POST['publisher'], $_POST['Pdate'], $_POST['copyright'], $_POST['extent'], $_POST['Odetail'], $_POST['size'], $_POST['Description'], $_POST['url'], $_POST['UTitle'], $_POST['VForm'], $_POST['SUTitle'], $photoPath, $title);
+    // Handle form submission for updating book details, co-authors, and subjects
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
 
-      if (!$stmt->execute()) {
-        $message = "Error updating book: " . $stmt->error;
+      // Variables to hold any message or error
+      $message = '';
+      $message_type = '';
+
+      // ** Handle Co-authors Update **
+      if (!empty($_POST['Co_Name']) && !empty($_POST['Co_Date']) && !empty($_POST['Co_Role']) && !empty($_POST['co_author_ids'])) {
+        $Co_Name = $_POST['Co_Name'];
+        $Co_Date = $_POST['Co_Date'];
+        $Co_Role = $_POST['Co_Role'];
+        $co_author_ids = $_POST['co_author_ids'];
+
+        for ($i = 0; $i < count($Co_Name); $i++) {
+          $name = $conn->real_escape_string($Co_Name[$i]);
+          $date = $conn->real_escape_string($Co_Date[$i]);
+          $role = $conn->real_escape_string($Co_Role[$i]);
+          $co_author_id = (int)$co_author_ids[$i]; // Get the co_author_id from the form
+
+          // Update co-author based on book_id and co_author_id
+          $updateQuery = "UPDATE coauthor 
+                                SET Co_Name='$name', Co_Date='$date', Co_Role='$role' 
+                                WHERE co_author_id=$co_author_id AND book_id=" . (int)$book['book_id'];
+
+          if ($conn->query($updateQuery) !== TRUE) {
+            $message = "Error updating co-author: " . $conn->error;
+            $message_type = "error";
+          }
+        }
+      }
+
+      // ** Handle Subjects Update **
+      if (!empty($_POST['subject_heads']) && !empty($_POST['subject_inputs']) && !empty($_POST['subject_ids'])) {
+        $subject_heads = $_POST['subject_heads'];
+        $subject_inputs = $_POST['subject_inputs'];
+        $subject_ids = $_POST['subject_ids'];
+
+        for ($i = 0; $i < count($subject_heads); $i++) {
+          $head = $conn->real_escape_string($subject_heads[$i]);
+          $input = $conn->real_escape_string($subject_inputs[$i]);
+          $subject_id = (int)$subject_ids[$i];
+
+          // Update subject based on book_id and subject_id
+          $updateQuery = "UPDATE subject 
+                                SET Sub_Head='$head', Sub_Head_input='$input' 
+                                WHERE subject_id=$subject_id AND book_id=" . (int)$book['book_id'];
+
+          if ($conn->query($updateQuery) !== TRUE) {
+            $message = "Error updating subject: " . $conn->error;
+            $message_type = "error";
+          }
+        }
+      }
+
+      // ** Handle Book Details Update and File Upload **
+      if (empty($message)) {
+        // Process file upload for book photo
+        $photoPath = $book['photo']; // Default to existing photo
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif']; // Allowed MIME types
+
+        if (isset($_FILES['photo']) && $_FILES['photo']['error'] == UPLOAD_ERR_OK) {
+          $fileType = mime_content_type($_FILES['photo']['tmp_name']);
+          $fileSize = $_FILES['photo']['size'];
+
+          if (!in_array($fileType, $allowedTypes) || $fileSize > 2 * 1024 * 1024) { // 2 MB limit
+            $message = "Invalid image format or file too large.";
+            $message_type = "error";
+          } else {
+            $uploadDir = '../../pic/Book/';
+            if (!is_dir($uploadDir)) {
+              mkdir($uploadDir, 0755, true);
+            }
+
+            // Delete existing photo if present
+            if (!empty($book['photo'])) {
+              unlink($uploadDir . $book['photo']);
+            }
+
+            // Handle new file upload
+            $fileName = uniqid() . '_' . basename($_FILES['photo']['name']);
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadDir . $fileName)) {
+              $photoPath = $fileName;
+            } else {
+              $message = "Failed to upload photo.";
+              $message_type = "error";
+            }
+          }
+        }
+
+        // ** Update Book Information **
+        if (empty($message)) {
+          $sql = "UPDATE book SET subtitle=?, author=?, edition=?, LCCN=?, ISBN=?, ISSN=?, MT=?, ST=?, place=?, publisher=?, Pdate=?, copyright=?, extent=?, Odetail=?, size=?, Description=?, url=?, UTitle=?, VForm=?, SUTitle=?, photo=? WHERE book_id=?";
+          $stmt = $conn->prepare($sql);
+          $stmt->bind_param("ssssssssssssssssssssss", $_POST['subtitle'], $_POST['author'], $_POST['edition'], $_POST['LCCN'], $_POST['ISBN'], $_POST['ISSN'], $_POST['MT'], $_POST['ST'], $_POST['place'], $_POST['publisher'], $_POST['Pdate'], $_POST['copyright'], $_POST['extent'], $_POST['Odetail'], $_POST['size'], $_POST['Description'], $_POST['url'], $_POST['UTitle'], $_POST['VForm'], $_POST['SUTitle'], $photoPath, $title);
+
+          if (!$stmt->execute()) {
+            $message = "Error updating book: " . $stmt->error;
+            $message_type = "error";
+          }
+          $stmt->close();
+        }
+      }
+
+      // ** Redirect After Update or Error **
+      if (empty($message)) {
+        // Redirect to the book view page on success
+        header("Location: ViewBook.php?message=success&title=" . urlencode($title));
+        exit();
+      }
+    }
+
+
+    // Handle book deletion
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
+      // Get the photo filename before deleting the book record
+      $photoToDelete = $book['photo'] ?? '';
+
+      $deleteSql = "DELETE FROM Book WHERE book_id = ?";
+      $deleteStmt = $conn->prepare($deleteSql);
+      $deleteStmt->bind_param("s", $title);
+
+      if ($deleteStmt->execute()) {
+        // Check if the photo exists and delete it from the directory
+        if ($photoToDelete && file_exists("../../pic/Book/" . $photoToDelete)) {
+          unlink("../../pic/Book/" . $photoToDelete);
+        }
+
+        // Redirect to index page after deletion
+        header("Location: index.php?message=deleted&title=" . urlencode($title));
+        exit();
+      } else {
+        $message = "Error deleting book: " . $deleteStmt->error;
         $message_type = "error";
       }
-      $stmt->close();
-    }
-  }
-
-  // ** Redirect After Update or Error **
-  if (empty($message)) {
-    // Redirect to the book view page on success
-    header("Location: ViewBook.php?message=success&title=" . urlencode($title));
-    exit();
-  }
-}
-
-
-// Handle book deletion
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete'])) {
-  // Get the photo filename before deleting the book record
-  $photoToDelete = $book['photo'] ?? '';
-
-  $deleteSql = "DELETE FROM Book WHERE book_id = ?";
-  $deleteStmt = $conn->prepare($deleteSql);
-  $deleteStmt->bind_param("s", $title);
-
-  if ($deleteStmt->execute()) {
-    // Check if the photo exists and delete it from the directory
-    if ($photoToDelete && file_exists("../../pic/Book/" . $photoToDelete)) {
-      unlink("../../pic/Book/" . $photoToDelete);
+      $deleteStmt->close();
     }
 
-    // Redirect to index page after deletion
-    header("Location: index.php?message=deleted&title=" . urlencode($title));
-    exit();
-  } else {
-    $message = "Error deleting book: " . $deleteStmt->error;
-    $message_type = "error";
-  }
-  $deleteStmt->close();
-}
+    // Handle Co-authors Update
+    if (isset($_POST['update'])) {
+      if (!empty($_POST['Co_Name']) && !empty($_POST['Co_Date']) && !empty($_POST['Co_Role']) && !empty($_POST['co_author_ids'])) {
+        $Co_Name = $_POST['Co_Name'];
+        $Co_Date = $_POST['Co_Date'];
+        $Co_Role = $_POST['Co_Role'];
+        $co_author_ids = $_POST['co_author_ids']; // Assuming this field is added to your form
 
-// Handle Co-authors Update
-if (isset($_POST['update'])) {
-  if (!empty($_POST['Co_Name']) && !empty($_POST['Co_Date']) && !empty($_POST['Co_Role']) && !empty($_POST['co_author_ids'])) {
-    $Co_Name = $_POST['Co_Name'];
-    $Co_Date = $_POST['Co_Date'];
-    $Co_Role = $_POST['Co_Role'];
-    $co_author_ids = $_POST['co_author_ids']; // Assuming this field is added to your form
+        for ($i = 0; $i < count($Co_Name); $i++) {
+          $name = $conn->real_escape_string($Co_Name[$i]);
+          $date = $conn->real_escape_string($Co_Date[$i]);
+          $role = $conn->real_escape_string($Co_Role[$i]);
+          $co_author_id = (int)$co_author_ids[$i]; // Get the co_author_id from the form
 
-    for ($i = 0; $i < count($Co_Name); $i++) {
-      $name = $conn->real_escape_string($Co_Name[$i]);
-      $date = $conn->real_escape_string($Co_Date[$i]);
-      $role = $conn->real_escape_string($Co_Role[$i]);
-      $co_author_id = (int)$co_author_ids[$i]; // Get the co_author_id from the form
+          // Update co-author based on book_id and co_author_id
+          $updateQuery = "UPDATE coauthor 
+                                  SET Co_Name='$name', Co_Date='$date', Co_Role='$role' 
+                                  WHERE co_author_id=$co_author_id AND book_id=" . (int)$book['book_id'];
 
-      // Update co-author based on book_id and co_author_id
-      $updateQuery = "UPDATE coauthor 
-                              SET Co_Name='$name', Co_Date='$date', Co_Role='$role' 
-                              WHERE co_author_id=$co_author_id AND book_id=" . (int)$book['book_id'];
-
-      if ($conn->query($updateQuery) !== TRUE) {
-        echo "Error updating co-author: " . $conn->error;
+          if ($conn->query($updateQuery) !== TRUE) {
+            echo "Error updating co-author: " . $conn->error;
+          }
+        }
       }
     }
-  }
-}
-// Handle Subjects Update
-if (isset($_POST['update'])) {
-  if (!empty($_POST['subject_heads']) && !empty($_POST['subject_inputs']) && !empty($_POST['subject_ids'])) {
-    $subject_heads = $_POST['subject_heads'];
-    $subject_inputs = $_POST['subject_inputs'];
-    $subject_ids = $_POST['subject_ids']; // Assuming this field is added to your form
+    // Handle Subjects Update
+    if (isset($_POST['update'])) {
+      if (!empty($_POST['subject_heads']) && !empty($_POST['subject_inputs']) && !empty($_POST['subject_ids'])) {
+        $subject_heads = $_POST['subject_heads'];
+        $subject_inputs = $_POST['subject_inputs'];
+        $subject_ids = $_POST['subject_ids']; // Assuming this field is added to your form
 
-    for ($i = 0; $i < count($subject_heads); $i++) {
-      $head = $conn->real_escape_string($subject_heads[$i]);
-      $input = $conn->real_escape_string($subject_inputs[$i]);
-      $subject_id = (int)$subject_ids[$i]; // Get the subject_id from the form
+        for ($i = 0; $i < count($subject_heads); $i++) {
+          $head = $conn->real_escape_string($subject_heads[$i]);
+          $input = $conn->real_escape_string($subject_inputs[$i]);
+          $subject_id = (int)$subject_ids[$i]; // Get the subject_id from the form
 
-      // Update subject based on book_id and subject_id
-      $updateQuery = "UPDATE subject 
-                              SET Sub_Head='$head', Sub_Head_input='$input' 
-                              WHERE subject_id=$subject_id AND book_id=" . (int)$book['book_id'];
+          // Update subject based on book_id and subject_id
+          $updateQuery = "UPDATE subject 
+                                  SET Sub_Head='$head', Sub_Head_input='$input' 
+                                  WHERE subject_id=$subject_id AND book_id=" . (int)$book['book_id'];
 
-      if ($conn->query($updateQuery) !== TRUE) {
-        echo "Error updating subject: " . $conn->error;
+          if ($conn->query($updateQuery) !== TRUE) {
+            echo "Error updating subject: " . $conn->error;
+          }
+        }
       }
     }
-  }
-}
 ?>
 
 <title>Edit Book</title>
@@ -254,7 +254,7 @@ if (isset($_POST['update'])) {
 </style>
 
 <!-- Main Content Area with Sidebar and BrowseBook Section -->
-<main class="flex  ">
+<div class="flex  ">
   <!-- Sidebar Section -->
           <?php include $sidebars[$userType] ?? ''; ?>
   <!-- BrowseBook Content Section -->
@@ -284,7 +284,7 @@ if (isset($_POST['update'])) {
       <a href="ViewBook.php?title=<?php echo urlencode($book['book_id']); ?>"
         class="hover:text-blue-800 hover:underline">&larr; Back</a>
 
-      <div class="text-center">
+      <div class="">
 
         <?php if (isset($book)): ?>
           <h2 class="text-3xl font-semibold mt-4">
@@ -499,7 +499,8 @@ if (isset($_POST['update'])) {
   <footer class="bg-blue-600 text-white mt-auto">
     <?php include 'include/footer.php'; ?>
   </footer>
-</main>
+                </div>
+                </div>
 
 <script>
   // JavaScript functions to confirm actions

@@ -35,7 +35,7 @@
     <h2 class="text-2xl font-semibold mb-6 text-center">Borrowed Book Count</h2>
 
     <!-- Chart Container -->
-    <div class="flex justify-center">
+    <div class="flex justify-center bg-[#f2f2f2] m-5">
       <canvas id="borrowedChart" width="800" height="250"></canvas>
     </div>
   </div>
