@@ -1,11 +1,14 @@
 <?php
 include '../config.php';
+
+// Set the current page variable
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 
     <!-- Main Content Area with Sidebar and BrowseBook Section -->
     <main class="flex flex-grow">
         <!-- Sidebar Section -->
-                <?php include $sidebars[$userType] ?? ''; ?>
+        <?php include $sidebars[$userType] ?? ''; ?>
         <!-- BrowseBook Content Section -->
         <div class="flex-grow ">
         <!-- Header at the Top -->
@@ -15,11 +18,11 @@ include '../config.php';
             <div class="w-full h-auto mx-auto"> <!-- This will take 100% of the container width and 80% of the viewport height -->
 
                 <!-- Navbar -->
-                <div class="w-full h-16 flex sticky top-0 justify-evenly gap-4 p-2 bg-blue-600"> <!-- Full width navbar with centered buttons -->
+                <div class="w-full h-16 flex sticky top-0 justify-evenly gap-4 p-2" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;"> <!-- Full width navbar with centered buttons -->
                     <!-- Button to Statistical Book Report -->
                     <div id="returnedSection" class="w-auto">
                         <a href="Report.php">
-                            <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-400 transition text-sm">
+                            <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'Report.php') ? "background-color: $button_active;" : '' ?>">
                                 Statistical Reports
                             </button>
                         </a>
@@ -28,7 +31,7 @@ include '../config.php';
                     <!-- Button to Return Book Report -->
                     <div id="returnedSection" class="w-auto">
                         <a href="Report_return.php">
-                            <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-400 transition text-sm">
+                            <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'Report_return.php') ? "background-color: $button_active;" : '' ?>">
                                 Returned Reports
                             </button>
                         </a>
@@ -37,25 +40,25 @@ include '../config.php';
                     <!-- Button to Borrow Report -->
                     <div id="ratingSection" class="w-auto">
                         <a href="report_borrow.php">
-                            <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-400 transition text-sm">
+                            <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'report_borrow.php') ? "background-color: $button_active;" : '' ?>">
                                 Borrowed Reports
                             </button>
                         </a>
                     </div>
 
                     <!-- Button to Rating Book Report -->
-                    <div class="returned-section w-auto">
+                    <div id="borrowedSection" class="w-auto">
                         <a href="report_rating.php">
-                        <button class="w-full bg-blue-900 text-white p-2 rounded hover:bg-blue-800 transition text-sm">
-                            Rating Reports
+                            <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'report_rating.php') ? "background-color: $button_active;" : '' ?>">
+                                Rating Reports
                             </button>
                         </a>
                     </div>
 
                     <!-- Button to Count Book Report -->
-                    <div class="returned-section w-auto">
+                    <div id="borrowedSection" class="w-auto">
                         <a href="Report_book_count.php">
-                            <button class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-400 transition text-sm">
+                            <button class="w-full btn text-white p-2 rounded transition text-sm" style="<?= ($currentPage == 'Report_book_count.php') ? "background-color: $button_active;" : '' ?>">
                                 Count Reports
                             </button>
                         </a>
@@ -70,7 +73,7 @@ include '../config.php';
             </div>
 
        <!-- Footer at the Bottom -->
-       <footer class="bg-blue-600 text-white mt-auto">
+       <footer class=" text-white mt-auto">
             <?php include 'include/footer.php'; ?>
         </footer>
     </main>

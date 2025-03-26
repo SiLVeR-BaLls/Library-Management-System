@@ -1,54 +1,52 @@
 <?php
-include '../config.php';
+  include '../config.php';
 
-// Initialize message variables
-$message = "";
-$message_type = "";
+  // Initialize message variables
+  $message = "";
+  $message_type = "";
 
-// Get the book title from the query string
-$title = $_GET['title'] ?? '';
+  // Get the book title from the query string
+  $title = $_GET['title'] ?? '';
 
-if ($title) {
-  // Fetch the book details
-  $sql = "SELECT * FROM Book WHERE book_id = ?";
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("i", $title);
+  if ($title) {
+    // Fetch the book details
+    $sql = "SELECT * FROM Book WHERE book_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $title);
 
-  if ($stmt->execute()) {
-    $result = $stmt->get_result();
+    if ($stmt->execute()) {
+      $result = $stmt->get_result();
 
-    if ($result->num_rows === 0) {
-      $message = "No book found with that title.";
-      $message_type = "error";
-    } else {
-      $book = $result->fetch_assoc();
+      if ($result->num_rows === 0) {
+        $message = "No book found with that title.";
+        $message_type = "error";
+      } else {
+        $book = $result->fetch_assoc();
 
-      // Helper function to fetch related data
-      function fetch_related_data($conn, $query, $title)
-      {
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("s", $title);
-        $stmt->execute();
-        return $stmt->get_result();
+        // Helper function to fetch related data
+        function fetch_related_data($conn, $query, $title)
+        {
+          $stmt = $conn->prepare($query);
+          $stmt->bind_param("s", $title);
+          $stmt->execute();
+          return $stmt->get_result();
+        }
+
+        // Fetch related data
+        $coAuthorsResult = fetch_related_data($conn, "SELECT * FROM CoAuthor WHERE book_id = ?", $title);
+        $subjectsResult = fetch_related_data($conn, "SELECT * FROM Subject WHERE book_id = ?", $title);
       }
-
-      // Fetch related data
-      $coAuthorsResult = fetch_related_data($conn, "SELECT * FROM CoAuthor WHERE book_id = ?", $title);
-      $subjectsResult = fetch_related_data($conn, "SELECT * FROM Subject WHERE book_id = ?", $title);
+    } else {
+      $message = "Error executing query: " . $stmt->error;
+      $message_type = "error";
     }
+    $stmt->close();
   } else {
-    $message = "Error executing query: " . $stmt->error;
+    $message = "No book title provided.";
     $message_type = "error";
   }
-  $stmt->close();
-} else {
-  $message = "No book title provided.";
-  $message_type = "error";
-}
 ?>
 
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
   .hidden {
@@ -116,7 +114,7 @@ if ($title) {
         <a href="ViewBook.php?title=<?php echo urlencode($book['book_id']); ?>" class="hover:text-blue-800 hover:underline">
           <?php echo htmlspecialchars($book['B_title']); ?>
         </a> &rarr;
-        <a href="AddBookCopy.php?title=<?php echo urlencode($book['book_id']); ?>" class="hover:text-blue-800 hover:underline">Edit Copy</a>
+        <a href="AddBookCopy.php?title=<?php echo urlencode($book['book_id']); ?>" class="hover:text-blue-800 hover:underline">Add Copy</a>
       </div>
       <a href="ViewBook.php?title=<?php echo urlencode($book['book_id']); ?>"
         class="hover:text-blue-800 hover:underline">&larr; Back</a>

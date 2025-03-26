@@ -1,26 +1,29 @@
 <?php
 include '../../config.php';
 
-// Get the bookID from the request (use GET to fetch the search query)
-$bookID = isset($_GET['bookID']) ? $_GET['bookID'] : '';
+// Get the search term from the request
+$searchTerm = isset($_GET['bookID']) ? $_GET['bookID'] : '';
 
 // Prevent SQL Injection and sanitize the input
-$bookID = htmlspecialchars($bookID);
+$searchTerm = htmlspecialchars($searchTerm);
 
-// Query to search for books by a partial or exact match of the book ID
+// Query to search for books by B_title, author, or Co_Name
 $sql = "SELECT 
             book_copies.book_copy, book_copies.copy_ID, book_copies.B_title, book_copies.status, 
             book_copies.callNumber, book_copies.circulationType, book_copies.dateAcquired, 
             book_copies.description1, book_copies.description2, book_copies.description3,
-            book.B_title AS book_title, book.author, book.ISBN, book.publisher, book.Pdate
+            book.B_title AS book_title, book.author, book.ISBN, book.publisher, book.Pdate,
+            coauthor.Co_Name
         FROM book_copies
         LEFT JOIN book ON book_copies.B_title = book.B_title
-        WHERE book_copies.book_copy LIKE ? AND status = 'available' ";
+        LEFT JOIN coauthor ON book_copies.B_title = coauthor.book_id
+        WHERE (book_copies.book_copy LIKE ? OR book.B_title LIKE ? OR book.author LIKE ? OR coauthor.Co_Name LIKE ?)
+          AND book_copies.status = 'available'";
 
 // Prepare the SQL statement to prevent SQL injection
 $stmt = $conn->prepare($sql);
-$searchParam = "%" . $bookID . "%"; // Using wildcards to search for partial matches
-$stmt->bind_param("s", $searchParam);
+$searchParam = "%" . $searchTerm . "%"; // Using wildcards to search for partial matches
+$stmt->bind_param("ssss", $searchParam, $searchParam, $searchParam, $searchParam);
 $stmt->execute();
 
 // Get the results
@@ -33,6 +36,7 @@ if ($result->num_rows > 0) {
         $bookID = htmlspecialchars($row['book_copy']);
         $bookTitle = htmlspecialchars($row['book_title']);
         $author = htmlspecialchars($row['author']);
+        $coName = htmlspecialchars($row['Co_Name']);
         $status = htmlspecialchars($row['status']);
         $callNumber = htmlspecialchars($row['callNumber']);
         $publisher = htmlspecialchars($row['publisher']);
@@ -43,6 +47,7 @@ if ($result->num_rows > 0) {
         data-id='{$bookID}' 
         data-title='{$bookTitle}' 
         data-author='{$author}' 
+        data-coName='{$coName}' 
         data-callNumber='{$callNumber}' 
         data-publisher='{$publisher}' 
         data-publicationYear='{$publicationYear}' 
@@ -50,6 +55,7 @@ if ($result->num_rows > 0) {
           <strong>Book ID:</strong> $bookID <br>
           <strong>Title:</strong> $bookTitle <br>
           <strong>Author:</strong> $author <br>
+          <strong>Co-Author:</strong> $coName <br>
           <strong>Genre:</strong> $callNumber <br>
           <strong>Publisher:</strong> $publisher <br>
           <strong>Year:</strong> $publicationYear <br>
@@ -57,7 +63,7 @@ if ($result->num_rows > 0) {
         </div><hr>";
     }  
 } else {
-    echo "<div class='no-results'>No book found with ID: " . htmlspecialchars($bookID) . "</div>";
+    echo "<div class='no-results'>No book found matching: " . htmlspecialchars($searchTerm) . "</div>";
 }
 
 // Close the database connection

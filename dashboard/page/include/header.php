@@ -24,12 +24,32 @@
         </div>
 
 
-        <!-- Right side: User's First Name and Login Button -->
-        <div class="flex items-center space-x-4  m-4">
+        <!-- Right side: Notification Bell, User's Photo, and Name -->
+        <div class="flex items-center space-x-4 m-4">
             <?php if ($userData): ?>
-                <span class="text-sm font-medium">Hello,
-                    <strong><?php echo htmlspecialchars($userData['Fname']); ?></strong>
-                </span>
+                <!-- Notification Bell -->
+                <ul class="nav justify-content-end">
+                    <li class="dropdown">
+                        <div class="dropdown-toggle text-light" id="noti_count" style="cursor: pointer;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="counter">0</span><i class="fas fa-bell" style="font-size: 20px;"></i>
+                        </div>
+                        
+                        <div class="dropdown-menu overflow-h-menu dropdown-menu-right">
+                            <div class="notification">
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="flex items-center gap-2">
+                    <?php if (!empty($userData['photo'])): ?>
+                        <img class="w-10 h-10 rounded-full object-cover" src="../../pic/User/<?php echo htmlspecialchars($userData['photo']); ?>" alt="User Photo">
+                    <?php else: ?>
+                        <img class="w-10 h-10 rounded-full object-cover" src="../../pic/default/user.jpg" alt="Default User Photo">
+                    <?php endif; ?>
+                    <span class="text-sm font-medium">
+                        <strong><?php echo htmlspecialchars($userData['Fname']); ?></strong>
+                    </span>
+                </div>
                 <!-- Logout Button (Icon Changes on Hover) -->
                 <div class="py-4 px-4">
                     <a href="logout.php" id="logoutBtn" class="b p-2 rounded-md transition flex items-center justify-center">
@@ -137,3 +157,71 @@
             background-color: <?= $sidebar_active ?>;
         }
     </style>
+</body>
+</html>
+
+    <script src="https://kit.fontawesome.com/6b23de7647.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function (){
+
+        $('.notification').load('Ajax/Notification.php');
+        $('.counter').text('0').hide();
+
+        var counter = 0;
+
+        $('#form-submit').on('submit', function(event){
+            event.preventDefault();
+            
+            var subject = $('#subject').val().trim();
+            var comment = $('#comment').val().trim();
+
+            $('#sub-error').text('');
+            $('#com-error').text('');
+
+            if(subject != '' && comment != ''){
+                
+                $.ajax({
+                    type: "POST",
+                    url: "Ajax/Ins_notification.php",
+                    data: { 'subject' : subject, 'comment' : comment },
+                    success: function (response) {
+                        var status = JSON.parse(response);
+                        if(status.status == 101){
+                            counter++;
+                            $('.counter').text(counter).show();
+                            $('.notification').load('Ajax/Notification.php');
+                            $("#form-submit").trigger("reset");
+                            console.log(status.msg);
+                        }
+                        else{
+                           console.log(status.msg);
+                        }
+                    }
+                });
+
+            }
+            else{
+            
+                if(subject == ''){
+                    $('#sub-error').text("Please Enter Subject");
+                }
+                if(comment == ''){
+                    $('#com-error').text("Please Enter Comment");
+                }
+            }
+
+        });
+
+        $('#noti_count').on('click',function (){
+            counter = 0;
+            $('.counter').text('0').hide();
+        });
+
+    });
+
+</script>

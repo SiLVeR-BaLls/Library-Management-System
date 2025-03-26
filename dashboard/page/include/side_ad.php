@@ -1,5 +1,5 @@
 <!-- Sticky Sidebar -->
- 
+
 <aside id="fullSidebar" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;" class="h-full z-10 flex flex-col w-1/6 -w-60 min-w-48 sticky top-0 shadow-lg">
     <div class="sticky top-0" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;">
 
@@ -18,28 +18,28 @@
 
                 <!-- Books Dropdown -->
                 <li class="relative">
-                    <button onclick="toggleDropdown('booksDropdown')" style="color : <?= $text1?>;" class="btn w-full z-10 flex justify-between items-center py-2 px-4  focus:outline-none">
-                        Manage Books ▼
+                    <button onclick="toggleDropdown('booksDropdown')" style="color : <?= $text1 ?>;" class="btn w-full z-10 flex justify-between items-center py-2 px-4  focus:outline-none">
+                        Books ▼
                     </button>
-                    <ul id="booksDropdown" class="absolute overflow-hidden overflow-y-auto z-10 left-0 hidden mt-1 w-48 bg-blue-500  rounded-md shadow-lg">
+                    <ul id="booksDropdown" class="absolute overflow-hidden overflow-y-auto z-10 left-0 hidden mt-1 w-48   rounded-md shadow-lg">
                         <li><a href="Borrow.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Borrow.php') ? $button_active : $sidebar_hover ?>;">Borrow</a></li>
-                        <li><a href="BorrowDisplay.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'BorrowDisplay.php') ? $button_active : $sidebar_hover ?>;">Borrowed</a></li>
+                        <li><a href="BorrowDisplay.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'BorrowDisplay.php') ? $button_active : $sidebar_hover ?>;">Book Cycle</a></li>
                         <li><a href="Catalog.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Catalog.php') ? $button_active : $sidebar_hover ?>;">Catalog</a></li>
                         <li><a href="CopyList.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'CopyList.php') ? $button_active : $sidebar_hover ?>;">Copy List</a></li>
-                        <li><a href="Report.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Report.php') ? $button_active : $sidebar_hover ?>;">Report</a></li>
+                        <li><a href="Report.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (in_array(basename($_SERVER['PHP_SELF']), ['Report.php', 'report_book_count.php', 'report_borrow.php', 'report_rating.php', 'report_return.php', 'Report_book_count.php', 'Report_return.php'])) ? $button_active : $sidebar_hover ?>;">Report</a></li>
                     </ul>
                 </li>
 
                 <!-- Users Dropdown -->
-                <li class="relative" >
-                    <button onclick="toggleDropdown('usersDropdown')" style="color : <?= $text1?>;" class="btn w-full z-10 flex justify-between items-center py-2 px-4  focus:outline-none">
-                        Manage Users ▼
+                <li class="relative">
+                    <button onclick="toggleDropdown('usersDropdown')" style="color : <?= $text1 ?>;" class="btn w-full z-10 flex justify-between items-center py-2 px-4  focus:outline-none">
+                        Users ▼
                     </button>
-                    <ul id="usersDropdown" class="absolute overflow-hidden overflow-y-auto z-10 left-0 hidden mt-1 w-48 bg-blue-500  rounded-md shadow-lg">
+                    <ul id="usersDropdown" class="absolute overflow-hidden overflow-y-auto z-10 left-0 hidden mt-1 w-48   rounded-md shadow-lg">
                         <li><a href="Assign.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Assign.php') ? $button_active : $sidebar_hover ?>;">Assign User</a></li>
                         <li><a href="AddUser.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'AddUser.php') ? $button_active : $sidebar_hover ?>;">Add User</a></li>
                         <li><a href="AddStaff.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'AddStaff.php') ? $button_active : $sidebar_hover ?>;">Add Staff</a></li>
-                        <li><a href="BrowseUser.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'BrowseUser.php') ? $button_active : $sidebar_hover ?>;">Browse Users</a></li>
+                        <li><a href="BrowseUser.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (in_array(basename($_SERVER['PHP_SELF']), ['BrowseUser.php', 'user_details.php'])) ? $button_active : $sidebar_hover ?>;">Browse Users</a></li>
                         <li><a href="pending.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'pending.php') ? $button_active : $sidebar_hover ?>;">Pending User</a></li>
                         <li><a href="User_Status.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'User_Status.php') ? $button_active : $sidebar_hover ?>;">User Status</a></li>
                     </ul>
@@ -47,38 +47,16 @@
 
                 <!-- Dashboard Dropdown -->
                 <li class="relative">
-                    <button onclick="toggleDropdown('dashboardDropdown')"  style="color : <?= $text1?>;" class="btn w-full z-10 flex justify-between items-center py-2 px-4  focus:outline-none">
+                    <button onclick="toggleDropdown('dashboardDropdown')" style="color : <?= $text1 ?>;" class="btn w-full z-10 flex justify-between items-center py-2 px-4  focus:outline-none">
                         Dashboard ▼
                     </button>
-                    <ul id="dashboardDropdown" style="color : <?= $text1?>;" class="absolute  overflow-y-auto z-10 left-0 hidden mt-1 w-48 bg-blue-500  rounded-md shadow-lg">
-                        <li><a href="profile.php"  class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'profile.php') ? $button_active : $sidebar_hover ?>;">Profile</a></li>
-                        <li><a href="Myborrow.php"  class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Myborrow.php') ? $button_active : $sidebar_hover ?>;">My Borrow</a></li>
-                        <li><a href="Myreturn.php" style="color : <?= $text1?>;"  class="btn block py-2 px-4 <?php echo (basename($_SERVER['PHP_SELF']) == 'Myreturn.php') ? $button_active : $sidebar_hover ?>;">My Returned</a></li>
+                    <ul id="dashboardDropdown" style="color : <?= $text1 ?>;" class="absolute  overflow-y-auto z-10 left-0 hidden mt-1 w-48   rounded-md shadow-lg">
+                        <li><a href="profile.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'profile.php') ? $button_active : $sidebar_hover ?>;">Profile</a></li>
+                        <li><a href="Myborrow.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Myborrow.php') ? $button_active : $sidebar_hover ?>;">My Borrow</a></li>
+                        <li><a href="Myreturn.php" style="color : <?= $text1 ?>;" class="btn block py-2 px-4 <?php echo (basename($_SERVER['PHP_SELF']) == 'Myreturn.php') ? $button_active : $sidebar_hover ?>;">My Returned</a></li>
                     </ul>
                 </li>
-                <li>
-    <a href="Myreturn.php" style="color: <?= $text1 ?>;" id="notif" class="btn block py-2 px-4">
-        <i class="fa fa-bell" aria-hidden="true"></i>
-    </a>
-</li>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
-                <script type="text/javascript">
-    function loadDoc() {
-        setInterval(function() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("notif").innerHTML = this.responseText;
-                }
-            };
-            xhttp.open("GET", "include/data.php", true);
-            xhttp.send();
-        }, 1000);
-    }
-    loadDoc();
-</script>
+               
                 <!-- JavaScript for Dropdown Toggle -->
                 <script>
                     function toggleDropdown(id) {
@@ -122,5 +100,25 @@
             display: flex;
         }
     }
-</style>
 
+    ul.absolute {
+        margin: 0; /* Remove any default margin */
+        padding: 0; /* Remove any default padding */
+        position: absolute;
+        top: 100%; /* Align directly below the button */
+        left: 0;
+        z-index: 10;
+    }
+
+    li.relative {
+        position: relative; /* Ensure parent is positioned for absolute child */
+    }
+
+    ul.absolute.hidden {
+        display: none; /* Ensure hidden dropdowns are not visible */
+    }
+
+    ul.absolute:not(.hidden) {
+        display: block; /* Show dropdown when not hidden */
+    }
+</style>

@@ -1,10 +1,12 @@
 <!-- user_status.php -->
 <?php
-include '../config.php';
+    include '../config.php';
 
-// Fetch all users
-$query = "SELECT IDno, Fname, Sname, U_Type, status_details FROM users_info";
-$result = mysqli_query($conn, $query);
+    // Fetch all users with status_log = 'approved'
+    $query = "SELECT IDno, Fname, Sname, U_Type, status_details 
+            FROM users_info 
+            WHERE status_log = 'approved'";
+    $result = mysqli_query($conn, $query);
 ?>
 
 <title>User Status</title>
@@ -36,6 +38,7 @@ $result = mysqli_query($conn, $query);
                                 <input type="text" id="searchInput" placeholder="Search..."
                                     class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none">
                                 <select id="searchCategory" class="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400">
+                                    <option value="all">All</option>
                                     <option value="IDno">IDno</option>
                                     <option value="Fname">First Name</option>
                                     <option value="Sname">Last Name</option>
@@ -210,13 +213,24 @@ $result = mysqli_query($conn, $query);
             const rowType = row.getAttribute('data-user-type');
             const rowStatus = row.getAttribute('data-status');
             const rowData = row.querySelectorAll('td');
-            const searchValue = rowData[getSearchCategoryIndex(searchCategory)].innerText.toLowerCase();
+            let matchesSearch = false;
+
+            if (searchCategory === 'all') {
+                rowData.forEach(cell => {
+                    if (cell.innerText.toLowerCase().includes(searchTerm)) {
+                        matchesSearch = true;
+                    }
+                });
+            } else {
+                const searchValue = rowData[getSearchCategoryIndex(searchCategory)].innerText.toLowerCase();
+                matchesSearch = searchValue.includes(searchTerm);
+            }
 
             // Apply filters: User Type, Status, and Search Term
             if (
                 (userType === 'all' || rowType === userType) &&
                 (statusFilter === 'all' || rowStatus === statusFilter) &&
-                searchValue.includes(searchTerm)
+                matchesSearch
             ) {
                 row.style.display = "";
                 filteredRows.push(row);
@@ -302,6 +316,55 @@ $result = mysqli_query($conn, $query);
         const savedStatusFilter = localStorage.getItem('selectedStatusFilter') || 'all';
         document.querySelector(`#${savedStatusFilter}Radio`).checked = true;
         filterRows();
+    });
+
+    // Highlight row and toggle checkbox on row click
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.user-row');
+        rows.forEach(row => {
+            row.addEventListener('click', function(event) {
+                // Prevent toggling if the click is on the checkbox itself
+                if (event.target.type === 'checkbox') return;
+
+                const checkbox = row.querySelector('.userCheckbox');
+                checkbox.checked = !checkbox.checked;
+
+                // Highlight or reset row background based on checkbox state
+                if (checkbox.checked) {
+                    row.style.backgroundColor = '#D1FAE5'; // Light green for selected
+                } else {
+                    row.style.backgroundColor = ''; // Reset to default
+                }
+            });
+        });
+
+        // Ensure checkbox click also highlights the row
+        const checkboxes = document.querySelectorAll('.userCheckbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.checked) {
+                    row.style.backgroundColor = '#D1FAE5'; // Light green for selected
+                } else {
+                    row.style.backgroundColor = ''; // Reset to default
+                }
+            });
+        });
+    });
+
+    // Highlight row on checkbox click
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.userCheckbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.checked) {
+                    row.style.backgroundColor = '#D1FAE5'; // Light green for selected
+                } else {
+                    row.style.backgroundColor = ''; // Reset to default
+                }
+            });
+        });
     });
 </script>
 

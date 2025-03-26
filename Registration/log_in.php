@@ -66,19 +66,26 @@ if (isset($_POST['submit'])) {
 
         if ($row = mysqli_fetch_assoc($result)) {
             if ($row['password'] === $password) {
-                // Check the account status
+                // Check the account status_log
                 if ($row['status_log'] == 'pending') {
                     $_SESSION['status_message'] = "Your account is still pending.";
                 } elseif ($row['status_log'] == 'approved') {
-                    // Reset failed attempts on successful login
-                    $_SESSION['failed_attempts'] = 0;
-                    $_SESSION['last_failed_attempt'] = 0;
-                    $_SESSION['cooldown_multiplier'] = 1; // Reset cooldown multiplier on successful login
+                    // Check the account status_details
+                    if ($row['status_details'] == 'active') {
+                        // Reset failed attempts on successful login
+                        $_SESSION['failed_attempts'] = 0;
+                        $_SESSION['last_failed_attempt'] = 0;
+                        $_SESSION['cooldown_multiplier'] = 1; // Reset cooldown multiplier on successful login
 
-                    $_SESSION[$row['U_Type']] = $row;
-                    // Redirect to the dashboard/page/index.php after successful login
-                    header("Location: ../dashboard/page/index.php");
-                    exit();
+                        $_SESSION[$row['U_Type']] = $row;
+                        // Redirect to the dashboard/page/index.php after successful login
+                        header("Location: ../dashboard/page/index.php");
+                        exit();
+                    } elseif ($row['status_details'] == 'inactive') {
+                        $_SESSION['status_message'] = "Your account is inactive.";
+                    } elseif ($row['status_details'] == 'restricted') {
+                        $_SESSION['status_message'] = "Your account is restricted.";
+                    }
                 } else {
                     $_SESSION['status_message'] = "Your account has been rejected.";
                 }

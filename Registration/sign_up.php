@@ -29,12 +29,12 @@
 
           <div class="group1">
             <div class="text-group">
-              <label for="Fname">Firstname</label>
-              <input id="Fname" name="Fname" class="box" type="text" placeholder="Firstname" required>
-            </div>
-            <div class="text-group">
               <label for="Sname">Surname</label>
               <input id="Sname" name="Sname" class="box" type="text" placeholder="Surname" required>
+            </div>
+            <div class="text-group">
+              <label for="Fname">Firstname</label>
+              <input id="Fname" name="Fname" class="box" type="text" placeholder="Firstname" required>
             </div>
             <div class="text-group">
               <label for="Mname">Middle Name</label>
@@ -205,7 +205,6 @@ document.querySelector('form').addEventListener('submit', function(event) {
               <div class="text-group">
                 <label for="IDno">ID Number:</label>
                 <input type="text" id="IDno" name="IDno" class="box" placeholder="Enter ID (if Manual)" required>
-                <span id="id-message"></span> <!-- Message for format validation -->
               </div>
 
 
@@ -213,24 +212,24 @@ document.querySelector('form').addEventListener('submit', function(event) {
   // Function to validate ID number format
   function validateID() {
     const id = document.getElementById('IDno').value;
-    const idMessage = document.getElementById('id-message');
     const idField = document.getElementById('IDno');
+    const userType = document.getElementById('U_Type').value;
 
-    // Regular expression to match the ID format: year(4 digits)-code(4 digits)-letter(1 letter)
-    const idRegex = /^\d{4}-\d{4}-[A-Za-z]{1}$/;
+    let idRegex;
 
-    if (idRegex.test(id)) {
-      idField.classList.remove('invalid');
-      idField.classList.add('valid');
-      idMessage.textContent = "ID format is correct";
-      idMessage.classList.remove('error-message');
-      idMessage.classList.add('success-message');
-    } else {
-      idField.classList.remove('valid');
+    // Define regex based on user type
+    if (userType === "student") {
+      // Student ID format: yyyy-xxxx-X
+      idRegex = /^\d{4}-\d{4}-[A-Za-z]{1}$/;
+    } else if (userType === "faculty") {
+      // Faculty ID format: flexible (e.g., xx-yyyy or any other format)
+      idRegex = /^[A-Za-z0-9-]+$/;
+    }
+
+    if (!idRegex.test(id)) {
       idField.classList.add('invalid');
-      idMessage.textContent = "ID number not in correct format";
-      idMessage.classList.remove('success-message');
-      idMessage.classList.add('error-message');
+    } else {
+      idField.classList.remove('invalid');
     }
   }
 
@@ -240,13 +239,26 @@ document.querySelector('form').addEventListener('submit', function(event) {
   // Add event listener to form submission to prevent submission if ID format is invalid
   document.querySelector('form').addEventListener('submit', function(event) {
     const id = document.getElementById('IDno').value;
+    const userType = document.getElementById('U_Type').value;
+
+    let idRegex;
+
+    // Define regex based on user type
+    if (userType === "student") {
+      idRegex = /^\d{4}-\d{4}-[A-Za-z]{1}$/;
+    } else if (userType === "faculty") {
+      idRegex = /^[A-Za-z0-9-]+$/;
+    }
+
     // If ID is not in valid format, prevent form submission
-    if (!/^\d{4}-\d{4}-[A-Za-z]{1}$/.test(id)) {
+    if (!idRegex.test(id)) {
       event.preventDefault(); // Stop form submission
       Swal.fire({
         icon: 'error',
         title: 'Invalid ID Format',
-        text: 'ID number must follow the format: yyyy-xxxx-X (year-code-letter)',
+        text: userType === "student"
+          ? 'ID number must follow the format: yyyy-xxxx-X (year-code-letter)'
+          : 'ID number must be alphanumeric and can include dashes.',
         confirmButtonText: 'OK'
       });
     }
@@ -472,7 +484,6 @@ function myFunction() {
   // Function to validate password
   function validatePassword() {
     const password = document.getElementById('password').value;
-    const passwordMessage = document.getElementById('password-message');
     const passwordRepeat = document.getElementById('password-repeat').value;
     const passwordField = document.getElementById('password');
     const passwordRepeatField = document.getElementById('password-repeat');
@@ -480,37 +491,19 @@ function myFunction() {
     // Updated regex to include special characters like '-', '_', and others
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>_\-])[A-Za-z\d!@#$%^&*(),.?":{}|<>_\-]{8,}$/;
 
-    // Flag to track password validity
-    let isValid = true;
-
     // Password format validation
-    if (passwordRegex.test(password)) {
-      passwordField.classList.remove('invalid');
-      passwordField.classList.add('valid');
-      passwordMessage.textContent = "Password requirement complete";
-      passwordMessage.classList.remove('error-message');
-      passwordMessage.classList.add('success-message');
-    } else {
-      passwordField.classList.remove('valid');
+    if (!passwordRegex.test(password)) {
       passwordField.classList.add('invalid');
-      passwordMessage.textContent = "Password does not meet recommended format";
-      passwordMessage.classList.remove('success-message');
-      passwordMessage.classList.add('error-message');
-      isValid = false;
+    } else {
+      passwordField.classList.remove('invalid');
     }
 
     // Validate password confirmation
     if (password !== passwordRepeat) {
       passwordRepeatField.classList.add('invalid');
-      document.getElementById('password-repeat-message').textContent = "Passwords do not match";
-      document.getElementById('password-repeat-message').classList.add('error-message');
-      isValid = false; // Mark as invalid if passwords don't match
     } else {
       passwordRepeatField.classList.remove('invalid');
-      document.getElementById('password-repeat-message').textContent = "";
     }
-
-    return isValid; // Return whether the form is valid
   }
 
   // Add event listeners to both password fields for real-time validation

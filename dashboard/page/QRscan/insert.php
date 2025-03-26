@@ -30,7 +30,7 @@ if (isset($_POST['studentID'])) {
 
     if ($result->num_rows === 0) {
         // ID does not exist, display "Who are you?" popup
-        echo "<script>alert('Who are you?'); window.location.href='index.php';</script>";
+        echo "<script>alert('Who are you?'); window.location.href='index_ad.php';</script>";
         exit; // Stop further processing
     }
 
@@ -70,8 +70,8 @@ if (isset($_POST['studentID'])) {
     $_SESSION['error'] = 'Please scan your QR Code number';
 }
 
-// Redirect to index.php
-header("location: index.php");
+// Redirect to index_ad.php
+header("location: index_ad.php");
 
 // Close the database connection
 $conn->close();

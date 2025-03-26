@@ -60,7 +60,7 @@ if ($conn && !$conn->connect_error) {
 }
 ?>
 
-<div class="my-4 px-2 flex w-full justify-between items-center">
+<div class="my-2 px-10 flex w-full justify-between items-center">
   <!-- Centered Search Controls -->
   <div class="flex flex-row gap-2 items-center">
     <!-- Search Input -->
@@ -84,9 +84,9 @@ if ($conn && !$conn->connect_error) {
       <option value="journal">Journal</option>
     </select>
   </div>
-  <!-- Button to Open the Modal -->
-  <button id="filterButton" class="btn text-white font-semibold py-1 px-3 rounded-md shadow-md transition-all duration-200">
-    Filter by Material Type
+  <!-- Filter Button -->
+  <button id="filterLink" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 font-semibold">
+    Filter
   </button>
 </div>
 
@@ -211,6 +211,7 @@ if ($conn && !$conn->connect_error) {
       $('#bookTableBody tr').each(function() {
         allRows.push($(this)); // Store each row in the allRows array
       });
+      filteredRows = allRows; // Initialize filteredRows with all rows
     }
 
     // Initialize all rows and handle search/filter
@@ -221,76 +222,59 @@ if ($conn && !$conn->connect_error) {
     $('#searchInput').on('keyup', filterTable);
     $('#searchType').on('change', filterTable);
 
-    // Filter function to show/hide rows
+    // Filter function to filter all rows and update pagination
     function filterTable() {
       const searchType = $('#searchType').val();
       const searchText = $('#searchInput').val().trim().toLowerCase(); // Trim and convert to lowercase
+      const selectedType = $('input[name="materialType"]:checked').val();
+      const selectedSubType = $('input[name="subType"]:checked').val();
 
-      if (searchText === '' && searchType === 'all') {
-        // If no filter is applied, show all rows
-        filteredRows = allRows;
-      } else {
-        // Apply filtering logic
-        filteredRows = allRows.filter(function(row) {
-          const rowTitle = row.find('.title').text().trim().toLowerCase();
-          const rowAuthor = row.find('.author').text().trim().toLowerCase();
-          const rowCoauthor = row.find('.coauthor').text().trim().toLowerCase();
-          const rowLCCN = row.find('.lccn').text().trim().toLowerCase();
-          const rowISBN = row.find('.isbn').text().trim().toLowerCase();
-          const rowISSN = row.find('.issn').text().trim().toLowerCase();
-          const rowMT = row.find('.MT').text().trim().toLowerCase();
-          const rowST = row.find('.ST').text().trim().toLowerCase();
-          const rowExtent = row.find('.extent').text().trim().toLowerCase();
-          const rowJournal = row.find('.journal').text().trim().toLowerCase();
+      filteredRows = allRows.filter(function(row) {
+        const rowTitle = row.find('.title').text().trim().toLowerCase();
+        const rowAuthor = row.find('.author').text().trim().toLowerCase();
+        const rowCoauthor = row.find('.coauthor').text().trim().toLowerCase();
+        const rowLCCN = row.find('.lccn').text().trim().toLowerCase();
+        const rowISBN = row.find('.isbn').text().trim().toLowerCase();
+        const rowISSN = row.find('.issn').text().trim().toLowerCase();
+        const rowMT = row.find('.MT').text().trim().toLowerCase();
+        const rowST = row.find('.ST').text().trim().toLowerCase();
+        const rowExtent = row.find('.extent').text().trim().toLowerCase();
+        const rowJournal = row.find('.journal').text().trim().toLowerCase();
 
-          let match = false;
-          switch (searchType) {
-            case 'all':
-              match = rowTitle.indexOf(searchText) > -1 ||
-                rowAuthor.indexOf(searchText) > -1 ||
-                rowCoauthor.indexOf(searchText) > -1 ||
-                rowLCCN.indexOf(searchText) > -1 ||
-                rowISBN.indexOf(searchText) > -1 ||
-                rowISSN.indexOf(searchText) > -1 ||
-                rowMT.indexOf(searchText) > -1 ||
-                rowST.indexOf(searchText) > -1 ||
-                rowExtent.indexOf(searchText) > -1 ||
-                rowJournal.indexOf(searchText) > -1;
-              break;
-            case 'title':
-              match = rowTitle.indexOf(searchText) > -1;
-              break;
-            case 'author':
-              match = rowAuthor.indexOf(searchText) > -1;
-              break;
-            case 'coauthor':
-              match = rowCoauthor.indexOf(searchText) > -1;
-              break;
-            case 'lccn':
-              match = rowLCCN.indexOf(searchText) > -1;
-              break;
-            case 'isbn':
-              match = rowISBN.indexOf(searchText) > -1;
-              break;
-            case 'issn':
-              match = rowISSN.indexOf(searchText) > -1;
-              break;
-            case 'MT':
-              match = rowMT.indexOf(searchText) > -1;
-              break;
-            case 'ST':
-              match = rowST.indexOf(searchText) > -1;
-              break;
-            case 'extent':
-              match = rowExtent.indexOf(searchText) > -1;
-              break;
-            case 'journal':
-              match = rowJournal.indexOf(searchText) > -1;
-              break;
-          }
-          return match;
-        });
-      }
+        let match = false;
+        switch (searchType) {
+          case 'all':
+            match = rowTitle.includes(searchText) ||
+                    rowAuthor.includes(searchText) ||
+                    rowCoauthor.includes(searchText) ||
+                    rowLCCN.includes(searchText) ||
+                    rowISBN.includes(searchText) ||
+                    rowISSN.includes(searchText) ||
+                    rowMT.includes(searchText) ||
+                    rowST.includes(searchText) ||
+                    rowExtent.includes(searchText) ||
+                    rowJournal.includes(searchText);
+            break;
+          case 'title': match = rowTitle.includes(searchText); break;
+          case 'author': match = rowAuthor.includes(searchText); break;
+          case 'coauthor': match = rowCoauthor.includes(searchText); break;
+          case 'lccn': match = rowLCCN.includes(searchText); break;
+          case 'isbn': match = rowISBN.includes(searchText); break;
+          case 'issn': match = rowISSN.includes(searchText); break;
+          case 'MT': match = rowMT.includes(searchText); break;
+          case 'ST': match = rowST.includes(searchText); break;
+          case 'extent': match = rowExtent.includes(searchText); break;
+          case 'journal': match = rowJournal.includes(searchText); break;
+        }
+
+        // Apply material type and subtype filters
+        const typeMatch = !selectedType || rowMT === selectedType.toLowerCase();
+        const subTypeMatch = !selectedSubType || rowST === selectedSubType.toLowerCase();
+
+        return match && typeMatch && subTypeMatch;
+      });
+
+      currentPage = 1; // Reset to the first page after filtering
       displayTablePage(currentPage); // Update the displayed rows after filtering
     }
 
@@ -305,13 +289,16 @@ if ($conn && !$conn->connect_error) {
 
       // Update pagination
       const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-      $('#pageInfo').text(`Page ${pageNumber} of ${totalPages}`);
 
-      // Disable 'Previous' button if on the first page
-      $('#prevBtn').prop('disabled', pageNumber <= 1);
-
-      // Disable 'Next' button if on the last page
-      $('#nextBtn').prop('disabled', pageNumber >= totalPages);
+      if (filteredRows.length === 0) {
+        // If no rows to display, show "1 of 0" and disable pagination
+        $('#pageInfo').text('Page 1 of 0');
+        $('#prevBtn, #nextBtn').prop('disabled', true);
+      } else {
+        $('#pageInfo').text(`Page ${pageNumber} of ${totalPages}`);
+        $('#prevBtn').prop('disabled', pageNumber <= 1);
+        $('#nextBtn').prop('disabled', pageNumber >= totalPages);
+      }
     }
 
     // Pagination functions
@@ -330,232 +317,209 @@ if ($conn && !$conn->connect_error) {
       }
     }
 
-    // Initialize with all rows visible
-    filterTable(); // Ensure the filter shows all rows initially
-
     // Bind the pagination buttons to their functions
     $('#nextBtn').on('click', nextPage);
     $('#prevBtn').on('click', prevPage);
 
+    // Initialize with all rows visible
+    filterTable(); // Ensure the filter shows all rows initially
+
     // Modal filter functionality
-    // Hide the modal initially on page load
-    $('#materialTypeModal').hide();
-
-    // Open the modal when the filter button is clicked
-    $('#filterButton').on('click', function() {
-      $('#materialTypeModal').show(); // Show the modal
-    });
-
-    // Close the modal when the "X" button is clicked
-    $('#modalCloseBtn').on('click', function() {
+    $('#filterApply').on('click', function() {
+      filterTable(); // Apply filters and update pagination
       $('#materialTypeModal').hide(); // Hide the modal
     });
 
-    // Apply the filter when the "Apply Filter" button is clicked
-    $('#filterApply').on('click', function() {
-      var selectedType = $('input[name="materialType"]:checked').val();
-      var selectedSubType = $('input[name="subType"]:checked').val();
-
-      // Filter the rows based on selected material type and subtypes
-      $('#bookTableBody tr').each(function() {
-        var rowMaterialType = $(this).find('.MT').text().toLowerCase();
-        var rowSubType = $(this).find('.ST').text().toLowerCase(); // Extract SubType from ST class
-
-        // Show row if it matches the filter criteria
-        if (
-          (!selectedType || selectedType.toLowerCase() === rowMaterialType) &&
-          (!selectedSubType || selectedSubType.toLowerCase() === rowSubType || selectedSubType === "All")
-        ) {
-          $(this).show(); // Show row
-        } else {
-          $(this).hide(); // Hide row
-        }
-      });
-
-      // Reapply table filter to ensure pagination is correct
-      filterTable();
-    });
-
-    // Clear all filters when the "Clear Filters" button is clicked
     $('#filterClear').on('click', function() {
       $('input[name="materialType"]').prop('checked', false);
       $('input[name="subType"]').prop('checked', false);
-      $('#bookTableBody tr').show(); // Show all rows (clear all filters)
-
-      // Reapply table filter to ensure pagination is correct
-      filterTable();
+      $('#searchInput').val('');
+      $('#searchType').val('all');
+      filteredRows = allRows; // Reset filters
+      currentPage = 1; // Reset to the first page
+      displayTablePage(currentPage); // Update the displayed rows
     });
 
-    // Close the modal if clicked outside the modal
+    // Replace button click with link click for opening the modal
+    $('#filterLink').on('click', function() {
+      $('#materialTypeModal').show(); // Show the modal
+    });
+
+    // Close modal when clicking the close link
+    $('#modalCloseLink').on('click', function() {
+      $('#materialTypeModal').hide();
+    });
+
+    // Close modal when clicking outside the modal content
     $(window).on('click', function(event) {
       if ($(event.target).is('#materialTypeModal')) {
-        $('#materialTypeModal').hide(); // Hide the modal
+        $('#materialTypeModal').hide();
       }
     });
   });
 </script>
 
-
 <!-- Modal Structure -->
-<div id="materialTypeModal" class="modal hidden">
- <!-- Modal Overlay (will close when clicked outside) -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" id="modalOverlay">
+<div id="materialTypeModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
   <!-- Modal Content -->
-  <div  style="color: <?= $text2 ?>; background: <?= $background ?>;" class="modal-content relative p-6 rounded-lg w-full max-w-4xl opacity-100">
-    <!-- Close Button in the top-right corner -->
-    <div class="absolute top-2 right-2 p-2">
-      <button id="modalCloseBtn" style="color: <?= $text2 ?>;" class=" text-2xl">Close</button>
+  <div style="color: <?= $text2 ?>; background: <?= $background ?>;" class="modal-content relative p-6 rounded-lg w-full max-w-4xl bg-white shadow-lg">
+    <!-- Close Link in the top-right corner -->
+    <div class="absolute top-2 right-2">
+      <a href="javascript:void(0);" id="modalCloseLink" style="color: <?= $text1 ?>" class="hover:underline font-semibold">Close</a>
     </div>
-      
-      <!-- Form Container -->
-      <form id="materialTypeForm">
-        <h2 class="text-2xl font-bold mb-6 text-center">Material Type Filters</h2>
-
-        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 mb-6">
-            <h3 class="col-span-4 text-xl font-semibold">Select Material Types</h3>
-            <!-- Material Type Options -->
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Book" class="h-4 w-4" />
-                <span>Book</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Computer File" class="h-4 w-4" />
-                <span>Computer File</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Electronic Book" class="h-4 w-4" />
-                <span>Electronic Book (E-Book)</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Equipment" class="h-4 w-4" />
-                <span>Equipment</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Kit" class="h-4 w-4" />
-                <span>Kit</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Manuscript Language Material" class="h-4 w-4" />
-                <span>Manuscript Language Material</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Map" class="h-4 w-4" />
-                <span>Map</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Mixed Material" class="h-4 w-4" />
-                <span>Mixed Material</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Music" class="h-4 w-4" />
-                <span>Music (Printed)</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Picture" class="h-4 w-4" />
-                <span>Picture</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Serial" class="h-4 w-4" />
-                <span>Serial</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Musical Sound Recording" class="h-4 w-4" />
-                <span>Musical Sound Recording</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="NonMusical Sound Recording" class="h-4 w-4" />
-                <span>Non-Musical Sound Recording</span>
-              </label>
-            </div>
-            <div class="flex items-center">
-              <label class="flex items-center space-x-2">
-                <input type="radio" name="materialType" value="Video" class="h-4 w-4" />
-                <span>Video</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- SubType Section -->
-          <div class="mb-6">
-            <h3 class="text-xl font-semibold">Select SubType</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 mt-4">
-              <!-- SubType Radio Buttons -->
-              <div class="flex items-center">
-                <label class="flex items-center space-x-2">
-                  <input type="radio" name="subType" value="Not Assigned" class="h-4 w-4" />
-                  <span>Not Assigned</span>
-                </label>
-              </div>
-              <div class="flex items-center">
-                <label class="flex items-center space-x-2">
-                  <input type="radio" name="subType" value="Braille" class="h-4 w-4" />
-                  <span>Braille</span>
-                </label>
-              </div>
-              <div class="flex items-center">
-                <label class="flex items-center space-x-2">
-                  <input type="radio" name="subType" value="Hardcover" class="h-4 w-4" />
-                  <span>Hardcover</span>
-                </label>
-              </div>
-              <div class="flex items-center">
-                <label class="flex items-center space-x-2">
-                  <input type="radio" name="subType" value="LargePrint" class="h-4 w-4" />
-                  <span>Large Print</span>
-                </label>
-              </div>
-              <div class="flex items-center">
-                <label class="flex items-center space-x-2">
-                  <input type="radio" name="subType" value="Paperback" class="h-4 w-4" />
-                  <span>Paperback</span>
-                </label>
-              </div>
-              <div class="flex items-center">
-                <label class="flex items-center space-x-2">
-                  <input type="radio" name="subType" value="Picture" class="h-4 w-4" />
-                  <span>Picture</span>
-                </label>
-              </div>
-              <div class="flex items-center">
-                <label class="flex items-center space-x-2">
-                  <input type="radio" name="subType" value="Dictionary" class="h-4 w-4" />
-                  <span>Dictionary</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-        <!-- Action Buttons -->
-        <div class="flex gap-4 mt-6 justify-center">
-          <button type="button" id="filterApply" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Apply Filter</button>
-          <button type="button" id="filterClear" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Clear Filters</button>
+    <!-- Form Container -->
+    <form id="materialTypeForm">
+      <h2 class="text-2xl font-bold mb-6 text-center">Material Type Filters</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 mb-6">
+        <h3 class="col-span-4 text-xl font-semibold">Select Material Types</h3>
+        <!-- Material Type Options -->
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Book" class="h-4 w-4" />
+            <span>Book</span>
+          </label>
         </div>
-      </form>
-    </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Computer File" class="h-4 w-4" />
+            <span>Computer File</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Electronic Book" class="h-4 w-4" />
+            <span>Electronic Book (E-Book)</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Equipment" class="h-4 w-4" />
+            <span>Equipment</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Kit" class="h-4 w-4" />
+            <span>Kit</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Manuscript Language Material" class="h-4 w-4" />
+            <span>Manuscript Language Material</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Map" class="h-4 w-4" />
+            <span>Map</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Mixed Material" class="h-4 w-4" />
+            <span>Mixed Material</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Music" class="h-4 w-4" />
+            <span>Music (Printed)</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Picture" class="h-4 w-4" />
+            <span>Picture</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Serial" class="h-4 w-4" />
+            <span>Serial</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Musical Sound Recording" class="h-4 w-4" />
+            <span>Musical Sound Recording</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="NonMusical Sound Recording" class="h-4 w-4" />
+            <span>Non-Musical Sound Recording</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Video" class="h-4 w-4" />
+            <span>Video</span>
+          </label>
+        </div>
+      </div>
+      <!-- SubType Section -->
+      <div class="mb-6">
+        <h3 class="text-xl font-semibold">Select SubType</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 mt-4">
+          <!-- SubType Radio Buttons -->
+          <div class="flex items-center">
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="subType" value="Not Assigned" class="h-4 w-4" />
+              <span>Not Assigned</span>
+            </label>
+          </div>
+          <div class="flex items-center">
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="subType" value="Braille" class="h-4 w-4" />
+              <span>Braille</span>
+            </label>
+          </div>
+          <div class="flex items-center">
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="subType" value="Hardcover" class="h-4 w-4" />
+              <span>Hardcover</span>
+            </label>
+          </div>
+          <div class="flex items-center">
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="subType" value="LargePrint" class="h-4 w-4" />
+              <span>Large Print</span>
+            </label>
+          </div>
+          <div class="flex items-center">
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="subType" value="Paperback" class="h-4 w-4" />
+              <span>Paperback</span>
+            </label>
+          </div>
+          <div class="flex items-center">
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="subType" value="Picture" class="h-4 w-4" />
+              <span>Picture</span>
+            </label>
+          </div>
+          <div class="flex items-center">
+            <label class="flex items-center space-x-2">
+              <input type="radio" name="subType" value="Dictionary" class="h-4 w-4" />
+              <span>Dictionary</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <!-- Action Buttons -->
+      <div class="flex gap-4 mt-6 justify-center">
+        <button type="button" id="filterApply" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Apply Filter</button>
+        <button type="button" id="filterClear" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Clear Filters</button>
+      </div>
+    </form>
   </div>
 </div>
+
+<style>
+  #materialTypeModal .modal-content {
+    margin: auto; /* Center horizontally */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Adjust for vertical centering */
+  }
+</style>

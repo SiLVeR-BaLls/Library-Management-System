@@ -1,42 +1,42 @@
 <?php
-// Initialize the query
-$usersQuery = "
-      SELECT *
-      FROM users_info
-      WHERE users_info.status_log = 'approved'";
+    // Initialize the query
+    $usersQuery = "
+          SELECT *
+          FROM users_info
+          WHERE users_info.status_log = 'approved'";
 
-// Apply U_Type filter if selected
-if (isset($_GET['U_Type']) && !empty($_GET['U_Type'])) {
-  $U_Type = mysqli_real_escape_string($conn, $_GET['U_Type']);
-  $usersQuery .= " AND users_info.U_Type = '$U_Type'";
-}
-
-// Fetch users without pagination (no LIMIT clause)
-$usersResult = mysqli_query($conn, $usersQuery);
-
-// Handle delete request
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
-  // Ensure ID is passed and sanitize it to prevent SQL injection
-  if (isset($_POST['id']) && !empty($_POST['id'])) {
-    $id = mysqli_real_escape_string($conn, $_POST['id']);
-    
-    // SQL DELETE query to remove the user from the database
-    $deleteQuery = "DELETE FROM users_info WHERE IDno = '$id'";  
-    $deleteResult = mysqli_query($conn, $deleteQuery);
-
-    if ($deleteResult) {
-      echo json_encode(['success' => true]);
-    } else {
-      echo json_encode(['success' => false, 'message' => 'Failed to delete user.']);
+    // Apply U_Type filter if selected
+    if (isset($_GET['U_Type']) && !empty($_GET['U_Type'])) {
+      $U_Type = mysqli_real_escape_string($conn, $_GET['U_Type']);
+      $usersQuery .= " AND users_info.U_Type = '$U_Type'";
     }
-  } else {
-    echo json_encode(['success' => false, 'message' => 'No ID provided.']);
-  }
-  exit;  // Exit after the response to prevent further output
-}
+
+    // Fetch users without pagination (no LIMIT clause)
+    $usersResult = mysqli_query($conn, $usersQuery);
+
+    // Handle delete request
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+      // Ensure ID is passed and sanitize it to prevent SQL injection
+      if (isset($_POST['id']) && !empty($_POST['id'])) {
+        $id = mysqli_real_escape_string($conn, $_POST['id']);
+        
+        // SQL DELETE query to remove the user from the database
+        $deleteQuery = "DELETE FROM users_info WHERE IDno = '$id'";  
+        $deleteResult = mysqli_query($conn, $deleteQuery);
+
+        if ($deleteResult) {
+          echo json_encode(['success' => true]);
+        } else {
+          echo json_encode(['success' => false, 'message' => 'Failed to delete user.']);
+        }
+      } else {
+        echo json_encode(['success' => false, 'message' => 'No ID provided.']);
+      }
+      exit;  // Exit after the response to prevent further output
+    }
 ?>
 
-<div class="container mx-auto ">
+<div class="container px-3 mx-auto ">
 
   <div class="flex flex-row  items-center my-4 space-y-4">
     <div class="flex flex-wrap justify-center items-center gap-4 w-full">
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['yrLVL']); ?></td>
             <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['college']); ?></td>
             <td class="px-4 py-2 whitespace-nowrap flex space-x-2">
-              <a href="include/user_details.php?id=<?php echo htmlspecialchars($row['IDno']); ?>" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">View</a>
+              <a href="user_details.php?id=<?php echo htmlspecialchars($row['IDno']); ?>" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">View</a>
               <button class="bg-red-500 text-white px-3 py-1 rounded text-sm" onclick="deleteUser('<?php echo htmlspecialchars($row['IDno']); ?>')">Delete</button>
             </td>
           </tr>
@@ -271,3 +271,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
   }
 </script>
+
+<style>
+    /* active (selected) state */
+    .radio-input label:has(input:checked) {
+        background-color: #1D4ED8;
+        color: #fff;
+    }
+
+    /* Hover color for table rows */
+    .user-row:hover {
+        background-color: #f0f0f0;
+    }
+</style>

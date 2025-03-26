@@ -165,6 +165,14 @@ include '../config.php'; // Include the configuration file for database connecti
               const selectedID = item.getAttribute('data-id');
               const selectedName = item.textContent;
               selectUser(selectedID, selectedName);
+
+              // Hide all results except the selected one
+              Array.from(results).forEach(result => {
+                if (result.getAttribute('data-id') === selectedID) {
+                  result.style.display = 'block'; // Show the selected user
+                } else {
+                  result.style.display = 'none'; // Hide others
+              });
             });
           });
         })
@@ -227,17 +235,40 @@ include '../config.php'; // Include the configuration file for database connecti
   }
 
 
-  // Set user ID in the input field after selecting a result
   function selectUser(IDno, name) {
-    document.getElementById('IDno').value = IDno;
-    // We no longer clear the results when selecting a user
-  }
+  document.getElementById('IDno').value = IDno;
+
+  // Get the container of user search results
+  const userSearchResult = document.getElementById('userSearchResult');
+  
+  // Loop through all the search result items
+  Array.from(userSearchResult.children).forEach(item => {
+    // Check if this item is the selected one
+    if (item.getAttribute('data-id') === IDno) {
+      // Keep the selected item visible
+      item.style.display = 'block';
+    } else {
+      // Hide all other users
+      item.style.display = 'none';
+    }
+  });
+}
+
 
   // Set book ID in the input field after selecting a result
   function selectBook(bookID, title, author, callNumber, publisher, publicationYear, status) {
     const inputField = document.getElementById(`bookID_${index}`);
     inputField.value = bookID; // Use the relevant parameter
-    // Optionally use other details, like updating the UI with additional info
+
+    // Hide all results except the selected one
+    const bookSearchResult = document.getElementById(`bookSearchResult_${index}`);
+    Array.from(bookSearchResult.children).forEach(item => {
+      if (item.getAttribute('data-id') === bookID) {
+        item.style.display = 'block'; // Show the selected book
+      } else {
+        item.style.display = 'none'; // Hide others
+      }
+    });
   }
 </script>
 
@@ -303,7 +334,16 @@ include '../config.php'; // Include the configuration file for database connecti
   // Set user ID in the input field after selecting a result
   function selectUser(IDno, name) {
     document.getElementById('IDno').value = IDno;
-    // We no longer clear the results when selecting a user
+
+    // Hide all results except the selected one
+    const userSearchResult = document.getElementById('userSearchResult');
+    Array.from(userSearchResult.children).forEach(item => {
+      if (item.getAttribute('data-id') === IDno) {
+        item.style.display = 'block'; // Show the selected user
+      } else {
+        item.style.display = 'none'; // Hide others
+      }
+    });
   }
 
   // Set book ID in the input field after selecting a result
@@ -311,5 +351,15 @@ include '../config.php'; // Include the configuration file for database connecti
     const inputField = document.getElementById(`bookID_${index}`);
     inputField.value = bookID;
     // We no longer clear the results when selecting a book
+
+    // Hide all results except the selected one
+    const bookSearchResult = document.getElementById(`bookSearchResult_${index}`);
+    Array.from(bookSearchResult.children).forEach(item => {
+      if (item.getAttribute('data-id') === bookID) {
+        item.style.display = 'block'; // Show the selected book
+      } else {
+        item.style.display = 'none'; // Hide others
+      }
+    });
   }
 </script>

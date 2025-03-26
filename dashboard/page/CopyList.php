@@ -22,7 +22,7 @@
         <!-- Header at the Top -->
         <?php include 'include/header.php'; ?>
 
-        <div class="container mx-auto px-4 py-6">
+        <div class="container mx-auto px-4">
             <h2 class="text-3xl font-semibold mb-4 text-center">Book Copy List</h2>
 
             <?php if ($message): ?>
@@ -40,17 +40,17 @@
                 <!-- Radio Buttons for Status Filter -->
                 <div class="w-full max-w-md">
                     <div class="radio-input flex space-x-4">
-                        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
+                        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-400 bg-blue-200 border border-gray-300 rounded-md">
                             <input type="radio" name="statusFilter" value="all" id="allRadio" class="hidden" checked>
-                            <span>All Status</span>
+                            <span class="block">All Status</span>
                         </label>
-                        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
+                        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-400 bg-blue-200 border border-gray-300 rounded-md">
                             <input type="radio" name="statusFilter" value="Available" id="availableRadio" class="hidden">
-                            <span>Available</span>
+                            <span class="block">Available</span>
                         </label>
-                        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
+                        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-400 bg-blue-200 border border-gray-300 rounded-md">
                             <input type="radio" name="statusFilter" value="Borrowed" id="BorrowedRadio" class="hidden">
-                            <span>Borrowed</span>
+                            <span class="block">Borrowed</span>
                         </label>
                     </div>
                 </div>
@@ -206,3 +206,16 @@
         filterBooks(); // Initialize the table with the filter applied and pagination
     });
 </script>
+
+<style>
+    /* active (selected) state */
+    .radio-input label:has(input:checked) {
+        background-color: #1D4ED8;
+        color: #fff;
+    }
+
+    /* Hover color for table rows */
+    .user-row:hover {
+        background-color: #f0f0f0;
+    }
+</style>

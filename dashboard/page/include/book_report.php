@@ -1,89 +1,61 @@
 <?php
 
-// Query to fetch books with ratings (0, 1, 2) and count borrowed books
-$ratingQuery = "
-        SELECT bc.B_title, bc.book_copy, bc.rating
-        FROM book_copies bc
-        WHERE bc.rating IS NOT NULL AND bc.status IN ('Available', 'Borrowed')
-    ";
-$ratingResult = $conn->query($ratingQuery);
+    // Query to fetch books with ratings (0, 1, 2) and count borrowed books
+    $ratingQuery = "
+            SELECT bc.B_title, bc.book_copy, bc.rating
+            FROM book_copies bc
+            WHERE bc.rating IS NOT NULL AND bc.status IN ('Available', 'Borrowed')
+        ";
+    $ratingResult = $conn->query($ratingQuery);
 
-// Initialize arrays to store books by rating
-$booksWithRatingZero = [];
-$booksWithRatingOne = [];
-$booksWithRatingTwo = [];
+    // Initialize arrays to store books by rating
+    $booksWithRatingZero = [];
+    $booksWithRatingOne = [];
+    $booksWithRatingTwo = [];
 
-// Initialize array for most borrowed books by college
-$borrowedBooksByCollege = [];
-$allBorrowedBooks = [];
+    // Initialize array for most borrowed books by college
+    $borrowedBooksByCollege = [];
+    $allBorrowedBooks = [];
 
-// Query for most borrowed books based on B_title and college IDno
-$borrowedQuery = "
-        SELECT ui.college, bc.B_title, COUNT(bb.book_copy) AS Borrowed_Count
-        FROM borrow_book bb
-        JOIN book_copies bc ON bb.book_copy = bc.book_copy
-        JOIN users_info ui ON bb.IDno = ui.IDno
-        WHERE bc.status = 'Borrowed'
-        GROUP BY ui.college, bc.B_title
-        ORDER BY ui.college, Borrowed_Count DESC
-    ";
-$borrowedResult = $conn->query($borrowedQuery);
+    // Query for most borrowed books based on B_title and college IDno
+    $borrowedQuery = "
+            SELECT ui.college, bc.B_title, COUNT(bb.book_copy) AS Borrowed_Count
+            FROM borrow_book bb
+            JOIN book_copies bc ON bb.book_copy = bc.book_copy
+            JOIN users_info ui ON bb.IDno = ui.IDno
+            WHERE bc.status = 'Borrowed'
+            GROUP BY ui.college, bc.B_title
+            ORDER BY ui.college, Borrowed_Count DESC
+        ";
+    $borrowedResult = $conn->query($borrowedQuery);
 
-// Organize borrowed books by college
-if ($borrowedResult->num_rows > 0) {
-    while ($row = $borrowedResult->fetch_assoc()) {
-        // Save the most borrowed book per college
-        $borrowedBooksByCollege[$row['college']][] = $row;
-        // Also store for the overall table (only the most borrowed book from each college)
-        if (count($borrowedBooksByCollege[$row['college']]) == 1) {
-            $allBorrowedBooks[] = $row;
+    // Organize borrowed books by college
+    if ($borrowedResult->num_rows > 0) {
+        while ($row = $borrowedResult->fetch_assoc()) {
+            // Save the most borrowed book per college
+            $borrowedBooksByCollege[$row['college']][] = $row;
+            // Also store for the overall table (only the most borrowed book from each college)
+            if (count($borrowedBooksByCollege[$row['college']]) == 1) {
+                $allBorrowedBooks[] = $row;
+            }
         }
     }
-}
 
-// Process rating results
-if ($ratingResult->num_rows > 0) {
-    while ($row = $ratingResult->fetch_assoc()) {
-        if ($row['rating'] == 0) {
-            $booksWithRatingZero[] = $row;
-        } elseif ($row['rating'] == 1) {
-            $booksWithRatingOne[] = $row;
-        } elseif ($row['rating'] == 2) {
-            $booksWithRatingTwo[] = $row;
+    // Process rating results
+    if ($ratingResult->num_rows > 0) {
+        while ($row = $ratingResult->fetch_assoc()) {
+            if ($row['rating'] == 0) {
+                $booksWithRatingZero[] = $row;
+            } elseif ($row['rating'] == 1) {
+                $booksWithRatingOne[] = $row;
+            } elseif ($row['rating'] == 2) {
+                $booksWithRatingTwo[] = $row;
+            }
         }
     }
-}
 ?>
 
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<style>
-    .report-container {
-        max-height: 400px;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
 
-    .report-card {
-        word-wrap: break-word;
-        white-space: normal;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        padding: 0.75rem;
-    }
-
-    .heading {
-        font-size: 1.25rem;
-    }
-
-    .subheading {
-        font-size: 1rem;
-    }
-
-    li {
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-    }
-</style>
 
 <div class="container mx-auto p-4">
     <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Library Reports</h1>
@@ -185,7 +157,12 @@ if ($ratingResult->num_rows > 0) {
     </div>
 </div>
 
-
+<script>
+    // Dynamically load Tailwind CSS only for this section
+    document.getElementById('tailwind-stylesheet').addEventListener('load', () => {
+        console.log('Tailwind CSS loaded for the report section.');
+    });
+</script>
 
 <?php
 // Close the database connection

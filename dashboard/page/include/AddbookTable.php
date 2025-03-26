@@ -21,7 +21,7 @@
     </nav>
 
     
-  <form action="include/AddConnect.php" method="post" >
+  <form action="include/AddConnect.php" class="p-3" method="post" >
 
  
     <!-- Title Section -->
@@ -501,7 +501,6 @@
     }
   });
 </script>
-
 
 <!-- navbar -->
 <script>

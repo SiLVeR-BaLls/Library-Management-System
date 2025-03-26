@@ -146,7 +146,7 @@ if ($title) {
           <a href="AddBookCopy.php?title=<?php echo urlencode($book['book_id']); ?>"
             class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add Copy</a>
           <a href="BookList.php?title=<?php echo urlencode($book['book_id']); ?>"
-            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">List</a>
+            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Copy List</a>
         </div>
       </div>
 

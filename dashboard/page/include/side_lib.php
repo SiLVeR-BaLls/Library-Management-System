@@ -22,7 +22,7 @@
                     <ul id="booksDropdown" class="absolute overflow-hidden overflow-y-auto z-10 left-0 hidden mt-1 w-48 bg-blue-500  rounded-md shadow-lg">
                         <li><a href="Borrow.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Borrow.php') ? $button_active : $sidebar_hover ?>;">Borrow</a></li>
                         <li><a href="CopyList.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'CopyList.php') ? $button_active : $sidebar_hover ?>;">Copy List</a></li>
-                        <li><a href="BorrowDisplay.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'BorrowDisplay.php') ? $button_active : $sidebar_hover ?>;">Borrowed</a></li>
+                        <li><a href="BorrowDisplay.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'BorrowDisplay.php') ? $button_active : $sidebar_hover ?>;">Book Cycle</a></li>
                         <li><a href="Catalog.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Catalog.php') ? $button_active : $sidebar_hover ?>;">Catalog</a></li>
                         <li><a href="Report.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Report.php') ? $button_active : $sidebar_hover ?>;">Report</a></li>
                     </ul>
