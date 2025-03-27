@@ -31,7 +31,7 @@ include '../config.php';
         <!-- BrowseBook Content -->
         <?php include 'include/profile_extend.php'; ?>
         <!-- Footer at the Bottom -->
-        <footer class="bg-blue-600 text-white mt-auto">
+        <footer>
             <?php include 'include/footer.php'; ?>
         </footer>
     </div>

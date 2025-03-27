@@ -27,16 +27,6 @@
         exit();
     }
 
-    // Restrict access based on user type
-    $page = basename($_SERVER['PHP_SELF']);
-    if (($page == 'admin.php' && $userType != 'admin') ||
-        ($page == 'student.php' && $userType != 'student') ||
-        ($page == 'librarian.php' && $userType != 'librarian') ||
-        ($page == 'faculty.php' && $userType != 'faculty')
-    ) {
-        header("Location: /lms/error.php");
-        exit();
-    }
 
     $sidebars = [
         'admin' => 'include/side_ad.php',
@@ -72,5 +62,5 @@ $sidebar_active = $settings['sidebar_active_color'] ?? '';
 $header = $settings['header_color'] ?? '';
 $footer = $settings['footer_color'] ?? '';
 $sidebar = $settings['sidebar_color'] ?? '';
-    $logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : 'default-logo.png';
+$logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : 'default-logo.png';
 

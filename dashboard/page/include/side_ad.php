@@ -14,7 +14,7 @@
                 <!-- Customize page button -->
                 <li><a href="custom.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'custom.php') ? $button_active : $sidebar_hover ?>;">Customize</a></li>
                 <!-- attendace button -->
-                <li><a href="QRscan/index_ad.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'index.php' && strpos($_SERVER['REQUEST_URI'], 'QRscan/') !== false) ? $button_active : $sidebar_hover ?>;">Attendance</a></li>
+                <li><a href="QRscan/index_ad.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'index_ad.php' && strpos($_SERVER['REQUEST_URI'], 'QRscan/') !== false) ? $button_active : $sidebar_hover ?>;">Attendance</a></li>
 
                 <!-- Books Dropdown -->
                 <li class="relative">
@@ -53,7 +53,7 @@
                     <ul id="dashboardDropdown" style="color : <?= $text1 ?>;" class="absolute  overflow-y-auto z-10 left-0 hidden mt-1 w-48   rounded-md shadow-lg">
                         <li><a href="profile.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'profile.php') ? $button_active : $sidebar_hover ?>;">Profile</a></li>
                         <li><a href="Myborrow.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Myborrow.php') ? $button_active : $sidebar_hover ?>;">My Borrow</a></li>
-                        <li><a href="Myreturn.php" style="color : <?= $text1 ?>;" class="btn block py-2 px-4 <?php echo (basename($_SERVER['PHP_SELF']) == 'Myreturn.php') ? $button_active : $sidebar_hover ?>;">My Returned</a></li>
+                        <li><a href="Myreturn.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Myreturn.php') ? $button_active : $sidebar_hover ?>;">My Return</a></li>
                     </ul>
                 </li>
                

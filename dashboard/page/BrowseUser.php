@@ -1,5 +1,7 @@
 <?php
 include '../config.php';
+// Start output buffering to prevent premature output
+ob_start();
 ?>
  
  <title>Browse User</title>
@@ -16,7 +18,7 @@ include '../config.php';
             <?php include 'include/TableOfUser.php'; ?>
 
         <!-- Footer -->
-        <footer class="bg-blue-600 text-white mt-auto">
+        <footer>
             <?php include 'include/footer.php'; ?>
         </footer>
     </div>

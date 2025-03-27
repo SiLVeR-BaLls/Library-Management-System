@@ -116,8 +116,11 @@
         </a> &rarr;
         <a href="AddBookCopy.php?title=<?php echo urlencode($book['book_id']); ?>" class="hover:text-blue-800 hover:underline">Add Copy</a>
       </div>
-      <a href="ViewBook.php?title=<?php echo urlencode($book['book_id']); ?>"
-        class="hover:text-blue-800 hover:underline">&larr; Back</a>
+        <!-- Return Button -->
+        <a href="ViewBook.php?title=<?php echo urlencode($book['book_id']); ?>" class="inline-block bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 mb-2">
+                &larr; Return
+            </a> <!-- Updated to look like a button --> 
+
       <?php if ($message): ?>
         <div class="alert alert-<?php echo $message_type; ?>">
           <?php echo htmlspecialchars($message); ?>
@@ -562,7 +565,7 @@
 
     </div>
     <!-- Footer at the Bottom -->
-    <footer class="bg-blue-600 text-white mt-auto">
+    <footer>
       <?php include 'include/footer.php'; ?>
     </footer>
     </di>

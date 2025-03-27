@@ -1,52 +1,52 @@
 <?php
-include '../config.php';
+    include '../config.php';
 
-// Initialize message variables
-$message = "";
-$message_type = "";
+    // Initialize message variables
+    $message = "";
+    $message_type = "";
 
-// Get the copy ID from the URL
-$ID = isset($_GET['book_copy_ID']) ? $_GET['book_copy_ID'] : '';
+    // Get the copy ID from the URL
+    $ID = isset($_GET['book_copy_ID']) ? $_GET['book_copy_ID'] : '';
 
-// Use prepared statements to prevent SQL injection
-$sql = "SELECT * FROM book_copies WHERE book_copy_ID = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $ID);
-$stmt->execute();
-$result = $stmt->get_result();
+    // Use prepared statements to prevent SQL injection
+    $sql = "SELECT * FROM book_copies WHERE book_copy_ID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $ID);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-if (!$result) {
-    $message = "Error retrieving copy details: " . $conn->error;
-    $message_type = "danger"; // Bootstrap class for error
-} elseif ($result->num_rows == 0) {
-    $message = "No copy found with the specified ID.";
-    $message_type = "warning"; // Bootstrap class for warning
-    $copy_data = [];
-} else {
-    $copy_data = $result->fetch_assoc();
-}
-
-$stmt->close();
-
-// Handle deletion logic here if confirmed
-if (isset($_GET['confirm_delete']) && $_GET['confirm_delete'] === 'true' && $ID) {
-    $delete_sql = "DELETE FROM book_copies WHERE book_copy_ID = ?";
-    $delete_stmt = $conn->prepare($delete_sql);
-    $delete_stmt->bind_param("s", $ID);
-
-    if ($delete_stmt->execute()) {
-        $message = "Copy deleted successfully.";
-        $message_type = "success";
-        // After successful deletion, redirect to BookList.php
-        header("Location: BookList.php?title=" . urlencode($copy_data['book_id']) . "&book_copy_ID=" . urlencode($copy_data['book_copy_ID']));
-        exit;
+    if (!$result) {
+        $message = "Error retrieving copy details: " . $conn->error;
+        $message_type = "danger"; // Bootstrap class for error
+    } elseif ($result->num_rows == 0) {
+        $message = "No copy found with the specified ID.";
+        $message_type = "warning"; // Bootstrap class for warning
+        $copy_data = [];
     } else {
-        $message = "Error deleting copy: " . $conn->error;
-        $message_type = "error";
+        $copy_data = $result->fetch_assoc();
     }
 
-    $delete_stmt->close();
-}
+    $stmt->close();
+
+    // Handle deletion logic here if confirmed
+    if (isset($_GET['confirm_delete']) && $_GET['confirm_delete'] === 'true' && $ID) {
+        $delete_sql = "DELETE FROM book_copies WHERE book_copy_ID = ?";
+        $delete_stmt = $conn->prepare($delete_sql);
+        $delete_stmt->bind_param("s", $ID);
+
+        if ($delete_stmt->execute()) {
+            $message = "Copy deleted successfully.";
+            $message_type = "success";
+            // After successful deletion, redirect to BookList.php
+            header("Location: BookList.php?title=" . urlencode($copy_data['book_id']) . "&book_copy_ID=" . urlencode($copy_data['book_copy_ID']));
+            exit;
+        } else {
+            $message = "Error deleting copy: " . $conn->error;
+            $message_type = "error";
+        }
+
+        $delete_stmt->close();
+    }
 ?>
 <!-- Main Content Area with Sidebar and BrowseBook Section -->
 <main class="flex  ">
@@ -60,14 +60,14 @@ if (isset($_GET['confirm_delete']) && $_GET['confirm_delete'] === 'true' && $ID)
         <!-- BrowseBook Content and Footer Section -->
         <div class="flex-grow">
             <!-- BrowseBook Content Section -->
-            <div class="p-8">
+            <div class="p-6">
                 <!-- Return to Copy Details button with both book_copy_ID and book_copy_ID in the query string -->
 
                 <a href="BookList.php?title=<?php echo urlencode($copy_data['book_id']); ?>&book_copy_ID=<?php echo urlencode($copy_data['book_copy_ID']); ?>"
-                    class="bg-gray-500 text-white py-2 px-6 rounded-md hover:bg-gray-600 mb-8 inline-block">
+                    class="bg-gray-500 text-white py-2 px-6 rounded-md hover:bg-gray-600 inline-block">
                     Return to List
                 </a>
-                <h2 class="text-3xl font-bold text-center mb-8">Book Copy Details</h2>
+                <h2 class="text-3xl font-bold text-center">Book Copy Details</h2>
 
                 <!-- Display message if exists -->
                 <?php if ($message): ?>
@@ -179,6 +179,10 @@ if (isset($_GET['confirm_delete']) && $_GET['confirm_delete'] === 'true' && $ID)
                             </div>
                         </div>
                     </div>
+                      <?php
+  // Check if the user is an admin or librarian
+  if ($userType === 'admin' || $userType === 'librarian') {
+  ?>
                     <!-- Edit and Delete Buttons -->
                     <div class="mt-8 flex justify-between">
                         <a href="include/edit_copy.php?book_copy_ID=<?php echo urlencode($copy_data['book_copy_ID']); ?>"
@@ -190,12 +194,21 @@ if (isset($_GET['confirm_delete']) && $_GET['confirm_delete'] === 'true' && $ID)
                             Delete Copy
                         </button>
                     </div>
+                    <div class="flex justify-center gap-4 mb-6">
+
+
+
+  <?php
+  }
+  ?>
+</div>
+
             </div>
 
         <?php endif; ?>
 
         <!-- Footer at the Bottom -->
-        <footer class="bg-blue-600 text-white p-4 mt-auto">
+        <footer>
             <?php include 'include/footer.php'; ?>
         </footer>
         </div>

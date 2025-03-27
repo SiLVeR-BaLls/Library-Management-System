@@ -59,7 +59,6 @@ if ($conn->connect_error) {
         } else {
             // Insert into users table
             $Ename = 'N/A';
-            $photo = 'default.jpg';
             $sql = "INSERT INTO users_info (IDno, Fname, Sname, Mname, Ename, gender, photo, municipality, barangay, province, DOB, college, course, yrLVL, A_LVL, status_details, personnel_type, username, password, U_Type, status_log, email, contact ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("sssssssssssssssssssssss", $IDno, $Fname, $Sname, $Mname, $Ename, $gender, $photo, $municipality, $barangay, $province, $DOB, $college, $course,  $yrLVL, $A_LVL, $status_details, $personnel_type, $username, $password, $U_Type, $status_log, $email, $contact );

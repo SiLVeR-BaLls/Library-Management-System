@@ -1,4 +1,4 @@
-<footer class="p-1 mt-auto text-xs" style="background: <?= $footer ?>; color: <?= $text ?>;">
+<footer class="p-1 mt-auto text-xs" style="background: <?= $footer ?>; color: <?= $text1 ?>;">
   <div class="container mx-auto text-center">
     <p>&copy; lms Capstone</p>
     <div class="mt-1">

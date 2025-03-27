@@ -25,22 +25,26 @@ if (isset($_GET['id'])) {
         $stmt->bind_result($email);
         $stmt->fetch();
         
-        // Update the user status to 'rejected' in the users_info table
-        $updateQuery = "UPDATE users_info SET status_log = 'rejected' WHERE IDno = ?";
-        $updateStmt = $conn->prepare($updateQuery);
-        $updateStmt->bind_param("s", $userId);
-        $updateStmt->execute();
-
-        // Send rejection email using PHPMailer
-        $subject = "Account Rejection";
-        $message = "I'm sorry, dear user. Your account is not qualified to be part of our system.";
+        // Send notification email using PHPMailer
+        $subject = "Account Deletion Notification";
+        $message = "Dear user, your account is scheduled for deletion. If you have any concerns, please contact support.";
         sendMail($email, $subject, $message);
 
-        // Redirect back to the user list page or display success message
-        header("Location: ../pending.php?message=Account rejected successfully!");
+        // Delete the user account from the database
+        $deleteQuery = "DELETE FROM users_info WHERE IDno = ?";
+        $deleteStmt = $conn->prepare($deleteQuery);
+        $deleteStmt->bind_param("s", $userId);
+
+        if ($deleteStmt->execute()) {
+            // Redirect back to the user list page or display success message
+            header("Location: ../pending.php?message=Account deleted successfully after sending notification!");
+        } else {
+            // Error deleting account
+            header("Location: ../pending.php?message=Error deleting account.");
+        }
     } else {
         // No user found
-        header("Location: ../pending.php?message=Error rejecting account.");
+        header("Location: ../pending.php?message=Error deleting account.");
     }
 }
 

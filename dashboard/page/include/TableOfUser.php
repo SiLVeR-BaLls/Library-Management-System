@@ -1,42 +1,66 @@
 <?php
+
+
     // Initialize the query
     $usersQuery = "
-          SELECT *
-          FROM users_info
-          WHERE users_info.status_log = 'approved'";
+        SELECT *
+        FROM users_info
+        WHERE users_info.status_log = 'approved'";
 
     // Apply U_Type filter if selected
     if (isset($_GET['U_Type']) && !empty($_GET['U_Type'])) {
-      $U_Type = mysqli_real_escape_string($conn, $_GET['U_Type']);
-      $usersQuery .= " AND users_info.U_Type = '$U_Type'";
+        $U_Type = mysqli_real_escape_string($conn, $_GET['U_Type']);
+        $usersQuery .= " AND users_info.U_Type = '$U_Type'";
     }
 
     // Fetch users without pagination (no LIMIT clause)
     $usersResult = mysqli_query($conn, $usersQuery);
 
-    // Handle delete request
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
-      // Ensure ID is passed and sanitize it to prevent SQL injection
-      if (isset($_POST['id']) && !empty($_POST['id'])) {
-        $id = mysqli_real_escape_string($conn, $_POST['id']);
-        
-        // SQL DELETE query to remove the user from the database
-        $deleteQuery = "DELETE FROM users_info WHERE IDno = '$id'";  
-        $deleteResult = mysqli_query($conn, $deleteQuery);
+    // Handle user deletion
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+        // Get the IDno of the user to delete from the form
+        $idToDelete = $_POST['id']; // Get the IDno of the user from the form
 
-        if ($deleteResult) {
-          echo json_encode(['success' => true]);
-        } else {
-          echo json_encode(['success' => false, 'message' => 'Failed to delete user.']);
+        // Ensure $idToDelete is safe to use (sanitize)
+        $idToDelete = mysqli_real_escape_string($conn, $idToDelete);
+
+        // Delete SQL query
+        $deleteSql = "DELETE FROM users_info WHERE IDno = ?";
+
+        if (!$conn) {
+            die("Database connection failed: " . mysqli_connect_error());
         }
-      } else {
-        echo json_encode(['success' => false, 'message' => 'No ID provided.']);
-      }
-      exit;  // Exit after the response to prevent further output
-    }
+
+        $deleteStmt = $conn->prepare($deleteSql);
+
+        // Check if prepare statement is successful
+        if ($deleteStmt === false) {
+            die("Error preparing statement: " . $conn->error);
+        }
+
+        // Bind the IDno parameter for the deletion
+        $deleteStmt->bind_param("s", $idToDelete); // 's' means the parameter is a string
+
+        // Execute the deletion
+        if ($deleteStmt->execute()) {
+            // Redirect to the table page after deletion
+            header('Location: BrowseUser.php ');
+            // End output buffering and flush the output
+ob_end_flush();
+            exit(); // Make sure to call exit() after a header redirect
+        } else {
+            // Handle the error if the deletion failed
+            echo "Error deleting user: " . $deleteStmt->error;
+        }
+        // Close the prepared statement
+        $deleteStmt->close();
+}
+
+
 ?>
 
-<div class="container px-3 mx-auto ">
+<div class="container mx-auto px-4 py-6 ">
+<h2 class="text-3xl font-semibold mb-6">Browse Users</h2>
 
   <div class="flex flex-row  items-center my-4 space-y-4">
     <div class="flex flex-wrap justify-center items-center gap-4 w-full">
@@ -44,8 +68,8 @@
       <div class="flex justify-center items-center w-full md:w-auto">
         <div class="flex w-full justify-center">
           <input type="text" id="searchInput" placeholder="Search..."
-            class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none">
-          <select id="searchCategory" class="border border-gray-300 rounded px-4 py-2 focus:ring-2 focus:ring-blue-400">
+            class="border rounded px-4 py-2 w-full focus:ring-2 focus:ring-blue-400 focus:outline-none">
+          <select id="searchCategory" class="border  rounded px-4 py-2 focus:ring-2 focus:ring-blue-400">
             <option value="IDno">IDno</option>
             <option value="Fname">First Name</option>
             <option value="Sname">Last Name</option>
@@ -88,30 +112,36 @@
   <div class="overflow-x-auto bg-white shadow-md rounded-lg">
     <table id="usersTable" class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-100">
-        <tr>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IDno</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">U_Type</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">College</th>
-          <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+        <tr style="background: <?= $sidebar?>; color : <?= $text1 ?>;">
+          <th class="px-4 py-3 text-left text-xs font-medium  uppercase tracking-wider">IDno</th>
+          <th class="px-4 py-3 text-left text-xs font-medium  uppercase tracking-wider">First Name</th>
+          <th class="px-4 py-3 text-left text-xs font-medium  uppercase tracking-wider">Last Name</th>
+          <th class="px-4 py-3 text-left text-xs font-medium  uppercase tracking-wider">Course</th>
+          <th class="px-4 py-3 text-left text-xs font-medium  uppercase tracking-wider">U_Type</th>
+          <th class="px-4 py-3 text-left text-xs font-medium  uppercase tracking-wider">Year</th>
+          <th class="px-4 py-3 text-left text-xs font-medium  uppercase tracking-wider">College</th>
+          <th class="px-4 py-3 text-left text-xs font-medium  uppercase tracking-wider">Action</th>
         </tr>
       </thead>
-      <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+      <tbody id="tableBody" class="bg-white  divide-gray-200">
         <?php while ($row = mysqli_fetch_assoc($usersResult)): ?>
           <tr class="user-row" data-user-type="<?php echo htmlspecialchars($row['U_Type']); ?>">
-            <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['IDno']); ?></td>
-            <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['Fname']); ?></td>
-            <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['Sname']); ?></td>
-            <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['course']); ?></td>
-            <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['U_Type']); ?></td>
-            <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['yrLVL']); ?></td>
-            <td class="px-4 py-2 whitespace-nowrap"><?php echo htmlspecialchars($row['college']); ?></td>
-            <td class="px-4 py-2 whitespace-nowrap flex space-x-2">
-              <a href="user_details.php?id=<?php echo htmlspecialchars($row['IDno']); ?>" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">View</a>
-              <button class="bg-red-500 text-white px-3 py-1 rounded text-sm" onclick="deleteUser('<?php echo htmlspecialchars($row['IDno']); ?>')">Delete</button>
+            <td class="px-4 py-2 "><?php echo htmlspecialchars($row['IDno']); ?></td>
+            <td class="px-4 py-2 "><?php echo htmlspecialchars($row['Fname']); ?></td>
+            <td class="px-4 py-2 "><?php echo htmlspecialchars($row['Sname']); ?></td>
+            <td class="px-4 py-2 "><?php echo htmlspecialchars($row['course']); ?></td>
+            <td class="px-4 py-2 "><?php echo htmlspecialchars($row['U_Type']); ?></td>
+            <td class="px-4 py-2 "><?php echo htmlspecialchars($row['yrLVL']); ?></td>
+            <td class="px-4 py-2 "><?php echo htmlspecialchars($row['college']); ?></td>
+            <td>
+            <form method="POST" action="" 
+  class="px-4 py-2  flex space-x-2">
+    <a href="user_details.php?id=<?php echo htmlspecialchars($row['IDno']); ?>" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">View</a>
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="id" value="<?php echo htmlspecialchars($row['IDno']); ?>">
+    <button type="submit" class="bg-red-500 w-full text-white px-3 py-1 rounded text-sm">Delete</button>
+</form>
+
             </td>
           </tr>
         <?php endwhile; ?>
@@ -249,27 +279,6 @@
   document.addEventListener("DOMContentLoaded", function() {
     updatePagination(); // Initialize the table with current page and filter
   });
-
-  // Delete user via AJAX
-  function deleteUser(id) {
-    if (confirm('Are you sure you want to delete this user?')) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '', true);  // Make a POST request to the same page
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                if (response.success) {
-                    alert('User deleted successfully');
-                    location.reload();  // Reload the page to reflect the deletion
-                } else {
-                    alert('Failed to delete user: ' + response.message);
-                }
-            }
-        };
-        xhr.send('action=delete&id=' + encodeURIComponent(id)); // Send the delete action and user ID
-    }
-  }
 </script>
 
 <style>

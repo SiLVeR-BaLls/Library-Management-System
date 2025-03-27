@@ -14,11 +14,11 @@ include '../config.php'; // Include the configuration file for database connecti
     <?php include 'include/header.php'; ?>
 
     <!-- BorrowBook Content -->
-    <div class="container px-4">
-      <h1 class="text-3xl font-semibold mb-4 text-center">Borrow a Book</h1>
+    <div class="container mx-auto px-4 py-6 ">
+    <h2 class="text-3xl font-semibold mb-6">Borrow a Book</h2>
 
       <form action="include/BorrowConnect.php" method="POST">
-        <div class="flex flex-row gap-4 mt-2 max-h-[70vh]">
+        <div class="flex flex-row gap-4 mt-2 max-h-[65vh]">
 
           <!-- User Section (Non-scrollable) -->
           <div class="user-container items-center flex flex-col space-y-4 w-1/2">
@@ -47,17 +47,17 @@ include '../config.php'; // Include the configuration file for database connecti
                   <button type="button" class="ml-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700"
                     onclick="startScanner('bookID_0')">Scan QR</button>
                 </div>
-                <div id="bookSearchResult_0" class="bookSearchResults mt-2 max-h-64 overflow-y-auto"></div>
+                <div id="bookSearchResult_0" class="bookSearchResults mt-2 max-h-40 overflow-y-auto"></div>
               </div>
             </div>
           </div>
 
 
           <!-- Video Element for QR Scanning -->
-          <div id="scannerModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-            <div class="bg-white p-4 rounded-lg shadow-lg">
-              <video id="scannerVideo" class=""></video>
-              <button onclick="stopScanner()" class="mt-2 bg-red-500 text-white px-4  rounded-lg hover:bg-red-700">Close Scanner</button>
+          <div id="scannerModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
+            <div class="bg-white p-4 rounded-lg shadow-lg relative">
+              <video id="scannerVideo" class="w-full h-auto"></video>
+              <button onclick="stopScanner()" class="absolute top-2 right-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700">Close</button>
             </div>
           </div>
 
@@ -111,7 +111,7 @@ include '../config.php'; // Include the configuration file for database connecti
             <button type="button" class="ml-2 bg-green-500 text-white px-4  rounded-lg hover:bg-green-700"
               onclick="startScanner('bookID_${bookCount}')">Scan QR</button>
           </div>
-          <div id="bookSearchResult_${bookCount}" class="bookSearchResults mt-2 max-h-64 overflow-y-auto"></div>
+          <div id="bookSearchResult_${bookCount}" class="bookSearchResults mt-2 max-h-40 overflow-y-auto"></div>
         </div>
       `;
             bookContainer.appendChild(newBookGroup);
@@ -122,14 +122,14 @@ include '../config.php'; // Include the configuration file for database connecti
         <div class="flex sticky bottom-0 items-center justify-center space-x-4 py-4 shadow-md">
           <!-- Add Another Book Button -->
           <button type="button"
-            class="bg-gray-500 text-white font-bold  px-6 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 transition"
+            class="bg-gray-500 text-white font-bold text-base px-6 py-3 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 transition"
             onclick="addBook()">
             Add Another Book
           </button>
 
           <!-- Approve Borrowing Button -->
           <button type="submit"
-            class="bg-blue-500 text-white font-bold  px-6 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+            class="bg-blue-500 text-white font-bold text-base px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
             Approve Borrowing
           </button>
         </div>
@@ -139,7 +139,7 @@ include '../config.php'; // Include the configuration file for database connecti
 
     </div>
     <!-- Footer at the Bottom -->
-    <footer class="bg-blue-600 text-white mt-auto">
+    <footer>
       <?php include 'include/footer.php'; ?>
     </footer>
   </div>
@@ -165,14 +165,6 @@ include '../config.php'; // Include the configuration file for database connecti
               const selectedID = item.getAttribute('data-id');
               const selectedName = item.textContent;
               selectUser(selectedID, selectedName);
-
-              // Hide all results except the selected one
-              Array.from(results).forEach(result => {
-                if (result.getAttribute('data-id') === selectedID) {
-                  result.style.display = 'block'; // Show the selected user
-                } else {
-                  result.style.display = 'none'; // Hide others
-              });
             });
           });
         })
@@ -235,25 +227,20 @@ include '../config.php'; // Include the configuration file for database connecti
   }
 
 
+  // Set user ID in the input field after selecting a result
   function selectUser(IDno, name) {
-  document.getElementById('IDno').value = IDno;
+    document.getElementById('IDno').value = IDno;
 
-  // Get the container of user search results
-  const userSearchResult = document.getElementById('userSearchResult');
-  
-  // Loop through all the search result items
-  Array.from(userSearchResult.children).forEach(item => {
-    // Check if this item is the selected one
-    if (item.getAttribute('data-id') === IDno) {
-      // Keep the selected item visible
-      item.style.display = 'block';
-    } else {
-      // Hide all other users
-      item.style.display = 'none';
-    }
-  });
-}
-
+    // Hide all results except the selected one
+    const userSearchResult = document.getElementById('userSearchResult');
+    Array.from(userSearchResult.children).forEach(item => {
+      if (item.getAttribute('data-id') === IDno) {
+        item.style.display = 'block'; // Show the selected user
+      } else {
+        item.style.display = 'none'; // Hide others
+      }
+    });
+  }
 
   // Set book ID in the input field after selecting a result
   function selectBook(bookID, title, author, callNumber, publisher, publicationYear, status) {

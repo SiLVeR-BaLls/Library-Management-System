@@ -2,6 +2,25 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <?php
+
+// Database Connection
+$conn = new mysqli('localhost', 'root', '', 'lms');
+if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
+
+// Determine User Type
+$userTypes = ['admin', 'student', 'librarian', 'faculty'];
+$userType = null;
+$idno = null;
+
+// Find the logged-in user and their type
+foreach ($userTypes as $type) {
+    if (!empty($_SESSION[$type]['IDno'])) {
+        $userType = $type;
+        $idno = $_SESSION[$type]['IDno'];
+        break;
+    }
+}
+
 // Initialize variables for messages
 $message = ""; // Variable to store messages
 $message_type = ""; // Variable to store message type (e.g. success, error)
@@ -102,7 +121,6 @@ if ($conn && !$conn->connect_error) {
           <th class="px-3 py-1 w-36 coauthor">Co-authors</th>
           <th class="px-3 py-1 w-28">Material Type</th>
           <th class="px-3 py-1 w-28">Sub Type</th>
-          <th class="px-3 py-1 extent">Extent</th>
           <th class="px-3 py-1 rounded-tr-lg">Copies</th>
         </tr>
       </thead>
@@ -118,11 +136,16 @@ if ($conn && !$conn->connect_error) {
               data-issn="<?php echo htmlspecialchars($row['ISSN']); ?>"
               data-material-type="<?php echo htmlspecialchars($row['MT']); ?>"
               data-sub-type="<?php echo htmlspecialchars($row['ST']); ?>"
-              data-extent="<?php echo htmlspecialchars($row['extent']); ?>"
               data-available-count="<?php echo $row['available_count']; ?>"
               data-total-count="<?php echo $row['total_count']; ?>"
               data-copyright="<?php echo htmlspecialchars($row['copyright']); ?>"
-              onclick="window.location.href='ViewBook.php?title=<?php echo urlencode($row['book_id']); ?>';"
+              onclick="
+                <?php if (empty($idno)): ?>
+                  alert('You are not logged in yet');
+                <?php else: ?>
+                  window.location.href='ViewBook.php?title=<?php echo urlencode($row['book_id']); ?>';
+                <?php endif; ?>
+              "
               onmouseenter="showPopup(event, this)" onmouseleave="hidePopup()">
 
               <td class="px-4 py-2 title"><?php echo htmlspecialchars($row['B_title']); ?></td>
@@ -130,7 +153,6 @@ if ($conn && !$conn->connect_error) {
               <td class="px-4 py-2 coauthor"><?php echo htmlspecialchars($row['coauthor']); ?></td>
               <td class="px-4 py-2 MT"><?php echo htmlspecialchars($row['MT']); ?></td>
               <td class="px-4 py-2 ST"><?php echo htmlspecialchars($row['ST']); ?></td>
-              <td class="px-4 py-2 extent"><?php echo htmlspecialchars($row['extent']); ?></td>
               <td class="px-4 py-2 flex justify-center gap-2">
                 <?php if ($row['available_count'] > 0): ?>
                   <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">✔</div>

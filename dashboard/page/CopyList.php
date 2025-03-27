@@ -22,8 +22,8 @@
         <!-- Header at the Top -->
         <?php include 'include/header.php'; ?>
 
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-semibold mb-4 text-center">Book Copy List</h2>
+        <div class="container mx-auto px-4 py-6 ">
+        <h2 class="text-3xl font-semibold mb-6">Book Copy List</h2>
 
             <?php if ($message): ?>
                 <div class="mb-4 p-4 <?php echo $message_type == 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'; ?> rounded">
@@ -114,7 +114,7 @@
         </div>
 
         <!-- Footer at the Bottom -->
-        <footer class="bg-blue-600 text-white mt-auto">
+        <footer>
             <?php include 'include/footer.php'; ?>
         </footer>
     </div>

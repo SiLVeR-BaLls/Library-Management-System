@@ -76,7 +76,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="bg-blue-600 text-white mt-auto">
+        <footer>
             <?php include 'include/footer.php'; ?>
         </footer>
     </div>

@@ -1,14 +1,16 @@
 <?php
 include '../config.php';
 
-// Fetch pending users from the database
-function getPendingUsers()
+// Fetch pending users from the database with pagination
+function getPendingUsers($page = 1, $limit = 10)
 {
     global $conn;
+    $offset = ($page - 1) * $limit;
     $query = "
             SELECT IDno, Fname, Sname, U_Type 
             FROM users_info
             WHERE status_log = 'pending'
+            LIMIT $limit OFFSET $offset
         ";
     $result = $conn->query($query);
 
@@ -18,12 +20,20 @@ function getPendingUsers()
             $users[] = $user;
         }
     }
-    return $users;
+
+    // Get total count of pending users
+    $countQuery = "SELECT COUNT(*) as total FROM users_info WHERE status_log = 'pending'";
+    $countResult = $conn->query($countQuery);
+    $total = $countResult->fetch_assoc()['total'];
+
+    return ['users' => $users, 'total' => $total];
 }
 
 // Handle AJAX requests to get updated pending users (for dynamic updates)
 if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
-    echo json_encode(getPendingUsers());
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+    echo json_encode(getPendingUsers($page, $limit));
     exit;
 }
 ?>
@@ -36,19 +46,19 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
     <div class="flex-grow">
         <!-- Header at the Top -->
         <?php include 'include/header.php'; ?>
-        <div class="container mx-auto px-4 py-6">
+        <div  class="container mx-auto px-4 py-6">
 
             <h2 class="text-3xl font-semibold mb-6">Pending Users</h2>
             <div class="mb-6 px-4 flex justify-between items-center overflow-x-auto">
 
-                <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-                    <thead class="bg-gray-100 border-b">
+                <table  class="min-w-full bg-white border-collapse border  rounded-lg shadow-md">
+                    <thead style="background: <?= $sidebar?>; color : <?= $text1 ?>;" class="bg-gray-100 border-b">
                         <tr>
-                            <th class="py-3 px-4 text-center text-gray-700 font-medium">ID No</th>
-                            <th class="py-3 px-4 text-left text-gray-700 font-medium">First Name</th>
-                            <th class="py-3 px-4 text-left text-gray-700 font-medium">Last Name</th>
-                            <th class="py-3 px-4 text-left text-gray-700 font-medium">Role</th>
-                            <th class="py-3 px-4 text-center text-gray-700 font-medium">Actions</th>
+                            <th class="py-3 px-4 text-center  font-medium border ">ID No</th>
+                            <th class="py-3 px-4 text-left  font-medium border ">First Name</th>
+                            <th class="py-3 px-4 text-left  font-medium border ">Last Name</th>
+                            <th class="py-3 px-4 text-left  font-medium border ">Role</th>
+                            <th class="py-3 px-4 text-center  font-medium border ">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="pendingUsersTable">
@@ -56,9 +66,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
                     </tbody>
                 </table>
             </div>
+            <!-- Pagination Controls -->
+            <div id="paginationControls" class="flex justify-center mt-4 space-x-2">
+                <!-- Pagination buttons will be injected here via JavaScript -->
+            </div>
         </div>
         <!-- Footer at the Bottom -->
-        <footer class="bg-blue-600 text-white mt-auto">
+        <footer>
             <?php include 'include/footer.php'; ?>
         </footer>
         </div>
@@ -72,7 +86,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
         <p>Are you sure you want to approve this user?</p>
         <div class="mt-4 flex justify-end">
             <button id="approveConfirm" class="px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded mr-2">Confirm</button>
-            <button id="approveCancel" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded">Cancel</button>
+            <button id="approveCancel" class="px-4 py-2  bg-gray-200 hover:bg-gray-300 rounded">Cancel</button>
         </div>
     </div>
 </div>
@@ -84,26 +98,44 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
         <p>Are you sure you want to reject this user?</p>
         <div class="mt-4 flex justify-end">
             <button id="rejectConfirm" class="px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded mr-2">Confirm</button>
-            <button id="rejectCancel" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded">Cancel</button>
+            <button id="rejectCancel" class="px-4 py-2  bg-gray-200 hover:bg-gray-300 rounded">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- User Details Popup -->
+<div id="userDetailsPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h3 class="text-lg font-semibold mb-4">User Details</h3>
+        <div id="userDetailsContent" class="space-y-2">
+            <!-- User details will be injected here via JavaScript -->
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button id="userDetailsClose" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded">Close</button>
         </div>
     </div>
 </div>
 
 <script>
     let selectedUserId = null;
+    let currentPage = 1;
+    const limit = 10;
 
     // Function to fetch and update the pending users table
-    function updatePendingUsers() {
-        fetch('?action=fetch_pending_users')
+    function updatePendingUsers(page = 1) {
+        fetch(`?action=fetch_pending_users&page=${page}&limit=${limit}`)
             .then(response => response.json())
             .then(data => {
                 const tableBody = document.getElementById('pendingUsersTable');
+                const paginationControls = document.getElementById('paginationControls');
                 tableBody.innerHTML = ''; // Clear the current table
+                paginationControls.innerHTML = ''; // Clear pagination controls
 
-                if (data.length > 0) {
-                    data.forEach(user => {
+                if (data.users.length > 0) {
+                    data.users.forEach(user => {
                         const row = document.createElement('tr');
-                        row.classList.add('border-b', 'hover:bg-gray-50');
+                        row.classList.add('border-b', 'hover:bg-gray-50', 'cursor-pointer');
+                        row.setAttribute('data-id', user.IDno);
                         row.innerHTML = `
                             <td class="py-3 px-4 text-center">${user.IDno}</td>
                             <td class="py-3 px-4">${user.Fname}</td>
@@ -115,15 +147,59 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
                             </td>
                         `;
                         tableBody.appendChild(row);
+
+                        // Attach click event to show user details
+                        row.addEventListener('click', function () {
+                            fetchUserDetails(user.IDno);
+                        });
                     });
 
                     // Reattach event listeners to the newly added buttons
                     attachButtonListeners();
+
+                    // Generate pagination controls
+                    const totalPages = Math.ceil(data.total / limit);
+                    for (let i = 1; i <= totalPages; i++) {
+                        const button = document.createElement('button');
+                        button.textContent = i;
+                        button.classList.add('px-3', 'py-1', 'rounded', 'border', 'hover:bg-gray-200');
+                        if (i === page) {
+                            button.classList.add('bg-blue-500', 'text-white');
+                        }
+                        button.addEventListener('click', () => {
+                            currentPage = i;
+                            updatePendingUsers(i);
+                        });
+                        paginationControls.appendChild(button);
+                    }
                 } else {
                     const row = document.createElement('tr');
                     row.innerHTML = `<td colspan="5" class="py-4 text-center text-gray-600">No pending users.</td>`;
                     tableBody.appendChild(row);
                 }
+            });
+    }
+
+    // Function to fetch user details and display in the modal
+    function fetchUserDetails(userId) {
+        fetch(`include/get_user_details.php?id=${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                const userDetailsContent = document.getElementById('userDetailsContent');
+                userDetailsContent.innerHTML = `
+                    <p><strong>ID No:</strong> ${data.IDno}</p>
+                    <p><strong>First Name:</strong> ${data.Fname}</p>
+                    <p><strong>Last Name:</strong> ${data.Sname}</p>
+                    <p><strong>Email:</strong> ${data.Email}</p>
+                    <p><strong>College:</strong> ${data.College}</p>
+                    <p><strong>Role:</strong> ${data.U_Type}</p>
+                `;
+                const userDetailsPopup = document.getElementById('userDetailsPopup');
+                userDetailsPopup.classList.remove('hidden');
+                userDetailsPopup.style.display = 'flex'; // Ensure the popup is displayed as a flex container
+            })
+            .catch(error => {
+                console.error('Error fetching user details:', error);
             });
     }
 
@@ -144,6 +220,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
                 document.getElementById('rejectPopup').classList.remove('hidden');
             });
         });
+
+        attachRowClickListeners();
     }
 
     // Close Popup (Cancel)
@@ -168,15 +246,37 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
     window.addEventListener('click', function(event) {
         const approvePopup = document.getElementById('approvePopup');
         const rejectPopup = document.getElementById('rejectPopup');
-        if (event.target === approvePopup || event.target === rejectPopup) {
+        const userDetailsPopup = document.getElementById('userDetailsPopup');
+        if (event.target === approvePopup || event.target === rejectPopup || event.target === userDetailsPopup) {
             approvePopup.classList.add('hidden');
             rejectPopup.classList.add('hidden');
+            userDetailsPopup.classList.add('hidden');
+            userDetailsPopup.style.display = 'none'; // Ensure the popup is hidden
         }
     });
+
+    // Close User Details Popup
+    document.getElementById('userDetailsClose').addEventListener('click', function () {
+        const userDetailsPopup = document.getElementById('userDetailsPopup');
+        userDetailsPopup.classList.add('hidden');
+        userDetailsPopup.style.display = 'none'; // Ensure the popup is hidden
+    });
+
+    // Ensure rows are clickable for showing user details
+    function attachRowClickListeners() {
+        document.querySelectorAll('#pendingUsersTable tr').forEach(row => {
+            row.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                if (userId) {
+                    fetchUserDetails(userId);
+                }
+            });
+        });
+    }
 
     // Initially load pending users
     updatePendingUsers();
 
     // Auto-update the pending users every 5 seconds
-    setInterval(updatePendingUsers, 5000);
+    setInterval(() => updatePendingUsers(currentPage), 5000);
 </script>
