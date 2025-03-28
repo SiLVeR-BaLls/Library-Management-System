@@ -93,7 +93,6 @@ if ($conn && !$conn->connect_error) {
       <option value="all">All</option>
       <option value="title">Title</option>
       <option value="author">Author</option>
-      <option value="coauthor">Co-authors</option>
       <option value="LCCN">LCCN</option>
       <option value="ISBN">ISBN</option>
       <option value="ISSN">ISSN</option>
@@ -118,7 +117,6 @@ if ($conn && !$conn->connect_error) {
         <tr>
           <th class="px-3 py-1 rounded-tl-lg">Title</th>
           <th class="px-3 py-1">Author</th>
-          <th class="px-3 py-1 w-36 coauthor">Co-authors</th>
           <th class="px-3 py-1 w-28">Material Type</th>
           <th class="px-3 py-1 w-28">Sub Type</th>
           <th class="px-3 py-1 rounded-tr-lg">Copies</th>
@@ -130,7 +128,6 @@ if ($conn && !$conn->connect_error) {
             <tr class="border-y border-solid cursor-pointer hover:bg-gray-200"
               data-title="<?php echo htmlspecialchars($row['B_title']); ?>"
               data-author="<?php echo htmlspecialchars($row['author']); ?>"
-              data-coauthor="<?php echo htmlspecialchars($row['coauthor']); ?>"
               data-lccn="<?php echo htmlspecialchars($row['LCCN']); ?>"
               data-isbn="<?php echo htmlspecialchars($row['ISBN']); ?>"
               data-issn="<?php echo htmlspecialchars($row['ISSN']); ?>"
@@ -150,7 +147,6 @@ if ($conn && !$conn->connect_error) {
 
               <td class="px-4 py-2 title"><?php echo htmlspecialchars($row['B_title']); ?></td>
               <td class="px-4 py-2 author"><?php echo htmlspecialchars($row['author']); ?></td>
-              <td class="px-4 py-2 coauthor"><?php echo htmlspecialchars($row['coauthor']); ?></td>
               <td class="px-4 py-2 MT"><?php echo htmlspecialchars($row['MT']); ?></td>
               <td class="px-4 py-2 ST"><?php echo htmlspecialchars($row['ST']); ?></td>
               <td class="px-4 py-2 flex justify-center gap-2">

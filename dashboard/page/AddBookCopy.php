@@ -182,10 +182,6 @@
         <div class="flex justify-center flex-wrap gap-4 mb-4">
           <!-- QR Code -->
           <div class="flex justify-center flex-wrap gap-4 mb-4">
-            <div class="w-full sm:w-1/2 lg:w-1/3 mb-4">
-              <label for="copy_ID" class="form-label">QR Code</label>
-              <input type="text" id="copy_ID" name="copy_ID" class="form-control w-full" required>
-            </div>
 
             <!-- Call Number -->
             <div class="w-full sm:w-1/2 lg:w-1/3 mb-4">
@@ -200,7 +196,7 @@
             </div>
             <!-- Copy Number -->
             <div class="w-full sm:w-1/2 lg:w-1/3 mb-4">
-              <label for="copyNumber" class="form-label">Copy Number</label>
+              <label for="copyNumber" class="form-label">Number of Copy</label>
               <input type="number" id="copyNumber" name="copyNumber" class="form-control w-full">
             </div>
           </div>
@@ -392,21 +388,7 @@
     });
   }
 
-  // Show input field for adding new entries
-  function showSublocationInput() {
-    document.getElementById('newSublocation').classList.remove('hidden');
-    document.getElementById('addSublocationBtn').classList.remove('hidden');
-  }
-
-  function showVendorInput() {
-    document.getElementById('newVendor').classList.remove('hidden');
-    document.getElementById('addVendorBtn').classList.remove('hidden');
-  }
-
-  function showFundingSourceInput() {
-    document.getElementById('newFundingSource').classList.remove('hidden');
-    document.getElementById('addFundingSourceBtn').classList.remove('hidden');
-  }
+  
 
   // Add new item to the data and update the dropdown
   async function addSublocation() {

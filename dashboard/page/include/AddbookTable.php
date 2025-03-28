@@ -121,10 +121,7 @@
             <input type="text" id="publisher" name="publisher" placeholder="Publisher name"
               class="w-full px-4 py-2 border rounded-md">
           </div>
-          <div>
-            <label for="Pdate" class="block text-sm font-medium text-gray-700">Date</label>
-            <input type="date" id="Pdate" name="Pdate" class="w-full px-4 py-2 border rounded-md">
-          </div>
+        
           <div>
             <label for="copyright" class="block text-sm font-medium text-gray-700">Copyright</label>
             <input type="text" id="copyright" name="copyright" placeholder="Enter copyright details"

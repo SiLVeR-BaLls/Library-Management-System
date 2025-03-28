@@ -223,9 +223,9 @@
   <!-- Modal for Extend or Return -->
   <div id="actionModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex justify-center items-center">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-xs">
-      <h3 class="text-xl font-semibold mb-4 text-center text-gray-900">Extend or Return?</h3>
+      <h3 class="text-xl font-semibold mb-4 text-center text-gray-900">Renew or Return?</h3>
       <div class="flex justify-between">
-        <button id="extendBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md">Extend</button>
+        <button id="extendBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md">Renew</button>
         <button id="returnBtn" class="bg-green-600 text-white px-4 py-2 rounded-md">Return</button>
       </div>
     </div>

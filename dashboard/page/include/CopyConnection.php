@@ -14,7 +14,6 @@ if ($conn->connect_error) {
     // Get POST data
     $B_title = $_POST['B_title'] ?? ''; // Use B_title directly from the form
     $book_id = $_POST['book_id'] ?? ''; // Use book_id directly from the form
-    $copy_ID = $_POST['copy_ID'] ?? '';
     $status = $_POST['status'] ?? '';
     $copyNumber = max(1, intval($_POST['copyNumber'] ?? 1)); // Default to 1 if not set
     $callNumber = $_POST['callNumber'] ?? '';
@@ -33,7 +32,7 @@ if ($conn->connect_error) {
     $note = $_POST['note'] ?? '';
 
     // Validate required fields
-    if (empty($copy_ID) || empty($callNumber) || empty($status) || empty($B_title)) {
+    if (empty($callNumber) || empty($status) || empty($B_title)) {
         $message = "Required fields cannot be empty.";
         $message_type = "error";
     } elseif (!DateTime::createFromFormat('Y-m-d', $dateAcquired)) {
@@ -41,12 +40,13 @@ if ($conn->connect_error) {
         $message_type = "error";
     } else {
         // Prepare the insert statement, including B_title
-        $sql = "INSERT INTO book_copies (copy_ID, status, callNumber, circulationType, dateAcquired, description1, description2, description3, number1, number2, number3, sublocation, vendor, fundingSource, rating, note, B_title, book_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO book_copies (status, callNumber, circulationType, dateAcquired, description1, description2, description3, number1, number2, number3, sublocation, vendor, fundingSource, rating, note, B_title, book_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         if ($stmt = $conn->prepare($sql)) {
-            $stmt->bind_param("sssssssssssssssssi", $copy_ID, $status, $callNumber, $circulationType, $dateAcquired, $description1, $description2, $description3, $number1, $number2, $number3, $sublocation, $vendor, $fundingSource, $rating, $note, $B_title, $book_id);
+            $stmt->bind_param("ssssssssssssssssi", $status, $callNumber, $circulationType, $dateAcquired, $description1, $description2, $description3, $number1, $number2, $number3, $sublocation, $vendor, $fundingSource, $rating, $note, $B_title, $book_id);
 
-            // Insert multiple copies without modifying copy_ID
+            // Insert multiple copies without modifying 
             $conn->begin_transaction();
             try {
                 for ($i = 0; $i < $copyNumber; $i++) {

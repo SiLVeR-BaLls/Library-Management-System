@@ -103,6 +103,11 @@
       $message = "No book title provided.";
       $message_type = "error";
     }
+
+    // Helper function to hide sections if empty
+    function hide_if_empty($value) {
+        return empty($value) ? 'hidden' : '';
+    }
 ?>
 
 <!-- Main Content Area with Sidebar and BrowseBook Section -->
@@ -175,15 +180,15 @@
             <div class="w-1/3 font-semibold text-gray-700">Edition:</div>
             <div class="w-2/3"><?php echo htmlspecialchars($book['edition']); ?></div>
           </div>
-          <div class="flex">
+          <div class="flex <?php echo hide_if_empty($book['LCCN']); ?>">
             <div class="w-1/3 font-semibold text-gray-700">LCCN:</div>
             <div class="w-2/3"><?php echo htmlspecialchars($book['LCCN']); ?></div>
           </div>
-          <div class="flex">
+          <div class="flex <?php echo hide_if_empty($book['ISBN']); ?>">
             <div class="w-1/3 font-semibold text-gray-700">ISBN:</div>
             <div class="w-2/3"><?php echo htmlspecialchars($book['ISBN']); ?></div>
           </div>
-          <div class="flex">
+          <div class="flex <?php echo hide_if_empty($book['ISSN']); ?>">
             <div class="w-1/3 font-semibold text-gray-700">ISSN:</div>
             <div class="w-2/3"><?php echo htmlspecialchars($book['ISSN']); ?></div>
           </div>
