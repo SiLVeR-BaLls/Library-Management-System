@@ -1,6 +1,6 @@
-
 <?php
 include '../../config.php';
+$loggedInUserID = $_SESSION['IDno'] ?? null; // Get the logged-in user's ID
 
 // Function to calculate the due date based on user type
 function calculateDueDate($U_Type) {
@@ -28,63 +28,86 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $errors = [];
     $borrowedBooks = [];
 
-    // Fetch the user's U_Type
-    $userTypeQuery = $conn->prepare("SELECT U_Type FROM users_info WHERE IDno = ?");
-    $userTypeQuery->bind_param("s", $IDno);
-    $userTypeQuery->execute();
-    $result = $userTypeQuery->get_result();
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $U_Type = $row['U_Type'];
-
-        // Calculate the due date
-        $dueDate = calculateDueDate($U_Type);
-
-        // Proceed with the book borrowing process
-        foreach ($bookIDs as $bookID) {
-            // Check if the book is available
-            $bookCheck = $conn->prepare("SELECT * FROM book_copies WHERE book_copy = ? AND status = 'available'");
-            $bookCheck->bind_param("s", $bookID);
-            $bookCheck->execute();
-            $bookCheck->store_result();
-
-            if ($bookCheck->num_rows > 0) {
-                // Insert the borrowing record with borrow date and due date
-                $stmt = $conn->prepare("INSERT INTO borrow_book (IDno, book_copy, borrow_date, due_date) VALUES (?, ?, NOW(), ?)");
-                $stmt->bind_param("sss", $IDno, $bookID, $dueDate);
-                $stmt->execute();
-
-                // Update the book status to 'borrowed'
-                $updateBook = $conn->prepare("UPDATE book_copies SET status = 'borrowed' WHERE book_copy = ?");
-                $updateBook->bind_param("s", $bookID);
-                $updateBook->execute();
-
-                // Get the book title (B_title) based on the book_copy
-                $bookTitleQuery = $conn->prepare("SELECT B_title FROM book WHERE book_id = (SELECT book_id FROM book_copies WHERE book_copy = ?)");
-                $bookTitleQuery->bind_param("s", $bookID);
-                $bookTitleQuery->execute();
-                $titleResult = $bookTitleQuery->get_result();
-                $titleRow = $titleResult->fetch_assoc();
-
-                $borrowedBooks[] = [
-                    'book_copy' => $bookID,
-                    'B_title' => $titleRow['B_title'] ?? 'Unknown Title',
-                ];
-
-                $stmt->close();
-                $updateBook->close();
-                $bookTitleQuery->close();
-            } else {
-                $errors[] = "Book with ID <b>$bookID</b> is not available (it may be borrowed).";
-            }
-            $bookCheck->close();
-        }
+    // Check if IDno is provided
+    if (empty($IDno)) {
+        $errors[] = "No user detected. Please provide a valid User ID.";
     } else {
-        $errors[] = "User with ID <b>$IDno</b> does not exist in the user log.";
-    }
+        // Fetch the user's U_Type
+        $userTypeQuery = $conn->prepare("SELECT U_Type FROM users_info WHERE IDno = ?");
+        $userTypeQuery->bind_param("s", $IDno);
+        $userTypeQuery->execute();
+        $result = $userTypeQuery->get_result();
 
-    $userTypeQuery->close();
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $U_Type = $row['U_Type'];
+
+            // Calculate the due date
+            $dueDate = calculateDueDate($U_Type);
+
+            // Proceed with the book borrowing process
+            foreach ($bookIDs as $bookID) {
+                // Check if the book is available or Reserved
+                $bookCheck = $conn->prepare("SELECT status FROM book_copies WHERE book_copy = ?");
+                $bookCheck->bind_param("s", $bookID);
+                $bookCheck->execute();
+                $bookCheck->store_result();
+                $bookCheck->bind_result($bookStatus);
+                $bookCheck->fetch();
+
+                if ($bookCheck->num_rows > 0) {
+                    if ($bookStatus === 'Reserved') {
+                        // Check if the reservation matches the logged-in user
+                        $reservationQuery = $conn->prepare("SELECT IDno FROM reservations WHERE book_copy = ?");
+                        $reservationQuery->bind_param("s", $bookID);
+                        $reservationQuery->execute();
+                        $reservationResult = $reservationQuery->get_result();
+                        $ReservedBy = $reservationResult->fetch_assoc()['IDno'] ?? null;
+
+                        if ($ReservedBy !== $IDno) {
+                            $errors[] = "Book with ID <b>$bookID</b> is Reserved by another user.";
+                            $reservationQuery->close();
+                            continue;
+                        }
+                        $reservationQuery->close();
+                    }
+
+                    // Insert the borrowing record with borrow date and due date
+                    $stmt = $conn->prepare("INSERT INTO borrow_book (IDno, book_copy, borrow_date, due_date) VALUES (?, ?, NOW(), ?)");
+                    $stmt->bind_param("sss", $IDno, $bookID, $dueDate);
+                    $stmt->execute();
+
+                    // Update the book status to 'borrowed'
+                    $updateBook = $conn->prepare("UPDATE book_copies SET status = 'borrowed' WHERE book_copy = ?");
+                    $updateBook->bind_param("s", $bookID);
+                    $updateBook->execute();
+
+                    // Get the book title (B_title) based on the book_copy
+                    $bookTitleQuery = $conn->prepare("SELECT B_title FROM book WHERE book_id = (SELECT book_id FROM book_copies WHERE book_copy = ?)");
+                    $bookTitleQuery->bind_param("s", $bookID);
+                    $bookTitleQuery->execute();
+                    $titleResult = $bookTitleQuery->get_result();
+                    $titleRow = $titleResult->fetch_assoc();
+
+                    $borrowedBooks[] = [
+                        'book_copy' => $bookID,
+                        'B_title' => $titleRow['B_title'] ?? 'Unknown Title',
+                    ];
+
+                    $stmt->close();
+                    $updateBook->close();
+                    $bookTitleQuery->close();
+                } else {
+                    $errors[] = "Book with ID <b>$bookID</b> is not available (it may be borrowed).";
+                }
+                $bookCheck->close();
+            }
+        } else {
+            $errors[] = "User with ID <b>$IDno</b> does not exist in the user log.";
+        }
+
+        $userTypeQuery->close();
+    }
 
     if (!empty($borrowedBooks) || !empty($errors)) {
         echo "<div class='modal'>";

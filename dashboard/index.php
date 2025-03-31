@@ -11,8 +11,10 @@ if ( $idno) {
 
     <div class="container">
         <div class="logo">
-            <img src="Registration/pic/logo.png" alt="Digital Library Logo">
-        </div>
+        <a href="#">
+                <img src="<?= $logo ?>" alt="Logo" class="w-auto  h-auto max-w-xs max-h-16">
+            </a>
+            </div>
         <h1>Welcome to Library Management System</h1>
         <p>We are delighted to have you here. Our library management system is designed to enhance your library experience by providing easy access to our vast collection of books, journals, and digital resources.</p>
         <center>

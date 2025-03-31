@@ -342,7 +342,7 @@
                     <!-- Action Buttons -->
                     <div class="flex justify-end space-x-2"> <!-- Reduced spacing -->
                         <button type="submit" name="update" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg focus:outline-none focus:ring focus:ring-green-300">Update Book</button> <!-- Reduced padding -->
-                        <button type="submit" name="delete" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg focus:outline-none focus:ring focus:ring-red-300">Delete Book</button> <!-- Reduced padding -->
+                        <button type="submit" name="delete" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg focus:outline-none focus:ring focus:ring-red-300" onclick="return confirm('Are you sure you want to delete this book? This action cannot be undone.');">Delete Book</button> <!-- Reduced padding -->
                     </div>
                 </form>
             <?php endif; ?>

@@ -78,6 +78,8 @@
                                 $_SESSION['cooldown_multiplier'] = 1; // Reset cooldown multiplier on successful login
 
                                 $_SESSION[$row['U_Type']] = $row;
+                                $_SESSION['IDno'] = $row['IDno']; // Store the IDno in the session
+
                                 // Redirect to the dashboard/page/index.php after successful login
                                 header("Location: ../dashboard/page/index.php");
                                 exit();
@@ -126,7 +128,7 @@
             <div class="card">
                 <div class="top">
                     <a href="../index.php">
-                <img src="<?= $logo ?>" alt="Logo" class="w-auto  h-auto max-w-xs max-h-16">
+                <img src="<?= $logo ?>" alt="Logo" class="logo">
             </a>
                     <strong>Library Management System</strong>
                 </div>

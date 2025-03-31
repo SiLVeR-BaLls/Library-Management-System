@@ -235,12 +235,13 @@
                         <!-- Default Themes -->
                         <div class="mb-6">
                             <label class="block font-semibold mb-2">Choose Default Theme:</label>
+#bbb9b9
                             <div class="grid grid-cols-2 gap-4">
                                 <a href="#" onclick="setTheme('#f8f9fa', '#FFFFFF', '#212529', '#6c757d', '#6c757d', '#e0e0e0', '#007bff', '#0056b3', '#003366')" class="block px-4 py-2 bg-gray-200 text-center rounded-md">Dark White</a>
                                 <a href="#" onclick="setTheme('#a67b5b', '#FFFFFF', '#FFFFFF', '#654321', '#654321', '#3e2723', '#f39c12', '#e67e22', '#3c8e40')" class="block px-4 py-2 bg-yellow-700 text-center rounded-md">Off Brown</a>
                                 <a href="#" onclick="setTheme('#ffcc00', '#FFFFFF', '#333333', '#ff9900', '#ff9900', '#ff6f00', '#f39c12', '#e74c3c', '#c0392b')" class="block px-4 py-2 bg-yellow-500 text-center rounded-md">Dark Yellow</a>
                                 <a href="#" onclick="setTheme('#001f3f', '#FFFFFF', '#FFFFFF', '#007bff', '#007bff', '#003366', '#27ae60', '#2980b9', '#0072bb')" class="block px-4 py-2 bg-blue-900 text-center rounded-md">Navy Blue</a>
-                                <a href="#" onclick="setTheme('#f2f2f2', '#FFFFFF', '#FFFFFF', '#FFD700', '#FFD700', '#1905A3', '#1905A3', '#0056b3', '#003580')" class="block px-4 py-2 bg-blue-900 text-center rounded-md">Sample</a>
+                                <a href="#" onclick="setTheme('#bbb9b9', '#FFFFFF', '#FFFFFF', '#FFD700', '#FFD700', '#1905A3', '#1905A3', '#0056b3', '#003580')" class="block px-4 py-2 bg-blue-900 text-center rounded-md">Sample</a>
                             </div>
                         </div>
                     </div>  <!-- Action Buttons -->

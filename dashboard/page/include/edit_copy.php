@@ -87,7 +87,7 @@
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Note</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="note" name="note" value="<?php echo htmlspecialchars($copy_data['note']); ?>" required>
+                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="note" name="note" value="<?php echo htmlspecialchars($copy_data['note']); ?>" >
                         </td>
                     </tr>
                     <tr>
@@ -102,7 +102,7 @@
                             <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="status" name="status" required>
                                 <option value="Available" <?php echo $copy_data['status'] == 'Available' ? 'selected' : ''; ?>>Available</option>
                                 <option value="Borrowed" <?php echo $copy_data['status'] == 'Borrowed' ? 'selected' : ''; ?>>Borrowed</option>
-                                <option value="Weeding" <?php echo $copy_data['status'] == 'Weeding' ? 'selected' : ''; ?>>Weeding</option>
+                                <option value="Reserved" <?php echo $copy_data['status'] == 'Reserved' ? 'selected' : ''; ?>>Reserved</option>
                             </select>
                         </td>
                     </tr>

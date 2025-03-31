@@ -60,6 +60,7 @@
                         <li><a href="profile.php"  style="color : <?= $text1?>;" class="btn block py-2 px-4 <?php echo (basename($_SERVER['PHP_SELF']) == 'profile.php') ? 'btn' : ''; ?> btn">Profile</a></li>
                         <li><a href="Myborrow.php"  style="color : <?= $text1?>;" class="btn block py-2 px-4 <?php echo (basename($_SERVER['PHP_SELF']) == 'Myborrow.php') ? 'btn' : ''; ?> btn">My Borrow</a></li>
                         <li><a href="Myreturn.php" style="color : <?= $text1?>;"  class="btn block py-2 px-4 <?php echo (basename($_SERVER['PHP_SELF']) == 'Myreturn.php') ? 'btn' : ''; ?> btn">My Returned</a></li>
+                        <li><a href="Myreserve.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Myreserve.php') ? $button_active : $sidebar_hover ?>;">My Reserve</a></li>
                     </ul>
                 </li>
 

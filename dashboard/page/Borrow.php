@@ -4,8 +4,8 @@ include '../config.php'; // Include the configuration file for database connecti
 <!-- script for the instascan -->
 <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 
-<!-- Main Content Area with Sidebar and BrowseBook Section -->
-<main class="flex h-full overflow-y-auto">
+<!-- div Content Area with Sidebar and BrowseBook Section -->
+<div class="flex h-full overflow-y-auto">
   <!-- Sidebar Section -->
   <?php include $sidebars[$userType] ?? ''; ?>
   <!-- BrowseBook Content Section -->
@@ -143,7 +143,7 @@ include '../config.php'; // Include the configuration file for database connecti
       <?php include 'include/footer.php'; ?>
     </footer>
   </div>
-</main>
+</div>
 
 
 <!-- Custom CSS for Scrollable Search Results -->

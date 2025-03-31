@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 28, 2025 at 03:24 AM
+-- Generation Time: Mar 28, 2025 at 12:30 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -94,7 +94,10 @@ INSERT INTO `book` (`book_id`, `B_title`, `subtitle`, `author`, `edition`, `LCCN
 (10, 'Algorithms ', 'Design and Analysis', 'Bruce Collins', '', '', '978-1-668686-951-4', '', 'Book', 'Not Assigned', '', 'USA', ' American Academic Publisher', '2024-12-07', '2024', '319p', 'llustrations; pic. (b&w)', '25 cm', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '6739710e7371f_ID-Card (10).png'),
 (11, 'Computing essentials', 'making IT work for you: Introductory 2023', 'Timothy J. O\'Leary', '', '', '978-1-26526321-8', '', 'Book', 'Not Assigned', '', 'New York', 'The McGraw-Hill Companies', '0000-00-00', '2023', '27.5 cm', '', '390pages', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (318, 'An Introduction to Cyber Security', '', 'J. Menezes.', '', '', '978-1-83535-145-1', '', 'Book', 'LargePrint', '', 'London ', 'London ED-Tech Press, [2024]', '0000-00-00', '2024', '337', 'illustrations, pic. (b&w)', '25cm', NULL, NULL, NULL, NULL, NULL, 0, '', NULL),
-(319, 'Iloilo Science and Technology University Cafeteria online menu and reservation system', '', 'Grace Ann D. De La Cruz, Ailene I. Llena, Mae G. Silva, Mary Lord S. Suay.', '1', '', '', '', 'Book', 'Not Assigned', '', 'Iloilo City ', 'Iloilo City Iloilo Science and Technology University, 2024', '0000-00-00', '2024', '69 pg', '', '27 cm', NULL, NULL, NULL, NULL, NULL, 0, '(Unpublished Undergraduate Thesis)', NULL);
+(319, 'Iloilo Science and Technology University Cafeteria online menu and reservation system', '', 'Grace Ann D. De La Cruz, Ailene I. Llena, Mae G. Silva, Mary Lord S. Suay.', '1', '', '', '', 'Book', 'Not Assigned', '', 'Iloilo City ', 'Iloilo City Iloilo Science and Technology University, 2024', '0000-00-00', '2024', '69 pg', '', '27 cm', NULL, NULL, NULL, NULL, NULL, 0, '(Unpublished Undergraduate Thesis)', NULL),
+(322, '11 s', '', '', '', '', '', '', '', 'Not Assigned', '', '', '', '0000-00-00', '', '', '', '', '0', '', '', '', '', 0, '', NULL),
+(323, '11 ss', '', '', '', '', '', '', '', 'Not Assigned', '', '', '', '0000-00-00', '', '', '', '', '0', '', '', '', '', 0, '', NULL),
+(324, '11 ssw', '', '', '', '', '', '', '', 'Not Assigned', '', '', '', '0000-00-00', '', '', '', '', '0', '', '', '', '', 0, '', NULL);
 
 -- --------------------------------------------------------
 
@@ -221,6 +224,37 @@ CREATE TABLE `coauthor` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `course`
+--
+
+CREATE TABLE `course` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `program_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `course`
+--
+
+INSERT INTO `course` (`id`, `name`, `program_id`) VALUES
+(6, 'BS in Ind Tech (BIT) - Level III', 10),
+(7, 'BS in Architecture', 8);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `department`
+--
+
+CREATE TABLE `department` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `fundingsource`
 --
 
@@ -234,7 +268,8 @@ CREATE TABLE `fundingsource` (
 --
 
 INSERT INTO `fundingsource` (`id`, `name`) VALUES
-(1, 'funding source');
+(1, 'funding source'),
+(2, 'funding source');
 
 -- --------------------------------------------------------
 
@@ -259,6 +294,27 @@ INSERT INTO `messages` (`message_id`, `from_user_id`, `to_user_id`, `message`, `
 (47, '2024-4536-A', 'admin1', 'hi lle', '2025-03-04 05:26:04', 1),
 (48, 'admin1', '2024-4536-A', 'can it be?', '2025-03-04 05:26:22', 1),
 (49, 'admin1', '2024-4536-A', 'huy', '2025-03-10 06:12:41', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `program`
+--
+
+CREATE TABLE `program` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `program`
+--
+
+INSERT INTO `program` (`id`, `name`) VALUES
+(7, 'College of Arts and Science'),
+(9, 'College of Education'),
+(8, 'College of Engineering and Architecture'),
+(10, 'College of Industrial Technology');
 
 -- --------------------------------------------------------
 
@@ -316,7 +372,11 @@ CREATE TABLE `sublocation` (
 --
 
 INSERT INTO `sublocation` (`id`, `name`) VALUES
-(3, 'sublocation');
+(3, 'sublocation'),
+(4, 'sublocation'),
+(5, 'sublocation'),
+(6, 'dd'),
+(7, 'ddw');
 
 -- --------------------------------------------------------
 
@@ -406,7 +466,8 @@ CREATE TABLE `vendor` (
 --
 
 INSERT INTO `vendor` (`id`, `name`) VALUES
-(1, 'vendor');
+(1, 'vendor'),
+(2, 'vendor');
 
 --
 -- Indexes for dumped tables
@@ -453,6 +514,20 @@ ALTER TABLE `coauthor`
   ADD KEY `B_title` (`book_id`);
 
 --
+-- Indexes for table `course`
+--
+ALTER TABLE `course`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `program_id` (`program_id`);
+
+--
+-- Indexes for table `department`
+--
+ALTER TABLE `department`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
+
+--
 -- Indexes for table `fundingsource`
 --
 ALTER TABLE `fundingsource`
@@ -465,6 +540,13 @@ ALTER TABLE `messages`
   ADD PRIMARY KEY (`message_id`),
   ADD KEY `from_user_id` (`from_user_id`),
   ADD KEY `to_user_id` (`to_user_id`);
+
+--
+-- Indexes for table `program`
+--
+ALTER TABLE `program`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `settings`
@@ -511,7 +593,7 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT for table `book`
 --
 ALTER TABLE `book`
-  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=320;
+  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=325;
 
 --
 -- AUTO_INCREMENT for table `book_copies`
@@ -532,16 +614,34 @@ ALTER TABLE `coauthor`
   MODIFY `co_author_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `course`
+--
+ALTER TABLE `course`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `department`
+--
+ALTER TABLE `department`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `fundingsource`
 --
 ALTER TABLE `fundingsource`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
   MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+
+--
+-- AUTO_INCREMENT for table `program`
+--
+ALTER TABLE `program`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `settings`
@@ -559,13 +659,13 @@ ALTER TABLE `subject`
 -- AUTO_INCREMENT for table `sublocation`
 --
 ALTER TABLE `sublocation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `vendor`
 --
 ALTER TABLE `vendor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
@@ -595,6 +695,12 @@ ALTER TABLE `borrow_book`
 --
 ALTER TABLE `coauthor`
   ADD CONSTRAINT `fk_coauthor` FOREIGN KEY (`book_id`) REFERENCES `book` (`book_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `course`
+--
+ALTER TABLE `course`
+  ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`program_id`) REFERENCES `program` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `messages`

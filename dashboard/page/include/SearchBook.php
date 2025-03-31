@@ -18,7 +18,7 @@ $sql = "SELECT
         LEFT JOIN book ON book_copies.B_title = book.B_title
         LEFT JOIN coauthor ON book_copies.B_title = coauthor.book_id
         WHERE (book_copies.book_copy LIKE ? OR book.B_title LIKE ? OR book.author LIKE ? OR coauthor.Co_Name LIKE ?)
-          AND book_copies.status = 'available'";
+          AND (book_copies.status = 'available' OR book_copies.status = 'reserved')";
 
 // Prepare the SQL statement to prevent SQL injection
 $stmt = $conn->prepare($sql);
@@ -41,6 +41,20 @@ if ($result->num_rows > 0) {
         $callNumber = htmlspecialchars($row['callNumber']);
         $publisher = htmlspecialchars($row['publisher']);
         $publicationYear = htmlspecialchars($row['Pdate']);
+
+        // Check if the book is reserved and validate the user
+        if ($status === 'reserved') {
+            $reservationQuery = $conn->prepare("SELECT IDno FROM reservation WHERE book_copy = ?");
+            $reservationQuery->bind_param("s", $bookID);
+            $reservationQuery->execute();
+            $reservationResult = $reservationQuery->get_result();
+            $reservedBy = $reservationResult->fetch_assoc()['IDno'] ?? null;
+
+            if ($reservedBy !== $_SESSION['IDno']) {
+                echo "<div class='no-results'>Book with ID: $bookID is reserved by another user.</div>";
+                continue;
+            }
+        }
 
         // Display each book result as a clickable div
         echo "<div class='p-2 cursor-pointer hover:bg-gray-200 search-item' 

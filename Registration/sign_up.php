@@ -5,7 +5,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Digital Library Registration</title>
+  <title> Library Registration</title>
   <link rel="stylesheet" href="css/sign_up1.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -14,7 +14,7 @@
 
 <body>
   <header>
-    <p><strong>DIGITAL LIBRARY MANAGEMENT SYSTEM</strong></p>
+    <p><strong> LIBRARY MANAGEMENT SYSTEM</strong></p>
 
   </header>
 

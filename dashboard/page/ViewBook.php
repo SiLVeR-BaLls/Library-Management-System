@@ -243,7 +243,7 @@
             <div class="w-1/3 font-semibold text-gray-700">Co-authors:</div>
             <div class="w-2/3">
               <?php if ($coAuthorsResult->num_rows > 0): ?>
-                <ul class="list-disc pl-6">
+                <ul class="pl-6" style="list-style-type: none;">
                   <?php while ($row = $coAuthorsResult->fetch_assoc()): ?>
                     <li><?php echo htmlspecialchars($row['Co_Name']) . " - " . htmlspecialchars($row['Co_Date']) . " (" . htmlspecialchars($row['Co_Role']) . ")"; ?></li>
                   <?php endwhile; ?>
@@ -257,7 +257,7 @@
             <div class="w-1/3 font-semibold text-gray-700">Subjects:</div>
             <div class="w-2/3">
               <?php if ($subjectsResult->num_rows > 0): ?>
-                <ul class="list-disc pl-6">
+                <ul class="pl-6" style="list-style-type: none;">
                   <?php while ($row = $subjectsResult->fetch_assoc()): ?>
                     <li><?php echo htmlspecialchars($row['Sub_Head']) . ": " . htmlspecialchars($row['Sub_Head_input']); ?></li>
                   <?php endwhile; ?>
