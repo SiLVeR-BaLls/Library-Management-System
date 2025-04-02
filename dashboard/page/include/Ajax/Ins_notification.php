@@ -3,64 +3,48 @@
 require_once '../Config/UFunction.php';
 $UDF_call = new UFunction();
 
+session_start();
+$userID = $_SESSION['id']; // Assuming 'id' is the session key for the logged-in user
+
 $json_parr = array();
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['to_user_id']) && isset($_POST['message'])) {
+        $to_user_id = $UDF_call->validate($_POST['to_user_id']);
+        $message = $UDF_call->validate($_POST['message']);
 
-    if(isset($_POST['subject']) && isset($_POST['comment'])){
+        if (!empty(trim($to_user_id)) && !empty(trim($message))) {
+            $fields = [
+                'from_user_id' => $userID,
+                'to_user_id' => $to_user_id,
+                'message' => $message
+            ];
 
-        $subject = $UDF_call->validate($_POST['subject']);
-        $comment = $UDF_call->validate($_POST['comment']);
-
-        if(!empty(trim($subject)) && !empty(trim($comment))){
-
-            $fields['n_sub'] = $subject;
-            $fields['n_msg'] = $comment;
-
-            $insert = $UDF_call->insert('notification', $fields);
-            if($insert){
-
+            $insert = $UDF_call->insert('messages', $fields);
+            if ($insert) {
                 $json_parr['status'] = 101;
-                $json_parr['msg'] = 'Notification Is Inserted';
-
-            }
-            else{
+                $json_parr['msg'] = 'Message sent successfully.';
+            } else {
                 $json_parr['status'] = 102;
-                $json_parr['msg'] = 'Notification Is Not Inserted';
+                $json_parr['msg'] = 'Failed to send the message.';
             }
-
-        }
-        else{
-
-            if(empty(trim($subject))){
-
+        } else {
+            if (empty(trim($to_user_id))) {
                 $json_parr['status'] = 103;
-                $json_parr['msg'] = 'Null Subject Not Allow';
-
+                $json_parr['msg'] = 'Recipient ID cannot be empty.';
             }
-            if(empty(trim($comment))){
-
+            if (empty(trim($message))) {
                 $json_parr['status'] = 104;
-                $json_parr['msg'] = 'Null Comment Not Allow';
-
+                $json_parr['msg'] = 'Message cannot be empty.';
             }
-
         }
-
-    }
-    else{
-
+    } else {
         $json_parr['status'] = 105;
-        $json_parr['msg'] = 'Invalid Value Not Allow';
-
+        $json_parr['msg'] = 'Invalid input.';
     }
-
-}
-else{
-               
+} else {
     $json_parr['status'] = 106;
-    $json_parr['msg'] = 'Invalid Request Not Allow';
-
+    $json_parr['msg'] = 'Invalid request method.';
 }
 
 echo json_encode($json_parr);

@@ -10,7 +10,8 @@
         <nav class="flex-grow ">
             <ul class="space-y-1 py-4">
                 <!-- browse button -->
-                <li><a href="index.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'index.php') ? $button_active : $sidebar_hover ?>;">Browse</a></li>
+                <li><a href="index.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (in_array(basename($_SERVER['PHP_SELF']), ['index.php', 'ViewBook.php', 'BookList.php', 'ViewCopy.php', 'AddBookCopy.php', 'edit_book.php'])) ? $button_active : $sidebar_hover ?>;">Browse</a></li>
+
                  <!-- attendace button -->
                 <li><a href="QRscan/index_lib.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'index.php' && strpos($_SERVER['REQUEST_URI'], 'QRscan/') !== false) ? $button_active : $sidebar_hover ?>;">Attendance</a></li>
 

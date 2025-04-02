@@ -1,3 +1,7 @@
+<?php
+include('extra/notification.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,15 +10,12 @@
     <meta name="theme-color" content="#06c1db">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lms</title>
-
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="flex flex-col w-full h-screen max-w-full max-h-screen" style="background-color: <?= $background ?>">
 
     <div style="background-color: <?= $header ?>; color : <?= $text1 ?>;" class="flex z-1000 sticky top-0 shadow-md items-center justify-between w-full h-[4rem] shadow-md">
-        <!-- Left side: Logo and Title -->
         <div class="flex items-center gap-4 p-4">
             <a href="#">
                 <img src="<?= $logo ?>" alt="Logo" class="w-auto  h-auto max-w-xs max-h-16">
@@ -24,23 +25,50 @@
             </strong>
         </div>
 
-
-        <!-- Right side: Notification Bell, User's Photo, and Name -->
         <div class="flex items-center space-x-4 m-4">
             <?php if ($userData): ?>
-                <!-- Notification Bell -->
-                <ul class="nav justify-content-end">
-                    <li class="dropdown">
-                        <div class="dropdown-toggle text-light" id="noti_count" style="cursor: pointer;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="counter">0</span><i class="fas fa-bell" style="font-size: 20px;"></i>
+                <div class="relative">
+                    <?php if ($idno): ?>
+                        <button id="bell-icon" class="p-2 text-white">
+                            <i class="fa fa-bell text-2xl"></i>
+                            <span id="notification-count-display" class="absolute top-0 right-0 bg-red-500 text-xs rounded-full px-2">
+                                <?= count($notifications) ?>
+                            </span>
+                        </button>
+                        <div id="notification-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg z-10">
+                            <div class="py-2 px-4 text-gray-700 font-semibold border-b">Notifications</div>
+                            <ul id="notification-list" class="max-h-48 overflow-y-auto">
+                                <?php foreach ($notifications as $note): ?>
+                                    <li class="px-4 py-2 hover:bg-gray-100 ">
+                                        <a href="<?= htmlspecialchars($note['link']) ?>" class="text-gray-800 hover:text-blue-600">
+                                            <?= htmlspecialchars($note['message']) ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
                         </div>
-                        
-                        <div class="dropdown-menu overflow-h-menu dropdown-menu-right">
-                            <div class="notification">
-                            </div>
-                        </div>
-                    </li>
-                </ul>
+                    <?php endif; ?>
+                    <script>
+                        console.log("JavaScript loaded"); // Verify script is running
+
+                        const bellIcon = document.getElementById('bell-icon');
+
+                        console.log("Bell icon element:", bellIcon); // Verify element is found
+
+                        if (bellIcon) {
+                            bellIcon.addEventListener('click', function() {
+                                console.log("Bell icon clicked"); // Verify click event is firing
+                                document.getElementById('notification-dropdown').classList.toggle('hidden');
+                            });
+                        } else {
+                            console.log("Bell icon element not found"); // Debug if element is not found
+                        }
+
+                        // ... (rest of your updateNotifications function)
+                    </script>
+
+                </div>
+
                 <div class="flex items-center gap-2">
                     <?php if (!empty($userData['photo'])): ?>
                         <img class="w-10 h-10 rounded-full object-cover" src="../../pic/User/<?php echo htmlspecialchars($userData['photo']); ?>" alt="User Photo">
@@ -51,7 +79,6 @@
                         <strong><?php echo htmlspecialchars($userData['Fname']); ?></strong>
                     </span>
                 </div>
-                <!-- Logout Button (Icon Changes on Hover) -->
                 <div class="py-4 px-4">
                     <a href="logout.php" id="logoutBtn" class="b p-2 rounded-md transition flex items-center justify-center">
                         <div class="bg-white rounded-full p-1 flex items-center justify-center">
@@ -60,18 +87,15 @@
                     </a>
                 </div>
 
-
-                <!-- JavaScript for Hover Effect -->
                 <script>
                     document.getElementById("logoutBtn").addEventListener("mouseover", function() {
-                        document.getElementById("logoutIcon").src = "../../pic/scr/exit_door_for hover.png"; // Change to hover image
+                        document.getElementById("logoutIcon").src = "../../pic/scr/exit_door_for hover.png";
                     });
 
                     document.getElementById("logoutBtn").addEventListener("mouseout", function() {
-                        document.getElementById("logoutIcon").src = "../../pic/scr/exit_door.png"; // Revert to normal image
+                        document.getElementById("logoutIcon").src = "../../pic/scr/exit_door.png";
                     });
                 </script>
-
 
             <?php else: ?>
                 <span class="text-sm font-medium">Hello, <strong>Guest</strong></span>
@@ -79,8 +103,6 @@
                     Log In
                 </a>
             <?php endif; ?>
-
-
         </div>
     </div>
 
@@ -130,7 +152,6 @@
         });
     </script>
 
-
     <style>
         /* Apply custom button colors */
         .btn {
@@ -158,69 +179,3 @@
             background-color: <?= $sidebar_active ?>;
         }
     </style>
-
-    <script src="https://kit.fontawesome.com/6b23de7647.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-
-<script type="text/javascript">
-
-    $(document).ready(function (){
-
-        $('.notification').load('Ajax/Notification.php');
-        $('.counter').text('0').hide();
-
-        var counter = 0;
-
-        $('#form-submit').on('submit', function(event){
-            event.preventDefault();
-            
-            var subject = $('#subject').val().trim();
-            var comment = $('#comment').val().trim();
-
-            $('#sub-error').text('');
-            $('#com-error').text('');
-
-            if(subject != '' && comment != ''){
-                
-                $.ajax({
-                    type: "POST",
-                    url: "Ajax/Ins_notification.php",
-                    data: { 'subject' : subject, 'comment' : comment },
-                    success: function (response) {
-                        var status = JSON.parse(response);
-                        if(status.status == 101){
-                            counter++;
-                            $('.counter').text(counter).show();
-                            $('.notification').load('Ajax/Notification.php');
-                            $("#form-submit").trigger("reset");
-                            console.log(status.msg);
-                        }
-                        else{
-                           console.log(status.msg);
-                        }
-                    }
-                });
-
-            }
-            else{
-            
-                if(subject == ''){
-                    $('#sub-error').text("Please Enter Subject");
-                }
-                if(comment == ''){
-                    $('#com-error').text("Please Enter Comment");
-                }
-            }
-
-        });
-
-        $('#noti_count').on('click',function (){
-            counter = 0;
-            $('.counter').text('0').hide();
-        });
-
-    });
-
-</script>

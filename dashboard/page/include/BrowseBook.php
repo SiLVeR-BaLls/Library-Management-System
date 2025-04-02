@@ -39,7 +39,7 @@ if ($conn && !$conn->connect_error) {
             book.MT, 
             book.ST, 
             book.extent,
-            book.journal,
+           
             GROUP_CONCAT(DISTINCT coauthor.Co_Name SEPARATOR ', ') AS coauthor,  
             COUNT(CASE WHEN book_copies.status = 'Available' THEN 1 END) AS available_count,
             COUNT(book_copies.book_copy_ID) AS total_count
@@ -60,9 +60,8 @@ if ($conn && !$conn->connect_error) {
             book.copyright, 
             book.MT, 
             book.ST, 
-            book.extent, 
-            book.journal
-        ORDER BY 
+            book.extent
+                    ORDER BY 
             book.B_title;
         ";
 
@@ -99,7 +98,6 @@ if ($conn && !$conn->connect_error) {
       <option value="MT">Material Type</option>
       <option value="ST">Sub Type</option>
       <option value="extent">Extent</option>
-      <option value="journal">Journal</option>
     </select>
   </div>
   <!-- Filter Button -->
@@ -257,7 +255,6 @@ if ($conn && !$conn->connect_error) {
         const rowMT = row.find('.MT').text().trim().toLowerCase();
         const rowST = row.find('.ST').text().trim().toLowerCase();
         const rowExtent = row.find('.extent').text().trim().toLowerCase();
-        const rowJournal = row.find('.journal').text().trim().toLowerCase();
 
         let match = false;
         switch (searchType) {
@@ -270,8 +267,7 @@ if ($conn && !$conn->connect_error) {
                     rowISSN.includes(searchText) ||
                     rowMT.includes(searchText) ||
                     rowST.includes(searchText) ||
-                    rowExtent.includes(searchText) ||
-                    rowJournal.includes(searchText);
+                    rowExtent.includes(searchText) ;
             break;
           case 'title': match = rowTitle.includes(searchText); break;
           case 'author': match = rowAuthor.includes(searchText); break;
@@ -282,7 +278,6 @@ if ($conn && !$conn->connect_error) {
           case 'MT': match = rowMT.includes(searchText); break;
           case 'ST': match = rowST.includes(searchText); break;
           case 'extent': match = rowExtent.includes(searchText); break;
-          case 'journal': match = rowJournal.includes(searchText); break;
         }
 
         // Apply material type and subtype filters
@@ -475,6 +470,12 @@ if ($conn && !$conn->connect_error) {
             <span>Video</span>
           </label>
         </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="materialType" value="Journal" class="h-4 w-4" />
+            <span>Journal</span>
+          </label>
+        </div>
       </div>
       <!-- SubType Section -->
       <div class="mb-6">
@@ -517,12 +518,12 @@ if ($conn && !$conn->connect_error) {
               <span>Picture</span>
             </label>
           </div>
-          <div class="flex items-center">
-            <label class="flex items-center space-x-2">
-              <input type="radio" name="subType" value="Dictionary" class="h-4 w-4" />
-              <span>Dictionary</span>
-            </label>
-          </div>
+        </div>
+        <div class="flex items-center">
+          <label class="flex items-center space-x-2">
+            <input type="radio" name="subType" value="Dictionary" class="h-4 w-4" />
+            <span>Dictionary</span>
+          </label>
         </div>
       </div>
       <!-- Action Buttons -->

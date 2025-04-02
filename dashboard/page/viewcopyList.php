@@ -186,7 +186,7 @@
                 <?php endif; ?>
 
                 <!-- Footer at the Bottom -->
-                <footer class="bg-blue-600 text-white p-4 mt-auto">
+                <footer>
                     <?php include 'include/footer.php'; ?>
                 </footer>
             </div>

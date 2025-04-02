@@ -3,25 +3,22 @@ include('../dashboard/config.php');
 
 // Check if the user is logged in and is either admin, student, or librarian
 if (!isset($_SESSION['admin']) && !isset($_SESSION['student']) && !isset($_SESSION['librarian'])) {
-    header('Location: ../../Registration/log_in.php'); // Redirect to the login page if not logged in
+    header('Location: ../../Registration/log_in.php');
     exit();
 }
 
 // Fetch data for the logged-in user (admin, student, or librarian)
 if (isset($_SESSION['admin'])) {
     $userType = 'admin';
-    $userID = $_SESSION['admin']['IDno']; // Get IDno from session based on admin
+    $userID = $_SESSION['admin']['IDno'];
 } elseif (isset($_SESSION['student'])) {
     $userType = 'student';
-    $userID = $_SESSION['student']['IDno']; // Get IDno from session based on student
+    $userID = $_SESSION['student']['IDno'];
 } elseif (isset($_SESSION['librarian'])) {
     $userType = 'librarian';
-    $userID = $_SESSION['librarian']['IDno']; // Get IDno from session based on librarian
-} else 
-
-// Check if user is logged in
-if (!$userID) {
-    header("Location: ../../Registration/log_in.php"); // Redirect to login page if not logged in
+    $userID = $_SESSION['librarian']['IDno'];
+} else {
+    header("Location: ../../Registration/log_in.php");
     exit();
 }
 
@@ -32,24 +29,32 @@ $selected_user_id = isset($_GET['IDno']) ? $_GET['IDno'] : null;
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['message']) && $selected_user_id) {
     $message = trim($_POST['message']);
     if (!empty($message)) {
-        // Insert message into the messages table
-        $query = "INSERT INTO messages (from_user_id, to_user_id, message) VALUES (?, ?, ?)";
+        $query = "INSERT INTO messages (from_user_id, to_user_id, message, timestamp) VALUES (?, ?, ?, NOW())";
         $stmt = $conn->prepare($query);
         $stmt->bind_param('sss', $userID, $selected_user_id, $message);
         $stmt->execute();
-        // Redirect to the same page to refresh the messages
         header("Location: index.php?IDno=" . $selected_user_id);
         exit();
     }
 }
 
-// Fetch messages between the logged-in user and selected user, order by latest first
+// Handle update is_read status
+if (isset($_POST['update_read']) && isset($_POST['message_id'])) {
+    $messageId = $_POST['message_id'];
+    $updateQuery = "UPDATE messages SET is_read = 1 WHERE id = ?";
+    $updateStmt = $conn->prepare($updateQuery);
+    $updateStmt->bind_param('i', $messageId);
+    $updateStmt->execute();
+    exit();
+}
+
+// Fetch messages between the logged-in user and selected user, order by oldest first
 $messages = [];
 if ($selected_user_id) {
     $query = "SELECT * FROM messages 
               WHERE (from_user_id = ? AND to_user_id = ?) 
                  OR (from_user_id = ? AND to_user_id = ?) 
-              ORDER BY timestamp DESC"; // Order by latest message first
+              ORDER BY timestamp desc"; // Order by oldest first
     $stmt = $conn->prepare($query);
     $stmt->bind_param('ssss', $userID, $selected_user_id, $selected_user_id, $userID);
     $stmt->execute();
@@ -94,7 +99,6 @@ $conversationStmt->bind_param('sss', $userID, $userID, $userID);
 $conversationStmt->execute();
 $conversationResult = $conversationStmt->get_result();
 
-// Store the results in an associative array grouped by user ID
 $conversationPartners = [];
 while ($row = $conversationResult->fetch_assoc()) {
     if (!isset($conversationPartners[$row['IDno']])) {
@@ -112,150 +116,291 @@ $result = $stmt->get_result();
 $userDetails = $result->fetch_assoc();
 
 // Mark messages as read when chat is opened
-$updateQuery = "UPDATE messages SET is_read = 1 WHERE to_user_id = ? AND from_user_id = ? AND is_read = 0";
-$updateStmt = $conn->prepare($updateQuery);
-$updateStmt->bind_param('ss', $userID, $selected_user_id);
-$updateStmt->execute();
-
-if (isset($_GET['IDno'])) {
-    $IDno = $_GET['IDno'];  // Assuming 'IDno' is the unique message or conversation identifier
-
-    // Prepare the query to update 'is_read' status
-    $stmt = $conn->prepare("UPDATE messages SET is_read = 1 WHERE message_id = ?");
-    $stmt->bind_param("i", $IDno);  // Bind the message ID (or conversation ID)
-    $stmt->execute();
+if ($selected_user_id) {
+    $updateQuery = "UPDATE messages SET is_read = 1 WHERE to_user_id = ? AND from_user_id = ? AND is_read = 0";
+    $updateStmt = $conn->prepare($updateQuery);
+    $updateStmt->bind_param('ss', $userID, $selected_user_id);
+    $updateStmt->execute();
 }
-
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
+    <title>Chat Application</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+    <style>
+    .scrollbar-hidden::-webkit-scrollbar { display: none; }
+    .scrollbar-hidden { -ms-overflow-style: none; scrollbar-width: none; }
+    .message-container { max-height: calc(100vh - 200px); overflow-y: auto; }
+    .message-input-container { display: flex; align-items: center; }
+    .message-input { flex-grow: 1; height: 50px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 5px; margin-right: 10px; }
+    .send-button { background-color: #3b82f6; color: white; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+    body { font-size: 16px; }
+    h2 { font-size: 1.25rem; }
+    p, span, li, input, button { font-size: 1rem; }
+    body.dark-mode { background-color: #1a202c; color: #e2e8f0; }
+    body.dark-mode .bg-white { background-color: #2d3748; }
+    body.dark-mode .bg-gray-100 { background-color: #4a5568; }
+    body.dark-mode .text-gray-800 { color: #cbd5e0; }
+    body.dark-mode .text-gray-700 { color: #a0aec0; }
+    body.dark-mode .text-gray-500 { color: #718096; }
+    body.dark-mode .border-gray-300 { border-color: #4a5568; }
+    body.dark-mode input, body.dark-mode textarea { background-color: #2d3748; color: #e2e8f0; }
+    @media (max-width: 768px) {
+    .flex.w-full.h-full {
+        flex-direction: column;
+    }
+
+    aside.w-1 {
+        width: 100%;
+        height: auto;
+    }
+
+    main.flex-1 {
+        width: 100%;
+        height: 100vh; /* Or another valid height calculation */
+    }
+
+    .message-container {
+        max-height: calc(100vh - 200px);
+    }
+
+    .message-input-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+}
+
+</style>
 </head>
 <body class="bg-gray-100 h-screen flex">
 
-<div class="flex-1 flex overflow-hidden">
+<div class="flex w-full h-full">
 
-<!-- Sidebar -->
-<div class="w-1/4 bg-white p-4 shadow-md h-full overflow-y-auto">
-    <a href="../" class="text-red-500">Leave</a>
-    <h2 class="text-xl font-semibold">
-        Logged in as: 
-        <span class="text-blue-500"><?php echo htmlspecialchars($userDetails['Fname']) . ' ' . htmlspecialchars($userDetails['Sname']); ?></span>
-    </h2>
+    <aside class="w-1/4 bg-white shadow-md p-4 flex flex-col space-y-3 overflow-y-auto scrollbar-hidden">
 
-    <!-- Search input -->
-    <form id="search-form" action="index.php" method="GET" class="mt-4">
-        <input type="text" name="search" placeholder="Search users..." class="px-4 py-2 border rounded w-full" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
-    </form>
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-gray-800">Chats</h2>
+            <div class="flex items-center space-x-2">
+                <button id="darkModeToggle" class="text-gray-500 hover:text-gray-700"><i class="fas fa-moon"></i></button>
+                <a href="../" class="text-sm text-red-500 hover:text-red-700"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </div>
 
-    <!-- Display search results -->
-    <?php if (!empty($searchResults)): ?>
-        <ul class="mt-4">
-            <?php foreach ($searchResults as $user): ?>
-                <li class="py-2 border-b">
-                    <a href="index.php?IDno=<?php echo $user['IDno']; ?>" class="text-blue-500">
-                        <?php echo htmlspecialchars($user['Fname']) . ' ' . htmlspecialchars($user['Sname']); ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    <?php elseif (isset($_GET['search']) && empty($searchResults)): ?>
-        <div class="text-red-500 mt-2">No users found with that name.</div>
-    <?php endif; ?>
+        <form id="search-form" action="index.php" method="GET">
+            <div class="relative">
+                <input type="text" name="search" placeholder="Search..."
+                       class="px-3 py-2 pl-8 rounded-md border border-gray-300 w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-300">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                    <i class="fas fa-search text-gray-400 text-xs"></i>
+                </div>
+            </div>
+        </form>
 
-<!-- Display conversation partners -->
-<div class="mt-6">
-    <h3 class="font-semibold text-lg">Your Conversations</h3>
-    <ul class="space-y-4 mt-4">
-        <?php foreach ($conversationPartners as $partner): ?>
-            <li class="py-2 border-b">
-                <a href="index.php?IDno=<?php echo $partner['IDno']; ?>" class="flex items-center justify-between py-2 px-4 rounded hover:bg-gray-100">
-                    
-                    <!-- Bold the name and message if the message is unread -->
-                    <span class="<?php echo $partner['is_read'] ? '' : 'font-bold'; ?>">
-                        <?php echo htmlspecialchars($partner['Fname']) . ' ' . htmlspecialchars($partner['Sname']); ?>
-                    </span>
-                    
-                    <div class="text-sm flex items-center space-x-2 text-gray-500">
-                        <!-- Display the latest message, bold if unread -->
-                        <span class="<?php echo $partner['is_read'] ? '' : 'font-bold'; ?> truncate max-w-xs">
-                            <?php echo htmlspecialchars($partner['message']); ?>
-                        </span>
-                        
-                        <!-- Display timestamp -->
-                        <span class="text-xs"><?php echo date('g:i A', strtotime($partner['timestamp'])); ?></span>
-                    </div>
-                </a>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-</div>
+        <?php if (!empty($searchResults)): ?>
+            <ul class="space-y-2 mt-3">
+                <?php foreach ($searchResults as $user): ?>
+                    <li class="hover:bg-gray-100 rounded-md p-3 cursor-pointer">
+                        <a href="index.php?IDno=<?php echo $user['IDno']; ?>" class="flex items-center">
+                            <span class="text-gray-700"><?php echo htmlspecialchars($user['Fname']) . ' ' . htmlspecialchars($user['Sname']); ?></span>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php elseif (isset($_GET['search']) && empty($searchResults)): ?>
+            <p class="text-red-500 mt-3">No users found.</p>
+        <?php endif; ?>
 
-</div>
-
-
-<!-- Chat area -->
-<div class="flex-1 bg-white p-4 flex flex-col">
-    <?php if ($selected_user_id): ?>
-        <div class="mb-6 overflow-y-auto space-y-4 mt-4 max-h-[500px]" id="content">
-            <h2 class="text-2xl">Chat with <?php echo htmlspecialchars($selectedUser['Fname']); ?></h2>
-            
-            <!-- Message container with scrolling enabled and fixed height -->
-            <div class="flex-1 overflow-y-auto space-y-4 mt-4 max-h-[300px]" id="messageContainer">
-                <?php
-                // Fetch and display the latest messages first
-                $messagesLimit = 10; // Set a limit for how many messages to show initially
-                $latestMessages = array_slice(array_reverse($messages), 0, $messagesLimit);
-                ?>
-
-                <?php foreach ($latestMessages as $message): ?>
-                    <div class="flex <?php echo $message['from_user_id'] === $userID ? 'justify-end' : 'justify-start'; ?>">
-                        <div class="bg-gray-200 p-3 rounded-lg max-w-xs">
-                            <p><?php echo htmlspecialchars($message['message']); ?></p>
-                            <div class="text-xs text-gray-500 mt-2">
-                                <?php echo date('g:i A', strtotime($message['timestamp'])); ?>
+        <div class="mt-3">
+            <h3 class="font-semibold text-gray-800">Your Chats</h3>
+            <ul class="space-y-2 mt-2">
+                <?php foreach ($conversationPartners as $partner): ?>
+                    <li class="p-3 rounded-md hover:bg-gray-100">
+                        <a href="index.php?IDno=<?php echo $partner['IDno']; ?>" class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="<?php echo $partner['is_read'] ? '' : 'font-semibold'; ?> text-gray-700">
+                                    <?php echo htmlspecialchars($partner['Fname']) . ' ' . htmlspecialchars($partner['Sname']); ?>
+                                </span>
                             </div>
+                            <div class="text-sm text-gray-500">
+                                <span class="truncate max-w-xs"><?php echo htmlspecialchars($partner['message']); ?></span>
+                                <span class="ml-1"><?php echo date('g:i A', strtotime($partner['timestamp'])); ?></span>
+                            </div>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    </aside>
 
-                            <!-- Read/Unread Status -->
-                            <?php if ($message['is_read'] == 1): ?>
-                                <span class="text-green-500 text-xs">Read</span>
-                            <?php else: ?>
-                                <span class="text-gray-500 text-xs">Unread</span>
-                            <?php endif; ?>
+    <main class="flex-1 bg-white shadow-md p-5 flex flex-col">
+        <?php if ($selected_user_id): ?>
+            <div class="flex flex-col flex-grow message-container scrollbar-hidden" id="messageDisplayArea">
+                <?php foreach (array_reverse($messages) as $message): ?>
+                    <div class="flex <?php echo $message['from_user_id'] === $userID ? 'justify-end' : 'justify-start'; ?>">
+                        <div class="bg-gray-100 p-3 rounded-md max-w-2xl">
+                            <p class="text-gray-800"><?php echo htmlspecialchars($message['message']); ?></p>
+                            <div class="flex items-center justify-between mt-2 text-sm text-gray-500">
+                                <span><?php echo date('g:i A', strtotime($message['timestamp'])); ?></span>
+                                <span class="<?php echo $message['is_read'] == 1 ? 'text-green-500' : 'text-gray-500'; ?>">
+                                    <?php echo $message['is_read'] == 1 ? 'Read' : 'Unread'; ?>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
-        </div>
 
-        <!-- Message input form with sticky positioning -->
-        <form method="POST" class="flex space-x-2 mt-4">
-            <input type="text" name="message" placeholder="Type a message..." class="flex-1 p-2 border rounded" required>
-            <button type="submit" class="bg-blue-500 text-white p-2 rounded">Send</button>
-        </form>
+            <div class="message-input-container">
+                <input type="text" id="messageInput" placeholder="Type a message..." class="message-input">
+                <button id="sendMessageButton" class="send-button">Send</button>
+            </div>
 
-    <?php else: ?>
-        <p class="text-center text-xl">Select a user to start chatting.</p>
-    <?php endif; ?>
+        <?php else: ?>
+            <p class="text-center text-gray-500">Select a user to chat.</p>
+        <?php endif; ?>
+    </main>
+
 </div>
 
 <script>
-    // Function to scroll the content to the bottom
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('YOUR_PUSHER_KEY', {
+        cluster: 'YOUR_CLUSTER'
+    });
+
+    var channel = pusher.subscribe('chat-room-<?php echo $selected_user_id; ?>');
+
     function scrollToBottom() {
-        const content = document.getElementById('content');
-        content.scrollTop = content.scrollHeight;
+        const messageDisplayArea = document.getElementById('messageDisplayArea');
+        messageDisplayArea.scrollTop = messageDisplayArea.scrollHeight;
     }
 
-    // Call this function to make sure the scroll starts at the bottom
     window.onload = scrollToBottom;
-</script>
 
-</div>
+    channel.bind('new-message', function(data) {
+        const messageContainer = document.getElementById('messageDisplayArea');
+        const newMessage = data.message;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('flex', newMessage.from_user_id === '<?php echo $userID; ?>' ? 'justify-end' : 'justify-start');
+        messageDiv.innerHTML = `
+            <div class="bg-gray-100 p-3 rounded-md max-w-2xl">
+                <p class="text-gray-800">${newMessage.message}</p>
+                <div class="flex items-center justify-between mt-2 text-sm text-gray-500">
+                    <span>${newMessage.timestamp}</span>
+                    <span class="text-gray-500">${newMessage.is_read == 1 ? 'Read' : 'Unread'}</span>
+                </div>
+            </div>
+        `;
+        messageContainer.appendChild(messageDiv);
+
+        scrollToBottom();
+
+        // Update read status for the new message
+        if (newMessage.to_user_id === '<?php echo $userID; ?>') {
+            fetch('index.php?IDno=<?php echo $selected_user_id; ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'update_read=true&message_id=' + encodeURIComponent(newMessage.id)
+            });
+        }
+    });
+
+    const sendMessageButton = document.getElementById('sendMessageButton');
+    const messageInput = document.getElementById('messageInput');
+    const messageDisplayArea = document.getElementById('messageDisplayArea');
+
+    sendMessageButton.addEventListener('click', function() {
+        const message = messageInput.value.trim();
+        if (message && '<?php echo $selected_user_id; ?>') {
+            fetch('index.php?IDno=<?php echo $selected_user_id; ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'message=' + encodeURIComponent(message)
+            })
+            .then(() => {
+                // Add the message to the display immediately
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('flex', 'justify-end'); // Your own message
+                messageDiv.innerHTML = `
+                    <div class="bg-gray-100 p-3 rounded-md max-w-2xl">
+                        <p class="text-gray-800">${message}</p>
+                        <div class="flex items-center justify-between mt-2 text-sm text-gray-500">
+                            <span>Now</span>
+                            <span class="text-gray-500">Unread</span>
+                        </div>
+                    </div>
+                `;
+                messageDisplayArea.appendChild(messageDiv);
+                messageInput.value = '';
+                scrollToBottom();
+            })
+            .then(() => {
+              // Fetch latest messages after sending
+              fetchMessages();
+            });
+        }
+    });
+
+    messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            sendMessageButton.click();
+        }
+    });
+
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+
+    darkModeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        if (document.body.classList.contains('dark-mode')) {
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    });
+
+    function fetchMessages(userId, lastTimestamp) {
+    fetch('your_php_file.php?userId=' + userId + (lastTimestamp ? '&lastTimestamp=' + lastTimestamp : ''))
+        .then(response => response.json())
+        .then(data => {
+            const messageContainer = document.getElementById('messageDisplayArea');
+            if (data && Array.isArray(data)) {
+                data.forEach(message => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', 'p-2', 'rounded', 'mb-2');
+                    messageDiv.classList.add(message.sender === 'right' ? 'bg-blue-100' : 'bg-gray-100');
+                    messageDiv.dataset.timestamp = message.timestamp;
+                    messageDiv.textContent = message.message;
+                    messageContainer.appendChild(messageDiv);
+                });
+            } else if (data && data.message) {
+              messageContainer.innerHTML = `<p class="text-gray-500 text-sm">${data.message}</p>`;
+            } else if (data && data.error){
+                console.error(data.error);
+            }
+            scrollToBottom();
+        });
+}
+    // Call fetchMessages initially to load messages
+    fetchMessages();
+
+    // Refresh messages every few seconds
+    setInterval(fetchMessages, 5000); // Fetch every 5 seconds
+</script>
 </body>
 </html>

@@ -92,6 +92,7 @@
             <option value="Musical Sound Recording">Musical Sound Recording</option>
             <option value="NonMusical Sound Recording">NonMusical Sound Recording</option>
             <option value="Video">Video</option>
+            <option value="Journal">Journal</option>
           </select>
         </div>
 

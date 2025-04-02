@@ -1,41 +1,41 @@
 <?php
-include '../config.php';
+    include '../config.php';
 
-// Fetch pending users from the database with pagination
-function getPendingUsers($page = 1, $limit = 10)
-{
-    global $conn;
-    $offset = ($page - 1) * $limit;
-    $query = "
-            SELECT IDno, Fname, Sname, U_Type 
-            FROM users_info
-            WHERE status_log = 'pending'
-            LIMIT $limit OFFSET $offset
-        ";
-    $result = $conn->query($query);
+    // Fetch pending users from the database with pagination
+    function getPendingUsers($page = 1, $limit = 10)
+    {
+        global $conn;
+        $offset = ($page - 1) * $limit;
+        $query = "
+                SELECT IDno, Fname, Sname, U_Type 
+                FROM users_info
+                WHERE status_log = 'pending'
+                LIMIT $limit OFFSET $offset
+            ";
+        $result = $conn->query($query);
 
-    $users = [];
-    if ($result->num_rows > 0) {
-        while ($user = $result->fetch_assoc()) {
-            $users[] = $user;
+        $users = [];
+        if ($result->num_rows > 0) {
+            while ($user = $result->fetch_assoc()) {
+                $users[] = $user;
+            }
         }
+
+        // Get total count of pending users
+        $countQuery = "SELECT COUNT(*) as total FROM users_info WHERE status_log = 'pending'";
+        $countResult = $conn->query($countQuery);
+        $total = $countResult->fetch_assoc()['total'];
+
+        return ['users' => $users, 'total' => $total];
     }
 
-    // Get total count of pending users
-    $countQuery = "SELECT COUNT(*) as total FROM users_info WHERE status_log = 'pending'";
-    $countResult = $conn->query($countQuery);
-    $total = $countResult->fetch_assoc()['total'];
-
-    return ['users' => $users, 'total' => $total];
-}
-
-// Handle AJAX requests to get updated pending users (for dynamic updates)
-if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
-    echo json_encode(getPendingUsers($page, $limit));
-    exit;
-}
+    // Handle AJAX requests to get updated pending users (for dynamic updates)
+    if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        echo json_encode(getPendingUsers($page, $limit));
+        exit;
+    }
 ?>
 
 <!-- Main Content Area with Sidebar and BrowseBook Section -->
@@ -80,7 +80,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
     </div>
 
 <!-- Approval Popup -->
-<div id="approvePopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+<div id="approvePopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden z-50">
     <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
         <h3 class="text-lg font-semibold mb-4">Confirm Approval</h3>
         <p>Are you sure you want to approve this user?</p>
@@ -92,7 +92,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
 </div>
 
 <!-- Rejection Popup -->
-<div id="rejectPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden">
+<div id="rejectPopup" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden z-50">
     <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
         <h3 class="text-lg font-semibold mb-4">Confirm Rejection</h3>
         <p>Are you sure you want to reject this user?</p>

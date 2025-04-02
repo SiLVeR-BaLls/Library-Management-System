@@ -13,9 +13,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <!-- Header at the Top -->
         <?php include 'include/header.php'; ?>
 
-        <div class="">
+        <div class="flex flex-col w-full">
             <!-- Parent container with 100% width and 80% height -->
-            <div class="w-full h-auto mx-auto"> <!-- This will take 100% of the container width and 80% of the viewport height -->
+            <div class=" w-full h-auto mx-auto"> <!-- This will take 100% of the container width and 80% of the viewport height -->
 
                 <!-- Navbar -->
                 <div class="w-full h-16 flex sticky top-0 justify-evenly gap-4 p-2" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;" > <!-- Full width navbar with centered buttons -->
