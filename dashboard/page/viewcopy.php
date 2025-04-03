@@ -140,7 +140,7 @@
                                         <?php echo htmlspecialchars($copy_data['fundingSource']); ?>
                                     </div>
                                 </div>
-                                <div class="flex justify-center mt-6">
+                                <div class="flex justify-center mt-6 hidden">
                                     <div id="qrcode" class="p-4 bg-white border rounded-md shadow-md"></div>
                                 </div>
 

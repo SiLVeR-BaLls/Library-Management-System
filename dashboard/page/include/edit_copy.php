@@ -59,7 +59,7 @@
         }
     }
 ?>
-
+<title>Edit Book</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <div class="container mx-auto mt-8 px-4">
@@ -80,7 +80,7 @@
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Copy ID</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="copy_ID" name="copy_ID" value="<?php echo htmlspecialchars($copy_data['copy_ID']); ?>" required>
+                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="copy_ID" name="copy_ID" value="<?php echo htmlspecialchars($copy_data['copy_ID']); ?>" >
                         </td>
                     </tr>
                     <!-- Added Note Field -->
