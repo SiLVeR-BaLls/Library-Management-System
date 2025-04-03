@@ -53,50 +53,6 @@
                 <input type="text" id="searchInput" class="w-full py-2 px-4 border rounded-md" placeholder="Search by Book Title..." onkeyup="filterBooks()" />
             </div>
 
-            <!-- Table -->
-            <table class="min-w-full table-auto bg-white shadow-md rounded-lg overflow-hidden">
-                <thead>
-                    <tr class="bg-gray-200 text-gray-700">
-                        <th class="py-2 px-4 border-b">Book Title</th>
-                        <th class="py-2 px-4 border-b">Borrow Date</th>
-                        <th class="py-2 px-4 border-b">Due Date</th>
-                        <th class="py-2 px-4 border-b">Return Date</th>
-                    </tr>
-                </thead>
-                <tbody id="bookTableBody">
-                    <?php
-                    if ($result && $result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            // Format the dates
-                            $borrowDate = date('Y-m-d H:i:s', strtotime($row['borrow_date']));
-                            $dueDate = date('Y-m-d', strtotime($row['due_date']));
-                            $returnDate = date('Y-m-d', strtotime($row['return_date'])); // Format the return date
-
-                            echo "<tr class='book-row'>
-                                    <td class='py-2 px-4'>" . htmlspecialchars($row['B_title']) . "</td>
-                                    <td class='py-2 px-4'>" . $borrowDate . "</td>
-                                    <td class='py-2 px-4'>" . $dueDate . "</td>
-                                    <td class='py-2 px-4'>" . $returnDate . "</td>
-                                  </tr>";
-                        }
-                    } else {
-                        echo "<tr><td class='py-2 px-4 text-center' colspan='4'>No returned books available.</td></tr>";
-                    }
-                    ?>
-                </tbody>
-            </table>
-
-            <!-- Pagination Controls -->
-            <div class="flex justify-center items-center space-x-4 my-6 flex-col md:flex-row md:space-x-6">
-                <button id="prevBtn" onclick="prevPage()" class="px-6 py-2 bg-gray-800 text-white rounded-lg cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-300 hover:bg-gray-600" disabled>Previous</button>
-                <span id="pageInfo" class="text-lg text-gray-600 font-medium">Page 1 of X</span>
-                <button id="nextBtn" onclick="nextPage()" class="px-6 py-2 bg-gray-800 text-white rounded-lg cursor-pointer transition duration-300 hover:bg-gray-600">Next</button>
-            </div>
-        </div>
-
-        <div class="container mx-auto px-4 py-6">
-            <!-- New Table for Status -->
-            <h2 class="text-3xl font-semibold mb-4 text-center">Returned Books Status</h2>
             <table class="min-w-full table-auto bg-white shadow-md rounded-lg overflow-hidden">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700">
@@ -130,7 +86,14 @@
                     ?>
                 </tbody>
             </table>
+            <!-- Pagination Controls -->
+            <div class="flex justify-center items-center space-x-4 my-6 flex-col md:flex-row md:space-x-6">
+                <button id="prevBtn" onclick="prevPage()" class="px-6 py-2 bg-gray-800 text-white rounded-lg cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-300 hover:bg-gray-600" disabled>Previous</button>
+                <span id="pageInfo" class="text-lg text-gray-600 font-medium">Page 1 of X</span>
+                <button id="nextBtn" onclick="nextPage()" class="px-6 py-2 bg-gray-800 text-white rounded-lg cursor-pointer transition duration-300 hover:bg-gray-600">Next</button>
+            </div>
         </div>
+
 
         <!-- Footer -->
         <footer>
