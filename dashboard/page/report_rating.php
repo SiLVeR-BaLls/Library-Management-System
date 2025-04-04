@@ -17,8 +17,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <!-- Parent container with 100% width and 80% height -->
             <div class="w-full h-auto mx-auto"> <!-- This will take 100% of the container width and 80% of the viewport height -->
 
-                <!-- Navbar -->
-                <div class="w-full h-16 flex sticky top-0 justify-evenly gap-4 p-2" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;"> <!-- Full width navbar with centered buttons -->
+                 <!-- Navbar -->
+                 <div class="w-full h-16 flex sticky top-0 justify-evenly gap-4 p-2" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;" > <!-- Full width navbar with centered buttons -->
                     <!-- Button to Statistical Book Report -->
                     <div id="returnedSection" class="w-auto">
                         <a href="Report.php">
@@ -33,6 +33,15 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         <a href="Report_return.php">
                             <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'Report_return.php') ? "background-color: $button_active;" : '' ?>">
                                 Returned Reports
+                            </button>
+                        </a>
+                    </div>
+
+                       <!-- Button to Return Book Report -->
+                       <div id="returnedSection" class="w-auto">
+                        <a href="Report_book.php">
+                            <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'Report_book.php') ? "background-color: $button_active;" : '' ?>">
+                                Reports in Book
                             </button>
                         </a>
                     </div>

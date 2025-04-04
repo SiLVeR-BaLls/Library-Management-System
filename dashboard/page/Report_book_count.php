@@ -37,6 +37,15 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         </a>
                     </div>
 
+                       <!-- Button to Return Book Report -->
+                       <div id="returnedSection" class="w-auto">
+                        <a href="Report_book.php">
+                            <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'Report_book.php') ? "background-color: $button_active;" : '' ?>">
+                                Reports in Book
+                            </button>
+                        </a>
+                    </div>
+
                     <!-- Button to Borrow Report -->
                     <div id="ratingSection" class="w-auto">
                         <a href="report_borrow.php">
