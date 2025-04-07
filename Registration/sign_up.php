@@ -43,8 +43,8 @@
             <div class="group-box">
               <p class="tile">Basic Information</p>
               <div class="text-group">
-                <label for="Sex">Sex</label>
-                <select class="box" name="Sex" id="Sex">
+                <label for="gender">Sex</label>
+                <select class="box" name="gender" id="gender">
                   <option value="" disabled selected>Select Sex</option>
                   <option value="m">Male</option>
                   <option value="f">Female</option>

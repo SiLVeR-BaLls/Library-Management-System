@@ -1,6 +1,6 @@
 
 <!-- open lang kong trip mo ma buang  -->
-<div class="min-h-screen bg-gray-100">
+<div class="min-h-screen ">
   <!-- Main Form Section -->
 
    <!-- Main Form Section -->
@@ -21,9 +21,9 @@
     </nav>
 
     
-  <form action="include/AddConnect.php" class="p-3" method="post" >
+  <form action="include/AddConnect.php" class="px-3 " method="post" >
 
- 
+ <div class="bg-gray-100 px-6 ">
     <!-- Title Section -->
     <div class="max-w-7xl mx-auto">
       <div class="flex items-center space-x-2 mb-4">
@@ -407,9 +407,10 @@
     </div>
 
     <!-- Common Action Buttons -->
-    <div class="flex justify-between mt-8">
+    <div class="flex justify-between py-6 mt-8">
       <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-md ml-auto">Add</button>
     </div>
+  </div>
  
   </form>
 </div>

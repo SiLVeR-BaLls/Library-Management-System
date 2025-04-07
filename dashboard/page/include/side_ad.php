@@ -47,8 +47,7 @@
 
                 <!-- Dashboard Dropdown -->
                 <li class="relative">
-                    <button onclick="toggleDropdown('dashboardDropdown')" style="color : <?= $text1 ?>;" class="btn w-full z-10 flex justify-between items-center py-2 px-4  focus:outline-none">
-                        Dashboard ▼
+                <button onclick="toggleDropdown('dashboardDropdown')" style="color : <?= $text1 ?>;" class="btn w-full z-10 flex justify-between items-center py-2 px-4  focus:outline-none">                        Dashboard ▼
                     </button>
                     <ul id="dashboardDropdown" style="color : <?= $text1 ?>;" class="absolute  overflow-y-auto z-10 left-0 hidden mt-1 w-48   rounded-md shadow-lg">
                         <li><a href="profile.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'profile.php') ? $button_active : $sidebar_hover ?>;">Profile</a></li>

@@ -1,5 +1,7 @@
 <?php
 include('extra/notification.php');
+ob_start();
+
 ?>
 
 <!DOCTYPE html>

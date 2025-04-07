@@ -164,12 +164,13 @@ if ($conn->connect_error) {
                     <div id="department-group">
                         <label for="college" class="text-sm font-medium">Department</label>
                         <select id="college" name="college" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
-                            <option value="" disabled selected>Select Department</option>
-                            <option value="Library">Library</option>
-                            <option value="Computer Department">Computer Department</option>
-                            <option value="Security">Security</option>
-                            <option value="College of Education">College of Education</option>
-                        </select>
+              <option value="" disabled selected>Select Department</option>
+              <?php foreach ($departments as $department): ?>
+                <option value="<?php echo $department['id']; ?>">
+                  <?php echo htmlspecialchars($department['name']); ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
                     </div>
 
                     <!-- Personnel Type -->

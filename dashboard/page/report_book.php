@@ -1,5 +1,5 @@
 <?php
-// report.php
+// report_book.php
 include '../config.php';
 
 // Initialize variables
@@ -7,23 +7,49 @@ $message = '';
 $message_type = '';
 $borrowCounts = [];
 $bookCopiesCounts = [];
+$bookCounts = []; // To store the count of unique books
 $totalCopies = 0;
+$totalBooks = 0;
 $totalDay = 0;
 $totalWeek = 0;
 $totalMonth = 0;
 $totalYear = 0;
 $otherRangeData = null; // Store data for the "Other" range
 
-// Fetch borrow counts and book counts by DDC/Local Range
-$sql = "SELECT bc.callNumber, bb.borrow_date FROM book_copies bc LEFT JOIN borrow_book bb ON bc.book_copy = bb.book_copy";
-$result = $conn->query($sql);
+// Fetch all book copies and group them by DDC/Local Range
+$sqlBookCopies = "SELECT callNumber, book_id FROM book_copies";
+$resultBookCopies = $conn->query($sqlBookCopies);
 
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
+$allBookCopiesByRange = [];
+if ($resultBookCopies) {
+    while ($row = $resultBookCopies->fetch_assoc()) {
+        $callNumber = $row['callNumber'];
+        $bookId = $row['book_id'];
+        $range = 'Other';
+
+        if (preg_match('/^[0-9]{3}/', $callNumber)) {
+            $rangeStart = intval(substr($callNumber, 0, 3));
+            $rangeEnd = floor($rangeStart / 100) * 100 + 99;
+            $range = sprintf("%03d", floor($rangeStart / 100) * 100) . "-" . sprintf("%03d", $rangeEnd);
+        }
+
+        if (!isset($allBookCopiesByRange[$range])) {
+            $allBookCopiesByRange[$range] = [];
+        }
+        $allBookCopiesByRange[$range][] = $bookId;
+    }
+}
+
+// Fetch borrow counts by DDC/Local Range
+$sqlBorrowData = "SELECT bc.callNumber, bb.borrow_date, bc.book_id FROM book_copies bc LEFT JOIN borrow_book bb ON bc.book_copy = bb.book_copy";
+$resultBorrowData = $conn->query($sqlBorrowData);
+
+if ($resultBorrowData) {
+    while ($row = $resultBorrowData->fetch_assoc()) {
         $callNumber = $row['callNumber'];
         $borrowDate = $row['borrow_date'];
-
-        $range = 'Other'; // Default range for non-numeric call numbers
+        $bookId = $row['book_id'];
+        $range = 'Other';
 
         if (preg_match('/^[0-9]{3}/', $callNumber)) {
             $rangeStart = intval(substr($callNumber, 0, 3));
@@ -32,15 +58,10 @@ if ($result) {
         }
 
         if ($range == 'Other') {
-            $otherRangeData['range'] = $range;
-            if (!isset($otherRangeData['borrowCounts'])) {
-                $otherRangeData['borrowCounts'] = ['day' => 0, 'week' => 0, 'month' => 0, 'year' => 0];
-                $otherRangeData['bookCopiesCounts'] = 0;
+            if (!isset($otherRangeData)) {
+                $otherRangeData = ['range' => $range, 'borrowCounts' => ['day' => 0, 'week' => 0, 'month' => 0, 'year' => 0], 'bookCounts' => []];
             }
-
-            $otherRangeData['bookCopiesCounts']++;
-            $totalCopies++;
-
+            $otherRangeData['bookCounts'][$bookId] = true;
             if ($borrowDate) {
                 if (date('Y-m-d', strtotime($borrowDate)) == date('Y-m-d')) $otherRangeData['borrowCounts']['day']++;
                 if (date('W Y', strtotime($borrowDate)) == date('W Y')) $otherRangeData['borrowCounts']['week']++;
@@ -55,12 +76,9 @@ if ($result) {
         } else {
             if (!isset($borrowCounts[$range])) {
                 $borrowCounts[$range] = ['day' => 0, 'week' => 0, 'month' => 0, 'year' => 0];
-                $bookCopiesCounts[$range] = 0;
+                $bookCounts[$range] = [];
             }
-
-            $bookCopiesCounts[$range]++;
-            $totalCopies++;
-
+            $bookCounts[$range][$bookId] = true;
             if ($borrowDate) {
                 if (date('Y-m-d', strtotime($borrowDate)) == date('Y-m-d')) $borrowCounts[$range]['day']++;
                 if (date('W Y', strtotime($borrowDate)) == date('W Y')) $borrowCounts[$range]['week']++;
@@ -75,9 +93,21 @@ if ($result) {
         }
     }
 } else {
-    $message = "Error fetching data: " . $conn->error;
+    $message = "Error fetching borrow data: " . $conn->error;
     $message_type = "danger";
 }
+
+// Calculate total unique books and total copies
+foreach ($bookCounts as $rangeBooks) {
+    $totalBooks += count($rangeBooks);
+}
+if ($otherRangeData) {
+    $totalBooks += count($otherRangeData['bookCounts']);
+}
+foreach ($allBookCopiesByRange as $rangeCopies) {
+    $totalCopies += count($rangeCopies);
+}
+
 // Ensure $currentPage is set to the current file name
 $currentPage = basename($_SERVER['PHP_SELF']);
 
@@ -89,21 +119,14 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <?php include 'include/header.php'; ?>
 
         <div class="">
-            <!-- Parent container with 100% width and 80% height -->
-            <div class="w-full h-auto mx-auto"> <!-- This will take 100% of the container width and 80% of the viewport height -->
-
-                <!-- Navbar -->
-                <div class="w-full h-16 flex sticky top-0 justify-evenly gap-4 p-2" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;"> <!-- Full width navbar with centered buttons -->
-                    <!-- Button to Statistical Book Report -->
-                    <div id="returnedSection" class="w-auto">
-                        <a href="Report.php">
-                            <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'Report.php') ? "background-color: $button_active;" : '' ?>">
+            <div class="w-full h-auto mx-auto"> <div class="w-full h-16 flex sticky top-0 justify-evenly gap-4 p-2" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;"> <div id="returnedSection" class="w-auto">
+                        <a href="report_book.php">
+                            <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'report_book.php') ? "background-color: $button_active;" : '' ?>">
                                 Statistical Reports
                             </button>
                         </a>
                     </div>
 
-                    <!-- Button to Return Book Report -->
                     <div id="returnedSection" class="w-auto">
                         <a href="Report_return.php">
                             <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'Report_return.php') ? "background-color: $button_active;" : '' ?>">
@@ -112,7 +135,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         </a>
                     </div>
 
-                    <!-- Button to Return Book Report -->
                     <div id="returnedSection" class="w-auto">
                         <a href="Report_book.php">
                             <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'Report_book.php') ? "background-color: $button_active;" : '' ?>">
@@ -121,7 +143,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         </a>
                     </div>
 
-                    <!-- Button to Borrow Report -->
                     <div id="ratingSection" class="w-auto">
                         <a href="report_borrow.php">
                             <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'report_borrow.php') ? "background-color: $button_active;" : '' ?>">
@@ -130,7 +151,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         </a>
                     </div>
 
-                    <!-- Button to Rating Book Report -->
                     <div id="borrowedSection" class="w-auto">
                         <a href="report_rating.php">
                             <button class="w-full text-white p-2 rounded btn transition text-sm" style="<?= ($currentPage == 'report_rating.php') ? "background-color: $button_active;" : '' ?>">
@@ -139,7 +159,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         </a>
                     </div>
 
-                    <!-- Button to Count Book Report -->
                     <div id="borrowedSection" class="w-auto">
                         <a href="Report_book_count.php">
                             <button class="w-full btn text-white p-2 rounded transition text-sm" style="<?= ($currentPage == 'Report_book_count.php') ? "background-color: $button_active;" : '' ?>">
@@ -163,6 +182,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                                 <thead>
                                     <tr class="bg-gray-100">
                                         <th class="border border-gray-300 p-2">DDC/Local Range</th>
+                                        <th class="border border-gray-300 p-2">Total Books</th>
                                         <th class="border border-gray-300 p-2">Total Copies</th>
                                         <th class="border border-gray-300 p-2">Day</th>
                                         <th class="border border-gray-300 p-2">Week</th>
@@ -178,7 +198,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                                                     <?php echo htmlspecialchars($range); ?>
                                                 </a>
                                             </td>
-                                            <td class="border border-gray-300 p-2"><?php echo htmlspecialchars($bookCopiesCounts[$range]); ?></td>
+                                            <td class="border border-gray-300 p-2"><?php echo htmlspecialchars(count($bookCounts[$range])); ?></td>
+                                            <td class="border border-gray-300 p-2"><?php echo htmlspecialchars(count($allBookCopiesByRange[$range] ?? [])); ?></td>
                                             <td class="border border-gray-300 p-2"><?php echo htmlspecialchars($data['day']); ?></td>
                                             <td class="border border-gray-300 p-2"><?php echo htmlspecialchars($data['week']); ?></td>
                                             <td class="border border-gray-300 p-2"><?php echo htmlspecialchars($data['month']); ?></td>
@@ -192,7 +213,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                                                     <?php echo htmlspecialchars($otherRangeData['range']); ?>
                                                 </a>
                                             </td>
-                                            <td class="border border-gray-300 p-2"><?php echo htmlspecialchars($otherRangeData['bookCopiesCounts']); ?></td>
+                                            <td class="border border-gray-300 p-2"><?php echo htmlspecialchars(count($otherRangeData['bookCounts'])); ?></td>
+                                            <td class="border border-gray-300 p-2"><?php echo htmlspecialchars(count($allBookCopiesByRange[$otherRangeData['range']] ?? [])); ?></td>
                                             <td class="border border-gray-300 p-2"><?php echo htmlspecialchars($otherRangeData['borrowCounts']['day']); ?></td>
                                             <td class="border border-gray-300 p-2"><?php echo htmlspecialchars($otherRangeData['borrowCounts']['week']); ?></td>
                                             <td class="border border-gray-300 p-2"><?php echo htmlspecialchars($otherRangeData['borrowCounts']['month']); ?></td>
@@ -201,6 +223,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                                     <?php endif; ?>
                                     <tr class="bg-gray-100">
                                         <td class="border border-gray-300 p-2 font-bold">Total</td>
+                                        <td class="border border-gray-300 p-2 font-bold"><?php echo $totalBooks; ?></td>
                                         <td class="border border-gray-300 p-2 font-bold"><?php echo $totalCopies; ?></td>
                                         <td class="border border-gray-300 p-2 font-bold"><?php echo $totalDay; ?></td>
                                         <td class="border border-gray-300 p-2 font-bold"><?php echo $totalWeek; ?></td>

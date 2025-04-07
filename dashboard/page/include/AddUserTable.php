@@ -1,250 +1,3 @@
-<?php
-  // Configuration
-  $db_host = 'localhost';
-  $db_username = 'root';
-  $db_password = '';
-  $db_name = 'lms';
-
-  // Create connection
-  $conn = new mysqli($db_host, $db_username, $db_password, $db_name);
-
-  // Check connection
-  if ($conn->connect_error) {
-    $message = "Connection failed: " . $conn->connect_error;
-    $message_type = "error";
-    $gender = $Sname = $username = ""; // Empty defaults
-  } else {
-    $message = "";
-    $message_type = "";
-    $gender = $Sname = $username = ""; // Empty defaults
-
-    // Ensure the Program table exists
-    $createTableQuery = "
-      CREATE TABLE IF NOT EXISTS Program (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          name VARCHAR(255) NOT NULL UNIQUE
-      )";
-    $conn->query($createTableQuery);
-
-    // Ensure the Department table exists
-    $createDepartmentTableQuery = "
-      CREATE TABLE IF NOT EXISTS Department (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          name VARCHAR(255) NOT NULL UNIQUE
-      )";
-    $conn->query($createDepartmentTableQuery);
-
-    // Ensure the Course table exists
-    $createCourseTableQuery = "
-      CREATE TABLE IF NOT EXISTS Course (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          name VARCHAR(255) NOT NULL,
-          program_id INT NOT NULL,
-          FOREIGN KEY (program_id) REFERENCES Program(id) ON DELETE CASCADE
-      )";
-    $conn->query($createCourseTableQuery);
-
-    // Handle adding a new Program
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['newProgram'])) {
-      $newProgram = trim($_POST['newProgram']);
-      if (!empty($newProgram)) {
-        $checkProgramQuery = "SELECT * FROM Program WHERE name = ?";
-        $stmt = $conn->prepare($checkProgramQuery);
-        $stmt->bind_param("s", $newProgram);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-          $duplicateError = "Program name already exists!";
-        } else {
-          $insertProgramQuery = "INSERT INTO Program (name) VALUES (?)";
-          $stmt = $conn->prepare($insertProgramQuery);
-          if ($stmt) {
-            $stmt->bind_param("s", $newProgram);
-            $stmt->execute();
-            $stmt->close();
-          }
-        }
-      }
-    }
-
-    // Handle adding a new Department
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['newDepartment'])) {
-      $newDepartment = trim($_POST['newDepartment']);
-      if (!empty($newDepartment)) {
-        $checkDepartmentQuery = "SELECT * FROM Department WHERE name = ?";
-        $stmt = $conn->prepare($checkDepartmentQuery);
-        $stmt->bind_param("s", $newDepartment);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-          $duplicateError = "Department name already exists!";
-        } else {
-          $insertDepartmentQuery = "INSERT INTO Department (name) VALUES (?)";
-          $stmt = $conn->prepare($insertDepartmentQuery);
-          if ($stmt) {
-            $stmt->bind_param("s", $newDepartment);
-            $stmt->execute();
-            $stmt->close();
-          }
-        }
-      }
-    }
-
-
-    // ... (Your database connection code remains the same)
-
-    // Fetch Programs
-    $programs = [];
-    $fetchProgramsQuery = "SELECT id, name FROM Program";
-    $result = $conn->query($fetchProgramsQuery);
-    if ($result) {
-      while ($row = $result->fetch_assoc()) {
-        $programs[] = $row;
-      }
-    }
-
-    // Fetch Departments
-    $departments = [];
-    $fetchDepartmentsQuery = "SELECT id, name FROM Department";
-    $result = $conn->query($fetchDepartmentsQuery);
-    if ($result) {
-      while ($row = $result->fetch_assoc()) {
-        $departments[] = $row;
-      }
-    }
-
-    // Fetch Courses
-    $courses = [];
-    $fetchCoursesQuery = "SELECT Course.id, Course.name, Program.name AS program_name FROM Course JOIN Program ON Course.program_id = Program.id";
-    $result = $conn->query($fetchCoursesQuery);
-    if ($result) {
-      while ($row = $result->fetch_assoc()) {
-        $courses[] = $row;
-      }
-    }
-
-    // ... (Your code for adding new data and user registration)
-
-
-    // Handle adding a new Course
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['newCourse'])) {
-      $newCourse = trim($_POST['newCourse']);
-      $programId = $_POST['programId'] ?? null;
-      if (!empty($newCourse) && !empty($programId)) {
-        $checkCourseQuery = "SELECT * FROM Course WHERE name = ? AND program_id = ?";
-        $stmt = $conn->prepare($checkCourseQuery);
-        $stmt->bind_param("si", $newCourse, $programId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-          $duplicateError = "Course name already exists for the selected program!";
-        } else {
-          $insertCourseQuery = "INSERT INTO Course (name, program_id) VALUES (?, ?)";
-          $stmt = $conn->prepare($insertCourseQuery);
-          if ($stmt) {
-            $stmt->bind_param("si", $newCourse, $programId);
-            $stmt->execute();
-            $stmt->close();
-          }
-        }
-      }
-    }
-
-    // Fetch all programs for the dropdown
-    $programs = [];
-    $fetchProgramsQuery = "SELECT id, name FROM Program";
-    $result = $conn->query($fetchProgramsQuery);
-    if ($result) {
-      while ($row = $result->fetch_assoc()) {
-        $programs[] = $row;
-      }
-    }
-
-    // Fetch all departments for the dropdown
-    $departments = [];
-    $fetchDepartmentsQuery = "SELECT id, name FROM Department";
-    $result = $conn->query($fetchDepartmentsQuery);
-    if ($result) {
-      while ($row = $result->fetch_assoc()) {
-        $departments[] = $row;
-      }
-    }
-
-    // Fetch all courses for the dropdown
-    $courses = [];
-    $fetchCoursesQuery = "SELECT Course.id, Course.name, Program.name AS program_name, Course.program_id FROM Course 
-                            JOIN Program ON Course.program_id = Program.id";
-    $result = $conn->query($fetchCoursesQuery);
-    if ($result) {
-      while ($row = $result->fetch_assoc()) {
-        $courses[] = $row;
-      }
-    }
-
-    // Insert user data into tables
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-      // Get POST data
-      $Fname = $_POST['Fname'] ?? '';
-      $Sname = $_POST['Sname'] ?? '';
-      $Mname = $_POST['Mname'] ?? '';
-      $Ename = $_POST['Ename'] ?? 'N/A';  // Default value
-      $gender = $_POST['gender'] ?? '';  // Fixed name
-      $DOB = $_POST['DOB'] ?? '';
-      $email = $_POST['email'] ?? '';
-      $contact = $_POST['contact'] ?? '';
-      $username = $_POST['username'] ?? '';
-      $password = $_POST['password'] ?? ''; // No hashing
-      $IDno = $_POST['IDno'] ?? '';
-      $U_Type = $_POST['U_Type'] ?? '';  // User Type
-      $college = $_POST['college'] ?? '';  // Default value
-      $course = $_POST['course'] ?? '';  // Default value
-      $yrLVL = $_POST['yrLVL'] ?? '';  // Default value
-      $personnel_type = $_POST['personnel_type'] ?? '';  // Default value
-      $A_LVL = '3';
-      $status_details = 'active';
-      $status_log = 'approved';
-
-      // Check if IDno already exists
-      $query = "SELECT * FROM users_info WHERE IDno = ?";
-      $stmt = $conn->prepare($query);
-      if ($stmt === false) {
-        die('MySQL prepare error: ' . $conn->error);
-      }
-      $stmt->bind_param("s", $IDno);
-      $stmt->execute();
-      $result = $stmt->get_result();
-
-      if ($result->num_rows > 0) {
-        $message = "Error: IDno already exists";
-        $message_type = "error";
-      } else {
-        // Insert into users table
-        // Insert query with 21 placeholders (one for each column)
-        $sql = "INSERT INTO users_info (IDno, Fname, Sname, Mname, Ename, gender, photo, DOB, college, course, yrLVL, A_LVL, status_details, personnel_type, username, password, U_Type, status_log, email, contact) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        $stmt = $conn->prepare($sql);
-        if ($stmt === false) {
-          die('MySQL prepare error: ' . $conn->error);
-        }
-
-        // Correctly bind 21 parameters
-        $stmt->bind_param("ssssssssssssssssssss", $IDno, $Fname, $Sname, $Mname, $Ename, $gender, $photo, $DOB, $college, $course, $yrLVL, $A_LVL, $status_details, $personnel_type, $username, $password, $U_Type, $status_log, $email, $contact);
-        $stmt->execute();
-
-        $message = "Registration successful!";
-        $message_type = "success";
-      }
-
-      // Close the statement
-      $stmt->close();
-    }
-
-    // Close the connection
-    $conn->close();
-  }
-?>
-
 <div class="min-h-screen bg-[#f2f2f2]  justify-center items-center px-10">
   <center class="bg-green-100 p-4 rounded-md shadow-md">
     <h1 class="text-2xl font-bold">Add User</h1>
@@ -357,7 +110,7 @@
                 </option>
               <?php endforeach; ?>
             </select>
-            <a href="#" onclick="openPopup()" class="text-blue-600 underline">Add</a>
+            <a href="#" onclick="openProgramPopup()" class="text-blue-600 underline">Add</a>
           </div>
 
           <!-- Department -->
@@ -393,9 +146,10 @@
             <a href="#" id="addCourseLink" onclick="openCoursePopup(event)" class="pointer-events-none text-gray-400">Add</a>
           </div>
 
-          <!-- Year and Section (Hidden for Faculty) -->
+          <!-- Year and Section (Dynamic based on course table) -->
           <div id="yrLVL-group">
             <label for="yrLVL" class="text-sm font-medium">Year and Section</label>
+                   <!-- Year and Section (Hidden for Faculty) -->
             <select id="yrLVL" name="yrLVL" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
               <option value="" disabled selected>Select Year and Section</option>
               <!-- Dynamic Year/Section Options -->
@@ -409,92 +163,9 @@
             </select>
           </div>
 
+
         </div>
       </fieldset>
-
-      <script>
-        function toggleUserType() {
-          const userType = document.getElementById('U_Type').value;
-          const programGroup = document.getElementById('program-group');
-          const departmentGroup = document.getElementById('department-group');
-          const personnelGroup = document.getElementById('personnel-group');
-          const courseGroup = document.getElementById('course-group');
-          const yrLvlGroup = document.getElementById('yrLVL-group');
-
-          if (userType === 'faculty') {
-            // Show Department and Personnel Type, hide Program, Course, and Year/Section
-            programGroup.style.display = 'none';
-            departmentGroup.style.display = 'block';
-            personnelGroup.style.display = 'block';
-            courseGroup.style.display = 'none';
-            yrLvlGroup.style.display = 'none';
-          } else {
-            // Show Program, Course, and Year/Section, hide Department and Personnel Type
-            programGroup.style.display = 'block';
-            departmentGroup.style.display = 'none';
-            personnelGroup.style.display = 'none';
-            courseGroup.style.display = 'block';
-            yrLvlGroup.style.display = 'block';
-          }
-        }
-
-        // Initial check on page load
-        window.onload = toggleUserType;
-
-        function filterCourses() {
-          const selectedProgramId = document.getElementById("Program").value;
-          const courseDropdown = document.getElementById("course");
-          const addCourseLink = document.getElementById("addCourseLink");
-
-          // Clear the course dropdown
-          courseDropdown.innerHTML = "";
-
-          if (!selectedProgramId) {
-            // If no program is selected, show "Choose Program First"
-            const defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.textContent = "Choose Program First";
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            courseDropdown.appendChild(defaultOption);
-
-            // Disable the "Add Course" link
-            addCourseLink.classList.add("pointer-events-none", "text-gray-400");
-            addCourseLink.classList.remove("text-blue-600", "underline");
-            return;
-          }
-
-          // Enable the "Add Course" link
-          addCourseLink.classList.remove("pointer-events-none", "text-gray-400");
-          addCourseLink.classList.add("text-blue-600", "underline");
-
-          // Add a default "Select Course" option
-          const defaultOption = document.createElement("option");
-          defaultOption.value = "";
-          defaultOption.textContent = "Select Course";
-          defaultOption.disabled = true;
-          defaultOption.selected = true;
-          courseDropdown.appendChild(defaultOption);
-
-          // Show only courses that match the selected program
-          const courseOptions = document.querySelectorAll("#course-options option");
-          courseOptions.forEach(option => {
-            if (option.dataset.programId === selectedProgramId) {
-              courseDropdown.appendChild(option.cloneNode(true));
-            }
-          });
-        }
-
-        function openCoursePopup(event) {
-          const selectedProgramId = document.getElementById("Program").value;
-          if (!selectedProgramId) {
-            alert("Please select a program before adding a course.");
-            return;
-          }
-          if (event) event.preventDefault(); // Prevent default link behavior
-          document.getElementById("coursePopupContainer").classList.remove("hidden");
-        }
-      </script>
 
       <!-- Hidden Course Options -->
       <div id="course-options" class="hidden">
@@ -537,69 +208,117 @@
   </form>
 
   <button id="displayDataButton" class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:ring-4 focus:ring-blue-300">
-  Display Data
+    Display Data
   </button>
   <div id="displayDataModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" style="z-index: 10000;">
     <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-full max-w-5xl">
-        <h2 class="text-xl font-bold mb-4">Added Data</h2>
+      <h2 class="text-xl font-bold mb-4">Added Data</h2>
 
-        <div class="flex space-x-4">
-            <div class="w-full">
-                <h3 class="text-lg font-semibold mb-2">Departments</h3>
-                <div id="filteredDepartmentsList" class="overflow-y-auto max-h-96">
-                    <?php foreach ($departments as $department): ?>
-                        <div class="border-b py-2 flex justify-between items-center" data-department-id="<?php echo $department['id']; ?>">
-                            <?php echo htmlspecialchars($department['name']); ?>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="department" data-id="<?php echo $department['id']; ?>" onclick="confirmRemove(this)">-</button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-            <div class="w-full">
-                <h3 class="text-lg font-semibold mb-2">Programs</h3>
-                <div id="filteredProgramsList" class="overflow-y-auto max-h-96">
-                    <?php foreach ($programs as $program): ?>
-                        <div class="border-b py-2 flex justify-between items-center" data-program-id="<?php echo $program['id']; ?>">
-                            <?php echo htmlspecialchars($program['name']); ?>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="program" data-id="<?php echo $program['id']; ?>" onclick="confirmRemove(this)">-</button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-
-            <div class="w-full">
-                <h3 class="text-lg font-semibold mb-2">Courses</h3>
-                <div class="mb-4">
-                    <label for="courseFilter" class="block text-sm font-medium">Filter by Program:</label>
-                    <select id="courseFilter" class="w-full border rounded px-3 py-2">
-                        <?php foreach ($programs as $program): ?>
-                            <option value="<?php echo $program['id']; ?>"><?php echo htmlspecialchars($program['name']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div id="filteredCoursesList" class="overflow-y-auto max-h-96">
-                    <?php foreach ($courses as $course): ?>
-                        <div class="border-b py-2 flex justify-between items-center" data-program-id="<?php echo $course['program_id']; ?>">
-                            <?php echo htmlspecialchars($course['name']); ?>
-                            <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="course" data-id="<?php echo $course['id']; ?>" onclick="confirmRemove(this)">-</button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+      <div class="flex space-x-4">
+        <div class="w-full">
+          <h3 class="text-lg font-semibold mb-2">Departments</h3>
+          <div id="filteredDepartmentsList" class="overflow-y-auto max-h-96">
+            <?php foreach ($departments as $department): ?>
+              <div class="border-b py-2 flex justify-between items-center" data-department-id="<?php echo $department['id']; ?>">
+                <?php echo htmlspecialchars($department['name']); ?>
+                <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="department" data-id="<?php echo $department['id']; ?>" onclick="confirmRemove(this)">-</button>
+              </div>
+            <?php endforeach; ?>
+          </div>
         </div>
-    </div>
-</div>
 
-<div id="confirmationModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" style="z-index: 10001;">
+        <div class="w-full">
+          <h3 class="text-lg font-semibold mb-2">Programs</h3>
+          <div id="filteredProgramsList" class="overflow-y-auto max-h-96">
+            <?php foreach ($programs as $program): ?>
+              <div class="border-b py-2 flex justify-between items-center" data-program-id="<?php echo $program['id']; ?>">
+                <?php echo htmlspecialchars($program['name']); ?>
+                <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="program" data-id="<?php echo $program['id']; ?>" onclick="confirmRemove(this)">-</button>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <div class="w-full">
+          <h3 class="text-lg font-semibold mb-2">Courses</h3>
+          <div class="mb-4">
+            <label for="courseFilter" class="block text-sm font-medium">Filter by Program:</label>
+            <select id="courseFilter" class="w-full border rounded px-3 py-2">
+              <?php foreach ($programs as $program): ?>
+                <option value="<?php echo $program['id']; ?>"><?php echo htmlspecialchars($program['name']); ?></option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+          <div id="filteredCoursesList" class="overflow-y-auto max-h-96">
+            <?php foreach ($courses as $course): ?>
+              <div class="border-b py-2 flex justify-between items-center" data-program-id="<?php echo $course['program_id']; ?>">
+                <?php echo htmlspecialchars($course['name']); ?>
+                <input type="number" id="max_year_<?php echo $course['id']; ?>" name="max_year_<?php echo $course['id']; ?>" value="<?php echo htmlspecialchars($course['max_year'] ?? ''); ?>" data-original-value="<?php echo htmlspecialchars($course['max_year'] ?? ''); ?>" min="0" max="1" step="1" onwheel="this.blur()" oninput="this.value = (this.value === '0' || this.value === '1') ? this.value : ''; enableSaveButton(<?php echo $course['id']; ?>)">
+                <button id="saveButton_<?php echo $course['id']; ?>" onclick="saveMaxYear(<?php echo $course['id']; ?>)" disabled>Save</button>
+                <button class="bg-red-500 text-white px-2 py-1 rounded ml-2" data-type="course" data-id="<?php echo $course['id']; ?>" onclick="confirmRemove(this)">-</button>
+              </div>
+            <?php endforeach; ?>
+          </div>
+
+          <script>
+            function enableSaveButton(courseId) {
+              const inputElement = document.getElementById('max_year_' + courseId);
+              const saveButton = document.getElementById('saveButton_' + courseId);
+
+              if (inputElement.value !== inputElement.dataset.originalValue) {
+                saveButton.disabled = false;
+              } else {
+                saveButton.disabled = true;
+              }
+            }
+
+            function saveMaxYear(courseId) {
+              const newValue = document.getElementById('max_year_' + courseId).value;
+              const saveButton = document.getElementById('saveButton_' + courseId);
+
+              // Disable the button during saving
+              saveButton.disabled = true;
+              saveButton.textContent = 'Saving...';
+
+              fetch('', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: 'save_max_year=true&course_id=' + courseId + '&new_value=' + newValue
+                })
+                .then(response => response.text())
+                .then(data => {
+                  console.log('Server response:', data);
+                  saveButton.textContent = 'Save'; // Revert button text
+                  const inputElement = document.getElementById('max_year_' + courseId);
+                  inputElement.dataset.originalValue = newValue; // Update original value
+                  saveButton.disabled = true; // Disable after successful save
+                  // Optionally update the UI to show success
+                })
+                .catch(error => {
+                  console.error('Error saving max year:', error);
+                  saveButton.textContent = 'Error'; // Show error on button
+                  saveButton.disabled = false; // Re-enable on error
+                  // Optionally update the UI to show an error
+                });
+            }
+          </script>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmationModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" style="z-index: 10001;">
     <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-96">
-        <p>Are you sure you want to remove this item?</p>
-        <div class="flex justify-end mt-4">
-            <button id="confirmRemoveButton" class="bg-red-500 text-white px-4 py-2 rounded mr-2">Remove</button>
-            <button id="cancelRemoveButton" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-        </div>
+      <p>Are you sure you want to remove this item?</p>
+      <div class="flex justify-end mt-4">
+        <button id="confirmRemoveButton" class="bg-red-500 text-white px-4 py-2 rounded mr-2">Remove</button>
+        <button id="cancelRemoveButton" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+      </div>
     </div>
-</div>
+  </div>
 </div>
 
 <style>
@@ -654,32 +373,106 @@
           <?php endforeach; ?>
         </select>
       </div>
-      <input type="text" name="newCourse" id="coursePopupInput" class="w-full border rounded px-3 py-2 mb-4" placeholder="Enter Course Name" required>
+      <input type="text" name="newCourse" id="coursePopupInput" class="w-full border rounded px-3 py-2 mb-4"
+        placeholder="Enter Course Name" required>
       <div class="flex justify-end gap-2">
-        <button type="button" onclick="closeCoursePopup(event)" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel</button>
-        <button type="button" onclick="submitCourseForm(event)" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Confirm</button>
+        <button type="button" onclick="closeCoursePopup(event)"
+          class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel
+        </button>
+        <button type="button" onclick="submitCourseForm(event)"
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Confirm
+        </button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- Duplicate Error Popup -->
-<?php if (isset($duplicateError)): ?>
-  <div id="duplicateErrorPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-80">
-      <h2 class="text-xl font-bold mb-4 text-red-600">Error</h2>
-      <p class="text-gray-700 mb-4"><?php echo htmlspecialchars($duplicateError); ?></p>
-      <div class="flex justify-end">
-        <button onclick="closeDuplicateErrorPopup()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Close</button>
-      </div>
-    </div>
-  </div>
-  <script>
-    function closeDuplicateErrorPopup() {
-      document.getElementById("duplicateErrorPopup").style.display = "none";
+
+
+
+<script>
+  function toggleUserType() {
+    const userType = document.getElementById('U_Type').value;
+    const programGroup = document.getElementById('program-group');
+    const departmentGroup = document.getElementById('department-group');
+    const personnelGroup = document.getElementById('personnel-group');
+    const courseGroup = document.getElementById('course-group');
+    const yrLvlGroup = document.getElementById('yrLVL-group');
+
+    if (userType === 'faculty') {
+      // Show Department and Personnel Type, hide Program, Course, and Year/Section
+      programGroup.style.display = 'none';
+      departmentGroup.style.display = 'block';
+      personnelGroup.style.display = 'block';
+      courseGroup.style.display = 'none';
+      yrLvlGroup.style.display = 'none';
+    } else {
+      // Show Program, Course, and Year/Section, hide Department and Personnel Type
+      programGroup.style.display = 'block';
+      departmentGroup.style.display = 'none';
+      personnelGroup.style.display = 'none';
+      courseGroup.style.display = 'block';
+      yrLvlGroup.style.display = 'block';
     }
-  </script>
-<?php endif; ?>
+  }
+
+  // Initial check on page load
+  window.onload = toggleUserType;
+
+  function filterCourses() {
+    const selectedProgramId = document.getElementById("Program").value;
+    const courseDropdown = document.getElementById("course");
+    const addCourseLink = document.getElementById("addCourseLink");
+
+    // Clear the course dropdown
+    courseDropdown.innerHTML = "";
+
+    if (!selectedProgramId) {
+      // If no program is selected, show "Choose Program First"
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Choose Program First";
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      courseDropdown.appendChild(defaultOption);
+
+      // Disable the "Add Course" link
+      addCourseLink.classList.add("pointer-events-none", "text-gray-400");
+      addCourseLink.classList.remove("text-blue-600", "underline");
+      return;
+    }
+
+    // Enable the "Add Course" link
+    addCourseLink.classList.remove("pointer-events-none", "text-gray-400");
+    addCourseLink.classList.add("text-blue-600", "underline");
+
+    // Add a default "Select Course" option
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Select Course";
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    courseDropdown.appendChild(defaultOption);
+
+    // Show only courses that match the selected program
+    const courseOptions = document.querySelectorAll("#course-options option");
+    courseOptions.forEach(option => {
+      if (option.dataset.programId === selectedProgramId) {
+        courseDropdown.appendChild(option.cloneNode(true));
+      }
+    });
+  }
+
+  function openCoursePopup(event) {
+    const selectedProgramId = document.getElementById("Program").value;
+    if (!selectedProgramId) {
+      alert("Please select a program before adding a course.");
+      return;
+    }
+    if (event) event.preventDefault(); // Prevent default link behavior
+    document.getElementById("coursePopupContainer").classList.remove("hidden");
+  }
+</script>
 
 <script>
   function openPopup(event) {
@@ -748,53 +541,366 @@
   });
 </script>
 
+<script>
+  function submitCourseForm(event) {
+    event.preventDefault(); // Prevent the default form submission
 
+    const form = document.getElementById('courseForm');
+    const formData = new FormData(form);
 
+    fetch(window.location.href, { // Send to the same page
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => response.json()) // Expect JSON response
+      .then(data => {
+        if (data.status === 'success') {
+          const newCourse = data.course;
+          const filteredCoursesList = document.getElementById('filteredCoursesList');
+          const courseFilter = document.getElementById('courseFilter');
+          const selectedFilterProgramId = courseFilter.value;
+
+          // Create a new div for the added course
+          const courseDiv = document.createElement('div');
+          courseDiv.classList.add('border-b', 'py-2', 'flex', 'justify-between', 'items-center');
+          courseDiv.dataset.programId = newCourse.program_id;
+          courseDiv.innerHTML = `
+                              ${newCourse.name}
+                              <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="course" data-id="${newCourse.id}" onclick="confirmRemove(this)">-</button>
+                          `;
+
+          // Add the new course to the displayed list if it matches the current filter
+          if (selectedFilterProgramId === '' || selectedFilterProgramId === String(newCourse.program_id)) {
+            filteredCoursesList.appendChild(courseDiv);
+          }
+
+          closeCoursePopup(event); // Close the popup
+          // Optionally, provide a success message to the user
+          console.log(data.message);
+        } else if (data.status === 'error') {
+          document.getElementById('duplicateErrorPopup').querySelector('.text-gray-700').textContent = data.message;
+          document.getElementById('duplicateErrorPopup').style.display = 'flex';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while adding the course.');
+      });
+  }
+
+  function openCoursePopup(event) {
+    const selectedProgramId = document.getElementById("Program").value;
+    if (!selectedProgramId) {
+      alert("Please select a program before adding a course.");
+      return;
+    }
+    if (event) event.preventDefault(); // Prevent default link behavior
+
+    // Set the programId in the popup form to the currently selected program
+    document.getElementById('programId').value = selectedProgramId;
+
+    document.getElementById("coursePopupContainer").classList.remove("hidden");
+  }
+
+  function closeCoursePopup(event) {
+    document.getElementById("coursePopupContainer").classList.add("hidden");
+    // Optionally clear the course input field after closing
+    document.getElementById('coursePopupInput').value = '';
+  }
+
+  function filterCourses() {
+    const selectedProgramId = document.getElementById("Program").value;
+    const courseDropdown = document.getElementById("course");
+    const addCourseLink = document.getElementById("addCourseLink");
+    const filteredCoursesList = document.getElementById('filteredCoursesList');
+    const allCourseDivs = filteredCoursesList.querySelectorAll('div');
+
+    allCourseDivs.forEach(div => {
+      if (selectedProgramId === '' || div.dataset.programId === selectedProgramId) {
+        div.style.display = '';
+      } else {
+        div.style.display = 'none';
+      }
+    });
+  }
+
+  // Filter the displayed course list based on the selected program in the filter dropdown
+  document.getElementById('courseFilter').addEventListener('change', function() {
+    const selectedProgramId = this.value;
+    const courses = document.querySelectorAll('#filteredCoursesList > div');
+
+    courses.forEach(courseDiv => {
+      const divProgramId = courseDiv.dataset.programId;
+      if (selectedProgramId === '' || divProgramId === selectedProgramId) {
+        courseDiv.style.display = '';
+      } else {
+        courseDiv.style.display = 'none';
+      }
+    });
+  });
+
+  // Initially filter the course list when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('courseFilter').dispatchEvent(new Event('change'));
+  });
+
+  function confirmRemove(button) {
+    const removeId = button.dataset.id;
+    const removeType = button.dataset.type;
+
+    if (confirm(`Are you sure you want to remove this ${removeType}?`)) {
+      fetch(window.location.href, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `remove_id=${removeId}&remove_type=${removeType}`,
+        })
+        .then(response => {
+          // Instead of trying to parse JSON, check if the redirect happened
+          if (response.redirected) {
+            window.location.reload(); // Force a page reload after the redirect
+          } else {
+            // If not redirected (which shouldn't happen with your PHP),
+            // you might want to handle potential errors differently.
+            console.error('Deletion might have failed or no redirect occurred.');
+            alert('Deletion might have failed.');
+          }
+        })
+        .catch(error => {
+          console.error('Fetch error:', error);
+          alert('An error occurred during the fetch.');
+        });
+    }
+  }
+</script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Display Data Modal
-    document.getElementById('displayDataButton').addEventListener('click', function() {
-        document.getElementById('displayDataModal').classList.remove('hidden');
-    });
+  document.addEventListener('DOMContentLoaded', function() {
+    // Display Data Modal (assuming this is still relevant in your full context)
+    const displayDataButton = document.getElementById('displayDataButton');
+    if (displayDataButton) {
+      displayDataButton.addEventListener('click', function() {
+        const displayDataModal = document.getElementById('displayDataModal');
+        if (displayDataModal) {
+          displayDataModal.classList.remove('hidden');
+        }
+      });
+    }
 
     // Close Modal (using a generic class)
     document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', function(event) {
-            if (event.target.classList.contains('modal')) {
-                this.classList.add('hidden');
-            }
-        });
+      modal.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+          this.classList.add('hidden');
+        }
+      });
     });
 
-    // Course Filter
-    document.getElementById('courseFilter').addEventListener('change', function() {
+    // Course Filter (already present above, but ensuring it's here)
+    const courseFilterElement = document.getElementById('courseFilter');
+    if (courseFilterElement) {
+      courseFilterElement.addEventListener('change', function() {
         const selectedProgramId = this.value;
         const courseDivs = document.querySelectorAll('#filteredCoursesList div');
         courseDivs.forEach(div => {
-            const divProgramId = div.dataset.programId;
-            if (divProgramId === selectedProgramId) {
-                div.style.display = '';
-            } else {
-                div.style.display = 'none';
-            }
+          const divProgramId = div.dataset.programId;
+          if (selectedProgramId === '' || divProgramId === selectedProgramId) {
+            div.style.display = '';
+          } else {
+            div.style.display = 'none';
+          }
         });
-    });
-});
-
-function confirmRemove(button) {
-    const itemType = button.dataset.type;
-    const itemId = button.dataset.id;
-
-    if (window.confirm('Are you sure you want to remove this item?')) {
-        // Add your PHP/AJAX removal logic here
-        console.log('Remove', itemType, itemId);
-
-        // Example removal from the display:
-        const divToRemove = document.querySelector(`[data-<span class="math-inline">\{itemType\}\-id\="</span>{itemId}"]`);
-        if (divToRemove) {
-            divToRemove.remove();
-        }
+      });
+      // Initially filter on load
+      courseFilterElement.dispatchEvent(new Event('change'));
     }
-}
+  });
+</script>
+
+<script>
+  function openProgramPopup(event) {
+    if (event) event.preventDefault(); // Prevent default link behavior
+    const popupContainer = document.getElementById("popupContainer");
+    if (popupContainer) {
+      popupContainer.classList.remove("hidden");
+    }
+  }
+
+  function closePopup(event) {
+    if (event) event.preventDefault(); // Prevent default button behavior
+    const popupContainer = document.getElementById("popupContainer");
+    if (popupContainer) {
+      popupContainer.classList.add("hidden");
+    }
+  }
+
+  function submitProgramForm(event) {
+    if (event) event.preventDefault(); // Prevent default form submission
+    const programForm = document.getElementById("programForm");
+    if (programForm) {
+      programForm.submit(); // Submit the form programmatically
+    }
+  }
+
+  function openDepartmeevntPopup(event) {
+    if (event) event.preventDefault(); // Prevent default link behavior
+    const departmentPopupContainer = document.getElementById("departmentPopupContainer");
+    if (departmentPopupContainer) {
+      departmentPopupContainer.classList.remove("hidden");
+    }
+  }
+
+  function closeDepartmentPopup(event) {
+    if (event) event.preventDefault(); // Prevent default button behavior
+    const departmentPopupContainer = document.getElementById("departmentPopupContainer");
+    if (departmentPopupContainer) {
+      departmentPopupContainer.classList.add("hidden");
+    }
+  }
+
+  function submitDepartmentForm(event) {
+    if (event) event.preventDefault(); // Prevent default form submission
+    const departmentForm = document.getElementById("departmentForm");
+    if (departmentForm) {
+      departmentForm.submit(); // Submit the form programmatically
+    }
+  }
+
+  function openCoursePopup(event) { // Declared twice, keeping the first one
+    const selectedProgramId = document.getElementById("Program").value;
+    if (!selectedProgramId) {
+      alert("Please select a program before adding a course.");
+      return;
+    }
+    if (event) event.preventDefault(); // Prevent default link behavior
+    const coursePopupContainer = document.getElementById("coursePopupContainer");
+    if (coursePopupContainer) {
+      coursePopupContainer.classList.remove("hidden");
+    }
+  }
+
+  function closeCoursePopup(event) { // Declared twice, keeping the first one
+    if (event) event.preventDefault(); // Prevent default button behavior
+    const coursePopupContainer = document.getElementById("coursePopupContainer");
+    if (coursePopupContainer) {
+      coursePopupContainer.classList.add("hidden");
+    }
+  }
+
+  function submitCourseForm(event) { // Declared twice, keeping the first one
+    if (event) event.preventDefault(); // Prevent default form submission
+    const courseForm = document.getElementById("courseForm");
+    if (courseForm) {
+      courseForm.submit(); // Submit the form programmatically
+    }
+  }
+
+  // Close program popup if clicked outside the box
+  const popupContainer = document.getElementById("popupContainer");
+  if (popupContainer) {
+    popupContainer.addEventListener("click", function(event) {
+      if (event.target === this) closePopup(event);
+    });
+  }
+
+  // Close department popup if clicked outside the box
+  const departmentPopupContainer = document.getElementById("departmentPopupContainer");
+  if (departmentPopupContainer) {
+    departmentPopupContainer.addEventListener("click", function(event) {
+      if (event.target === this) closeDepartmentPopup(event);
+    });
+  }
+
+  // Close course popup if clicked outside the box
+  const coursePopupContainer = document.getElementById("coursePopupContainer");
+  if (coursePopupContainer) {
+    coursePopupContainer.addEventListener("click", function(event) {
+      if (event.target === this) closeCoursePopup(event);
+    });
+  }
+</script>
+
+<script>
+  function toggleUserType() {
+    const userType = document.getElementById('U_Type').value;
+    const programGroup = document.getElementById('program-group');
+    const departmentGroup = document.getElementById('department-group');
+    const personnelGroup = document.getElementById('personnel-group');
+    const courseGroup = document.getElementById('course-group');
+    const yrLvlGroup = document.getElementById('yrLVL-group');
+
+    if (userType === 'faculty') {
+      // Show Department and Personnel Type, hide Program, Course, and Year/Section
+      programGroup.style.display = 'none';
+      departmentGroup.style.display = 'block';
+      personnelGroup.style.display = 'block';
+      courseGroup.style.display = 'none';
+      yrLvlGroup.style.display = 'none';
+    } else {
+      // Show Program, Course, and Year/Section, hide Department and Personnel Type
+      programGroup.style.display = 'block';
+      departmentGroup.style.display = 'none';
+      personnelGroup.style.display = 'none';
+      courseGroup.style.display = 'block';
+      yrLvlGroup.style.display = 'block';
+    }
+  }
+
+  // Initial check on page load
+  window.onload = toggleUserType;
+
+  function filterCourses() {
+    const selectedProgramId = document.getElementById("Program").value;
+    const courseDropdown = document.getElementById("course");
+    const addCourseLink = document.getElementById("addCourseLink");
+
+    // Clear the course dropdown
+    courseDropdown.innerHTML = "";
+
+    if (!selectedProgramId) {
+      // If no program is selected, show "Choose Program First"
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Choose Program First";
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      courseDropdown.appendChild(defaultOption);
+
+      // Disable the "Add Course" link
+      addCourseLink.classList.add("pointer-events-none", "text-gray-400");
+      addCourseLink.classList.remove("text-blue-600", "underline");
+      return;
+    }
+
+    // Enable the "Add Course" link
+    addCourseLink.classList.remove("pointer-events-none", "text-gray-400");
+    addCourseLink.classList.add("text-blue-600", "underline");
+
+    // Add a default "Select Course" option
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Select Course";
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    courseDropdown.appendChild(defaultOption);
+
+    // Show only courses that match the selected program
+    const courseOptions = document.querySelectorAll("#course-options option");
+    courseOptions.forEach(option => {
+      if (option.dataset.programId === selectedProgramId) {
+        courseDropdown.appendChild(option.cloneNode(true));
+      }
+    });
+  }
+
+  function openCoursePopup(event) {
+    const selectedProgramId = document.getElementById("Program").value;
+    if (!selectedProgramId) {
+      alert("Please select a program before adding a course.");
+      return;
+    }
+    if (event) event.preventDefault(); // Prevent default link behavior
+    document.getElementById("coursePopupContainer").classList.remove("hidden");
+  }
 </script>

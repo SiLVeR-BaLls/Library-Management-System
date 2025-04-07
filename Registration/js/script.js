@@ -1,93 +1,93 @@
-// const courses = {
-//   cit: {
-//     advancedEducation: [
-//       "Doctor of Ind Tech (DIT) - Level I",
-//       "Master of Ind Tech (MIT) - Level I",
-//     ],
-//     baccalaureate: [
-//       "BS in Ind Tech (BIT) - Level III",
-//       "BS in Auto Tech (BSAT) - Level  III",
-//       "BS in Hotel & Rest Tech (BSHRT) - Level II",
-//       "BS in Elec Tech (BSELT) - Level III",
-//       "BS in Elec Eng (BSELX) - Level III",
-//       "BS in Fashion Design & Merch (BSFDM) - Level II",
-//     ],
-//     majors: [
-//       "Arch Drafting",
-//       "Auto Tech",
-//       "Const Tech",
-//       "Elec Tech",
-//       "Elec Eng Tech",
-//       "Fashion & Apparel Tech",
-//       "Furn & Cabinet Making Tech",
-//       "Mech Tech",
-//       "Refrig & Air Cond Tech",
-//       "Food Tech",
-//       "Welding & Fab Tech",
-//     ],
-//     eveningVocational: [
-//       "Arch Drafting",
-//       "Auto Mechanics",
-//       "Machine Shop Tech",
-//       "Welding & Fab",
-//       "HVACR Tech",
-//       "Apparel Tech",
-//       "Culinary Arts",
-//       "Ind Elec",
-//       "Cosmetology",
-//     ],
-//     etcCourses: [
-//       "Auto Servicing",
-//       "Ind Elec",
-//       "Dom Refrig & Air Cond",
-//       "Comm Refrig & Air Cond",
-//       "Dressmaking",
-//       "Lathe Machine Op",
-//       "Comm Cooking",
-//       "Consumer Elec Tech",
-//       "Plate Welding (SMAW)",
-//     ],
-//     additionalPrograms: [
-//       "BS in Entrep",
-//       "BS in Hosp Management",
-//       "BS in Tourism Management",
-//     ],
-//     hospitalityMajors: ["Culinary Arts", "Cruiseship"],
-//   },
-//   coe: {
-//     advancedEducation: [
-//       "Doctor of Ed",
-//       "MA in Ed",
-//       "MS in Home Econ",
-//       "MS in TVET Ed",
-//       "Master of Tech & Liv Ed",
-//     ],
-//     postBaccalaureate: ["Diploma in Teaching"],
-//     baccalaureate: ["BEEd ", "BSEd ", "BTVTEd", "BS in Ind Ed"],
-//   },
-//   cas: {
-//     advancedEducation: ["MS in Comp Sci", "MA in Math"],
-//     baccalaureate: [
-//       "BS in English",
-//       "BS in Human Services",
-//       "BS in Bio",
-//       "BS in Comm Dev",
-//       "BS in Comp Sci",
-//       "BS in Info Systems",
-//       "BS in Info Tech",
-//       "BS in Math",
-//     ],
-//   },
-//   cea: {
-//     baccalaureate: [
-//       "BS in Architecture",
-//       "BS in Civil Eng",
-//       "BS in Elec Eng",
-//       "BS in Mech Eng",
-//       "BS in Elec Eng (ECE)",
-//     ],
-//   },
-// };
+const courses = {
+  cit: {
+    advancedEducation: [
+      "Doctor of Ind Tech (DIT) - Level I",
+      "Master of Ind Tech (MIT) - Level I",
+    ],
+    baccalaureate: [
+      "BS in Ind Tech (BIT) - Level III",
+      "BS in Auto Tech (BSAT) - Level III",
+      "BS in Hotel & Rest Tech (BSHRT) - Level II",
+      "BS in Elec Tech (BSELT) - Level III",
+      "BS in Elec Eng (BSELX) - Level III",
+      "BS in Fashion Design & Merch (BSFDM) - Level II",
+    ],
+    majors: [
+      "Arch Drafting",
+      "Auto Tech",
+      "Const Tech",
+      "Elec Tech",
+      "Elec Eng Tech",
+      "Fashion & Apparel Tech",
+      "Furn & Cabinet Making Tech",
+      "Mech Tech",
+      "Refrig & Air Cond Tech",
+      "Food Tech",
+      "Welding & Fab Tech",
+    ],
+    eveningVocational: [
+      "Arch Drafting",
+      "Auto Mechanics",
+      "Machine Shop Tech",
+      "Welding & Fab",
+      "HVACR Tech",
+      "Apparel Tech",
+      "Culinary Arts",
+      "Ind Elec",
+      "Cosmetology",
+    ],
+    etcCourses: [
+      "Auto Servicing",
+      "Ind Elec",
+      "Dom Refrig & Air Cond",
+      "Comm Refrig & Air Cond",
+      "Dressmaking",
+      "Lathe Machine Op",
+      "Comm Cooking",
+      "Consumer Elec Tech",
+      "Plate Welding (SMAW)",
+    ],
+    additionalPrograms: [
+      "BS in Entrep",
+      "BS in Hosp Management",
+      "BS in Tourism Management",
+    ],
+    hospitalityMajors: ["Culinary Arts", "Cruiseship"],
+  },
+  coe: {
+    advancedEducation: [
+      "Doctor of Ed",
+      "MA in Ed",
+      "MS in Home Econ",
+      "MS in TVET Ed",
+      "Master of Tech & Liv Ed",
+    ],
+    postBaccalaureate: ["Diploma in Teaching"],
+    baccalaureate: ["BEEd ", "BSEd ", "BTVTEd", "BS in Ind Ed"],
+  },
+  cas: {
+    advancedEducation: ["MS in Comp Sci", "MA in Math"],
+    baccalaureate: [
+      "BS in English",
+      "BS in Human Services",
+      "BS in Bio)",
+      "BS in Comm Dev",
+      "BS in Comp Sci",
+      "BS in Info Systems",
+      "BS in Info Tech",
+      "BS in Math",
+    ],
+  },
+  cea: {
+    baccalaureate: [
+      "BS in Architecture",
+      "BS in Civil Eng",
+      "BS in Elec Eng",
+      "BS in Mech Eng",
+      "BS in Elec Eng (ECE)",
+    ],
+  },
+};
 
 function updateCourses() {
   const collegeSelect = document.getElementById("college");
@@ -116,6 +116,27 @@ function updateCourses() {
 document.getElementById("college").addEventListener("change", updateCourses);
 
 
+//repaet password
+
+// Form validation on submit
+document
+  .getElementById("registration-form")
+  .addEventListener("submit", function (event) {
+    const password = document.getElementById("password").value;
+    const passwordRepeat = document.getElementById("password-repeat").value;
+    const errorMessage = document.getElementById("error-message");
+
+    if (password !== passwordRepeat) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Passwords do not match.",
+      });
+      event.preventDefault(); // Prevent form submission
+    } else {
+      errorMessage.textContent = ""; // Clear error message
+    }
+  });
 
 //password visible
 function togglePasswordVisibility(passwordId, iconId) {
@@ -190,6 +211,8 @@ window.onload = displayErrorMessage;
 //idno problem
 
 
+
+
 const nextBtn = document.getElementById('nextBtn');
 const prevBtn = document.getElementById('prevBtn');
 const submitBtn = document.getElementById('submitBtn');
@@ -197,36 +220,12 @@ const formSteps = document.querySelectorAll('.form-step');
 let currentStep = 0;
 
 nextBtn.addEventListener('click', () => {
-    const currentFormStep = formSteps[currentStep];
-    const requiredFields = currentFormStep.querySelectorAll('[required]');
-    let isValid = true;
-
-    // Clear any previous error message
-    const errorMessageContainer = document.getElementById('error-message');
-    errorMessageContainer.style.display = 'none'; // Hide error message initially
-    errorMessageContainer.textContent = '';
-
-    // Loop through each required field and check if it's empty
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            isValid = false;
-            field.classList.add('invalid'); // Highlight the empty field
-        } else {
-            field.classList.remove('invalid'); // Remove highlight if the field is filled
-        }
-    });
-
-    if (!isValid) {
-        // Show error message if fields are empty
-        errorMessageContainer.textContent = 'Please fill in all required fields before proceeding.';
-        errorMessageContainer.style.display = 'block'; // Display error message
-    } else {
-        // If valid, proceed to the next step
-        currentFormStep.classList.remove('form-step-active');
+    if (currentStep < formSteps.length - 1) {
+        formSteps[currentStep].classList.remove('form-step-active');
         currentStep++;
         formSteps[currentStep].classList.add('form-step-active');
-        updateButtons();
     }
+    updateButtons();
 });
 
 prevBtn.addEventListener('click', () => {
@@ -235,6 +234,13 @@ prevBtn.addEventListener('click', () => {
         currentStep--;
         formSteps[currentStep].classList.add('form-step-active');
     }
+    updateButtons();
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+    currentStep = 0;
+    formSteps.forEach(step => step.classList.remove('form-step-active'));
+    formSteps[0].classList.add('form-step-active');
     updateButtons();
 });
 
