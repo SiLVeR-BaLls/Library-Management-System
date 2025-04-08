@@ -112,8 +112,8 @@ if ($conn->connect_error) {
             <legend class="text-lg font-semibold">Personal Information</legend>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="Sex" class="text-sm font-medium">Sex</label>
-                    <select id="Sex" name="Sex" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
+                    <label for="gender" class="text-sm font-medium">Sex</label>
+                    <select id="gender" name="gender" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
                         <option value="" disabled selected>Select Sex</option>
                         <option value="m">Male</option>
                         <option value="f">Female</option>

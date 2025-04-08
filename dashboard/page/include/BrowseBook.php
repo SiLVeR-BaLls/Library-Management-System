@@ -162,44 +162,48 @@ if ($conn && !$conn->connect_error) {
         </table>
 
         <div class="top-borrowed-books p-3 bg-gray-100 rounded-lg shadow-md w-1/5">
-            <h3 class="text-lg font-semibold mb-3">Top 3 Most Borrowed Books</h3>
-            <ul>
-                <?php
-                // Query to fetch the top 3 most borrowed books
-                $topBorrowedQuery = "
-                    SELECT 
-                        book.B_title, 
-                        COUNT(book_copies.book_copy_ID) AS borrow_count
-                    FROM 
-                        book
-                    INNER JOIN 
-                        book_copies ON book.book_id = book_copies.book_id
-                    WHERE 
-                        book_copies.status = 'Borrowed'
-                    GROUP BY 
-                        book.B_title
-                    ORDER BY 
-                        borrow_count DESC
-                    LIMIT 3;
-                ";
+    <h3 class="text-lg font-semibold mb-3">Top Borrowed Book Copies</h3>
+    <ul>
+        <?php
+        // Query to fetch count of borrowed copies per book and the actual display title
+        $query = "
+           SELECT 
+    bb.B_title AS book_title, 
+    COUNT(bb.book_copy) AS borrow_count
+FROM 
+    borrow_book b
+LEFT JOIN 
+    book_copies bb ON b.book_copy = bb.book_copy  -- Left join for all book copies
+RIGHT JOIN 
+    book_copies bb2 ON b.book_copy = bb2.book_copy  -- Right join for all borrow records
+GROUP BY 
+    bb.B_title
+ORDER BY 
+    borrow_count DESC
+LIMIT 3;
 
-                $topBorrowedResult = $conn->query($topBorrowedQuery);
+        ";
 
-                if ($topBorrowedResult && $topBorrowedResult->num_rows > 0):
-                    while ($topBook = $topBorrowedResult->fetch_assoc()):
-                        ?>
-                        <li class="mb-2">
-                            <span class="font-medium"><?php echo htmlspecialchars($topBook['B_title']); ?></span> -
-                            <span class="text-gray-600"><?php echo $topBook['borrow_count']; ?> times borrowed</span>
-                        </li>
-                        <?php
-                    endwhile;
-                else:
-                    ?>
-                    <li class="text-gray-600">No data available.</li>
-                <?php endif; ?>
-            </ul>
-        </div>
+        $result = $conn->query($query);
+
+        if ($result && $result->num_rows > 0):
+            while ($row = $result->fetch_assoc()):
+        ?>
+               <li class="mb-2">
+    <strong><?php echo htmlspecialchars($row['book_title']); ?> -</strong> 
+    <span class="text-gray-600">(<?php echo $row['borrow_count']; ?>)</span>
+</li>
+
+        <?php
+            endwhile;
+        else:
+        ?>
+            <li class="text-red-600">No borrowed books found.</li>
+        <?php endif; ?>
+    </ul>
+</div>
+
+
     </div>
 
     <div class="flex justify-center items-center space-x-2 my-3 flex-col md:flex-row md:space-x-4">

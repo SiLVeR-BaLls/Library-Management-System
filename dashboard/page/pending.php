@@ -187,6 +187,18 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
                                 <strong class="block text-gray-700 text-xs font-semibold">First Name:</strong>
                                 <span class="block text-black text-base overflow-y-auto max-h-20">${user.Fname}</span>
                             </div>
+                          <div class="mb-2">
+    <strong class="block text-gray-700 text-xs font-semibold">Sex:</strong>
+    <span class="block text-black text-base overflow-y-auto max-h-20">
+        ${
+            user.gender === 'm' ? 'Male' :
+            user.gender === 'f' ? 'Female' :
+            user.gender === 'O' ? 'Other' :
+            'Gender Unidentified'
+        }
+    </span>
+</div>
+
                             <div class="mb-2">
                                 <strong class="block text-gray-700 text-xs font-semibold">Middle Name:</strong>
                                 <span class="block text-black text-base overflow-y-auto max-h-20">${user.Mname || 'N/A'}</span>
