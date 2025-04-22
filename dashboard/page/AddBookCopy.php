@@ -220,9 +220,10 @@ $fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(
 
             <!-- Purchase Price -->
             <div class="w-full sm:w-1/2 lg:w-1/3 mb-4">
-              <label for="purchasePrice" class="form-label">Purchase Price</label>
-              <input type="number" step="0.1" id="purchasePrice" name="purchasePrice" class="form-control w-full">
-            </div>
+  <label for="purchasePrice" class="form-label">Purchase Price</label>
+  <input type="number" step="0.01" min="0" id="purchasePrice" name="purchasePrice" class="form-control w-full" placeholder="0.00">
+</div>
+
             <!-- Copy Number -->
             <div class="w-full sm:w-1/2 lg:w-1/3 mb-4">
               <label for="copyNumber" class="form-label">Number of Copy</label>

@@ -260,13 +260,39 @@
                             <label for="ISSN" class="block text-gray-700 font-medium mb-1">ISSN:</label> <!-- Reduced margin -->
                             <input type="text" id="ISSN" name="ISSN" value="<?php echo htmlspecialchars($book['ISSN']); ?>" class="shadow-sm border rounded-lg w-full py-1 px-2 text-gray-700 focus:outline-none focus:ring focus:ring-blue-300"> <!-- Reduced padding -->
                         </div>
-                        <div>
-                            <label for="MT" class="block text-gray-700 font-medium mb-1">Material Type:</label> <!-- Reduced margin -->
-                            <input type="text" id="MT" name="MT" value="<?php echo htmlspecialchars($book['MT']); ?>" class="shadow-sm border rounded-lg w-full py-1 px-2 text-gray-700 focus:outline-none focus:ring focus:ring-blue-300"> <!-- Reduced padding -->
+                        <div class="mt-6">
+                            <label for="MT" class="block text-sm font-medium text-gray-700">Material Type</label>
+                            <select name="MT" id="MT" class="w-full px-4 py-2 border rounded-md">
+                                <option value="" <?php echo empty($book['MT']) ? 'selected' : ''; ?>>Select Material Type</option>
+                                <option value="Book" <?php echo $book['MT'] === 'Book' ? 'selected' : ''; ?>>Book</option>
+                                <option value="Computer File" <?php echo $book['MT'] === 'Computer File' ? 'selected' : ''; ?>>Computer File</option>
+                                <option value="Electronic Book" <?php echo $book['MT'] === 'Electronic Book' ? 'selected' : ''; ?>>Electronic Book (E-Book)</option>
+                                <option value="Equipment" <?php echo $book['MT'] === 'Equipment' ? 'selected' : ''; ?>>Equipment</option>
+                                <option value="Kit" <?php echo $book['MT'] === 'Kit' ? 'selected' : ''; ?>>Kit</option>
+                                <option value="Manuscript Language Material" <?php echo $book['MT'] === 'Manuscript Language Material' ? 'selected' : ''; ?>>Manuscript Language Material</option>
+                                <option value="Map" <?php echo $book['MT'] === 'Map' ? 'selected' : ''; ?>>Map</option>
+                                <option value="Mixed Material" <?php echo $book['MT'] === 'Mixed Material' ? 'selected' : ''; ?>>Mixed Material</option>
+                                <option value="Music" <?php echo $book['MT'] === 'Music' ? 'selected' : ''; ?>>Music (Printed)</option>
+                                <option value="Picture" <?php echo $book['MT'] === 'Picture' ? 'selected' : ''; ?>>Picture</option>
+                                <option value="Serial" <?php echo $book['MT'] === 'Serial' ? 'selected' : ''; ?>>Serial</option>
+                                <option value="Musical Sound Recording" <?php echo $book['MT'] === 'Musical Sound Recording' ? 'selected' : ''; ?>>Musical Sound Recording</option>
+                                <option value="NonMusical Sound Recording" <?php echo $book['MT'] === 'NonMusical Sound Recording' ? 'selected' : ''; ?>>NonMusical Sound Recording</option>
+                                <option value="Video" <?php echo $book['MT'] === 'Video' ? 'selected' : ''; ?>>Video</option>
+                                <option value="Journal" <?php echo $book['MT'] === 'Journal' ? 'selected' : ''; ?>>Journal</option>
+                            </select>
                         </div>
-                        <div>
-                            <label for="ST" class="block text-gray-700 font-medium mb-1">Shelf Type:</label> <!-- Reduced margin -->
-                            <input type="text" id="ST" name="ST" value="<?php echo htmlspecialchars($book['ST']); ?>" class="shadow-sm border rounded-lg w-full py-1 px-2 text-gray-700 focus:outline-none focus:ring focus:ring-blue-300"> <!-- Reduced padding -->
+                        <div class="mt-6">
+                            <label for="ST" class="block text-sm font-medium text-gray-700">SubType</label>
+                            <select name="ST" id="ST" class="w-full px-4 py-2 border rounded-md">
+                                <option value="Not Assigned" <?php echo $book['ST'] === 'Not Assigned' ? 'selected' : ''; ?>>No SubType Assigned</option>
+                                <option value="Braille" <?php echo $book['ST'] === 'Braille' ? 'selected' : ''; ?>>Braille</option>
+                                <option value="Hardcover" <?php echo $book['ST'] === 'Hardcover' ? 'selected' : ''; ?>>Hardcover</option>
+                                <option value="LargePrint" <?php echo $book['ST'] === 'LargePrint' ? 'selected' : ''; ?>>Large Print</option>
+                                <option value="Paperback" <?php echo $book['ST'] === 'Paperback' ? 'selected' : ''; ?>>Paperback</option>
+                                <option value="Picture Book" <?php echo $book['ST'] === 'Picture Book' ? 'selected' : ''; ?>>Picture Book</option>
+                                <option value="Dictionary" <?php echo $book['ST'] === 'Dictionary' ? 'selected' : ''; ?>>Dictionary</option>
+                                <option value="Other" <?php echo $book['ST'] === 'Other' ? 'selected' : ''; ?>>Other</option>
+                            </select>
                         </div>
                         <div>
                             <label for="place" class="block text-gray-700 font-medium mb-1">Place:</label> <!-- Reduced margin -->
@@ -341,8 +367,8 @@
 
                     <!-- Action Buttons -->
                     <div class="flex justify-end space-x-2"> <!-- Reduced spacing -->
-                        <button type="submit" name="update" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg focus:outline-none focus:ring focus:ring-green-300">Update Book</button> <!-- Reduced padding -->
-                        <button type="submit" name="delete" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg focus:outline-none focus:ring focus:ring-red-300" onclick="return confirm('Are you sure you want to delete this book? This action cannot be undone.');">Delete Book</button> <!-- Reduced padding -->
+                        <button type="submit" name="update" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg focus:outline-none focus:ring focus:ring-green-300" onclick="return confirm('Are you sure you want to update this book?');">Update Book</button> <!-- Added confirmation -->
+                        <button type="submit" name="delete" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg focus:outline-none focus:ring focus:ring-red-300" onclick="return confirm('Are you sure you want to delete this book? This action cannot be undone.');">Delete Book</button> <!-- Added confirmation -->
                     </div>
                 </form>
             <?php endif; ?>

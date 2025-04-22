@@ -1,4 +1,8 @@
 
+
+<!-- add another  color for contain to contrast with the background color -->
+
+
 <?php
       include '../config.php';
         error_reporting(E_ALL);

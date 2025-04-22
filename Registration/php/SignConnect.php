@@ -1,6 +1,5 @@
 <?php
 // Configuration
-// Configuration
 $db_host = 'localhost';
 $db_username = 'root';
 $db_password = '';
@@ -19,6 +18,20 @@ if ($conn->connect_error) {
     $message_type = "";
     $gender = $Sname = $username = ""; // Empty defaults
 
+    // Fetch courses and max_year
+    $courses = [];
+    $result = $conn->query("SELECT Course.id, Course.name, Course.college_id, Course.max_year, College.name AS college_name 
+                            FROM Course 
+                            JOIN College ON Course.college_id = College.id 
+                            ORDER BY Course.name ASC");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $courses[] = $row;
+        }
+    } else {
+        echo "Error fetching courses: " . $conn->error;
+    }
+
     // Insert user data into tables
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Get POST data
@@ -36,15 +49,14 @@ if ($conn->connect_error) {
         $username = $_POST['username'];
         $password = $_POST['password']; // No hashing
         $IDno = $_POST['IDno'];
-       $U_Type = $_POST['U_Type'];
-        // $status = $_POST['status'];
+        $U_Type = $_POST['U_Type'];
         $college = $_POST['college']??'';
         $course = $_POST['course']??'';
         $yrLVL = $_POST['yrLVL']??'';
         $personnel_type = $_POST['personnel_type']??'';
-      $status_details ='active';
-            $A_LVL = '3';
-            $status_log = 'pending';
+        $status_details ='active';
+        $A_LVL = '3';
+        $status_log = 'pending';
 
         // Check if IDno already exists
         $query = "SELECT * FROM users_info WHERE IDno = ?";
@@ -64,10 +76,6 @@ if ($conn->connect_error) {
             $stmt->bind_param("sssssssssssssssssssssss", $IDno, $Fname, $Sname, $Mname, $Ename, $gender, $photo, $municipality, $barangay, $province, $DOB, $college, $course,  $yrLVL, $A_LVL, $status_details, $personnel_type, $username, $password, $U_Type, $status_log, $email, $contact );
             $stmt->execute();
 
- 
-            
-      
-           
             $message = "Registration successful!";
             $message_type = "success";
         }
@@ -101,10 +109,10 @@ if ($conn->connect_error) {
                     if (type === 'success') {
                         window.location.href = '../log_in.php'; // Redirect to the index page
                     } else if (type === 'error') {
-                // Redirect back to the registration page using history.back()
-                // This will take the user to the previous page in their history stack
-                window.history.back();
-              }
+                        // Redirect back to the registration page using history.back()
+                        // This will take the user to the previous page in their history stack
+                        window.history.back();
+                    }
                 }
             });
         }
@@ -116,7 +124,6 @@ if ($conn->connect_error) {
                 case 'm':
                     return 'Mr';
                 case 'o':
-
                     return 'Msr';
             }
         }

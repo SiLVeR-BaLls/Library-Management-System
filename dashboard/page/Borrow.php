@@ -57,7 +57,7 @@ include '../config.php'; // Include the configuration file for database connecti
           <div id="scannerModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 hidden">
             <div class="bg-white p-4 rounded-lg shadow-lg relative">
               <video id="scannerVideo" class="w-full h-auto"></video>
-              <button onclick="stopScanner()" class="absolute top-2 right-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700">Close</button>
+              <button type="button" onclick="stopScanner()" class="absolute top-2 right-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-700">Close</button>
             </div>
           </div>
 

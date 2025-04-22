@@ -95,9 +95,7 @@
                                     <td class="py-4 px-6 border-b">
                                         <select class="border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 role-select" name="U_Type[<?= $user['IDno'] ?>]" data-id="<?= $user['IDno'] ?>" data-current-role="<?= $user['U_Type'] ?>">
                                             <option value="admin" <?= $user['U_Type'] == 'admin' ? 'selected' : '' ?>>Admin</option>
-                                            <option value="student" <?= $user['U_Type'] == 'student' ? 'selected' : '' ?>>Student</option>
-                                            <option value="professor" <?= $user['U_Type'] == 'professor' ? 'selected' : '' ?>>Professor</option>
-                                            <option value="staff" <?= $user['U_Type'] == 'staff' ? 'selected' : '' ?>>Staff</option>
+                                            <option value="faculty" <?= $user['U_Type'] == 'faculty' ? 'selected' : '' ?>>Faculty</option>
                                             <option value="librarian" <?= $user['U_Type'] == 'librarian' ? 'selected' : '' ?>>Librarian</option>
                                         </select>
                                     </td>

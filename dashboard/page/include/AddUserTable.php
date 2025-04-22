@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#f2f2f2]  justify-center items-center px-10">
+<div class="min-h-screen bg-[#f2f2f2] justify-center items-center px-10">
   <center class="bg-green-100 p-4 rounded-md shadow-md">
     <h1 class="text-2xl font-bold">Add User</h1>
   </center>
@@ -48,7 +48,8 @@
         </div>
         <div>
           <label for="DOB" class="text-sm font-medium">Birthdate</label>
-          <input id="DOB" name="DOB" type="date" class="w-full mt-1 border-gray-300 rounded-md shadow-sm" required>
+          <input id="DOB" name="DOB" type="date" class="w-full mt-1 border-gray-300 rounded-md shadow-sm" required
+            max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>">
         </div>
       </div>
     </fieldset>
@@ -99,32 +100,32 @@
 
         <div id="user-info" class="space-y-4">
 
-          <!-- Program -->
+          <!-- College -->
           <div id="program-group">
-            <label for="Program" class="text-sm font-medium">Program</label>
-            <select id="Program" name="Program" class="form-select w-full" onchange="filterCourses()">
-              <option value="" disabled selected>Select Program</option>
-              <?php foreach ($programs as $program): ?>
-                <option value="<?php echo $program['id']; ?>">
-                  <?php echo htmlspecialchars($program['name']); ?>
+            <label for="college" class="text-sm font-medium">College</label>
+            <select id="college" name="college" class="form-select w-full">
+              <option value="" disabled selected>Select College</option>
+              <?php foreach ($colleges as $college): ?>
+                <option value="<?php echo htmlspecialchars($college['name']); ?>">
+                  <?php echo htmlspecialchars($college['name']); ?>
                 </option>
               <?php endforeach; ?>
             </select>
-            <a href="#" onclick="openProgramPopup()" class="text-blue-600 underline">Add</a>
+            <button type="button" onclick="openProgramPopup()" class="text-blue-600 underline">Add</button>
           </div>
 
           <!-- Department -->
-          <div id="department-group" class="hidden">
-            <label for="college" class="text-sm font-medium">Department</label>
-            <select id="college" name="college" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
+          <div id="department-group">
+            <label for="department" class="text-sm font-medium">Department</label>
+            <select id="department" name="department" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
               <option value="" disabled selected>Select Department</option>
               <?php foreach ($departments as $department): ?>
-                <option value="<?php echo $department['id']; ?>">
+                <option value="<?php echo htmlspecialchars($department['name']); ?>">
                   <?php echo htmlspecialchars($department['name']); ?>
                 </option>
               <?php endforeach; ?>
             </select>
-            <a href="#" onclick="openDepartmentPopup(event)" class="text-blue-600 underline">Add</a>
+            <button type="button" onclick="openDepartmentPopup()" class="text-blue-600 underline">Add</button>
           </div>
 
           <!-- Personnel Type -->
@@ -141,9 +142,18 @@
           <div id="course-group">
             <label for="course" class="text-sm font-medium">Course</label>
             <select id="course" name="course" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
-              <option value="" disabled selected>Choose Program First</option>
+              <option value="" disabled selected>Select Course</option>
+              <?php if (!empty($courses)): ?>
+                <?php foreach ($courses as $course): ?>
+                  <option value="<?php echo htmlspecialchars($course['name']); ?>"> <!-- Use course name as value -->
+                    <?php echo htmlspecialchars($course['name']); ?>
+                  </option>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <option value="" disabled>No courses available</option>
+              <?php endif; ?>
             </select>
-            <a href="#" id="addCourseLink" onclick="openCoursePopup(event)" class="pointer-events-none text-gray-400">Add</a>
+            <button type="button" id="addCourseLink" onclick="openCoursePopup()" class="text-blue-600 underline">Add</button>
           </div>
 
           <!-- Year and Section (Dynamic based on course table) -->
@@ -207,7 +217,21 @@
     </div>
   </form>
 
-  <button id="displayDataButton" class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:ring-4 focus:ring-blue-300">
+  <?php if (!empty($_GET['success']) && $_GET['success'] === 'true'): ?>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('registration-form').reset(); // Clear the form
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Data submitted successfully!',
+          confirmButtonText: 'OK'
+        });
+      });
+    </script>
+  <?php endif; ?>
+
+  <button type="button" id="displayDataButton" class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:ring-4 focus:ring-blue-300">
     Display Data
   </button>
   <div id="displayDataModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" style="z-index: 10000;">
@@ -215,6 +239,7 @@
       <h2 class="text-xl font-bold mb-4">Added Data</h2>
 
       <div class="flex space-x-4">
+        <!-- Departments Section -->
         <div class="w-full">
           <h3 class="text-lg font-semibold mb-2">Departments</h3>
           <div id="filteredDepartmentsList" class="overflow-y-auto max-h-96">
@@ -227,84 +252,52 @@
           </div>
         </div>
 
+        <!-- Colleges Section -->
         <div class="w-full">
-          <h3 class="text-lg font-semibold mb-2">Programs</h3>
-          <div id="filteredProgramsList" class="overflow-y-auto max-h-96">
-            <?php foreach ($programs as $program): ?>
-              <div class="border-b py-2 flex justify-between items-center" data-program-id="<?php echo $program['id']; ?>">
-                <?php echo htmlspecialchars($program['name']); ?>
-                <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="program" data-id="<?php echo $program['id']; ?>" onclick="confirmRemove(this)">-</button>
+          <h3 class="text-lg font-semibold mb-2">Colleges</h3>
+          <div id="filteredCollegesList" class="overflow-y-auto max-h-96">
+            <?php foreach ($colleges as $college): ?>
+              <div class="border-b py-2 flex justify-between items-center" data-college-id="<?php echo $college['id']; ?>">
+                <?php echo htmlspecialchars($college['name']); ?>
+                <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="college" data-id="<?php echo $college['id']; ?>" onclick="confirmRemove(this)">-</button>
               </div>
             <?php endforeach; ?>
           </div>
         </div>
 
+        <!-- Courses Section -->
         <div class="w-full">
-          <h3 class="text-lg font-semibold mb-2">Courses</h3>
-          <div class="mb-4">
-            <label for="courseFilter" class="block text-sm font-medium">Filter by Program:</label>
-            <select id="courseFilter" class="w-full border rounded px-3 py-2">
-              <?php foreach ($programs as $program): ?>
-                <option value="<?php echo $program['id']; ?>"><?php echo htmlspecialchars($program['name']); ?></option>
+          <div class="flex justify-between items-center gap-4 mb-4">
+            <h3 class="text-lg font-semibold">Courses</h3>
+            <select id="courseFilter" class="px-3 py-2">
+              <option value="" selected>All Colleges</option>
+              <?php foreach ($colleges as $college): ?>
+                <option value="<?php echo $college['id']; ?>"><?php echo htmlspecialchars($college['name']); ?></option>
               <?php endforeach; ?>
             </select>
           </div>
           <div id="filteredCoursesList" class="overflow-y-auto max-h-96">
-            <?php foreach ($courses as $course): ?>
-              <div class="border-b py-2 flex justify-between items-center" data-program-id="<?php echo $course['program_id']; ?>">
-                <?php echo htmlspecialchars($course['name']); ?>
-                <input type="number" id="max_year_<?php echo $course['id']; ?>" name="max_year_<?php echo $course['id']; ?>" value="<?php echo htmlspecialchars($course['max_year'] ?? ''); ?>" data-original-value="<?php echo htmlspecialchars($course['max_year'] ?? ''); ?>" min="0" max="1" step="1" onwheel="this.blur()" oninput="this.value = (this.value === '0' || this.value === '1') ? this.value : ''; enableSaveButton(<?php echo $course['id']; ?>)">
-                <button id="saveButton_<?php echo $course['id']; ?>" onclick="saveMaxYear(<?php echo $course['id']; ?>)" disabled>Save</button>
-                <button class="bg-red-500 text-white px-2 py-1 rounded ml-2" data-type="course" data-id="<?php echo $course['id']; ?>" onclick="confirmRemove(this)">-</button>
-              </div>
-            <?php endforeach; ?>
+            <?php if (isset($courses) && is_array($courses) && !empty($courses)): ?>
+              <?php foreach ($courses as $course): ?>
+                <?php 
+                  $courseId = isset($course['id']) ? htmlspecialchars($course['id']) : '';
+                  $collegeId = isset($course['college_id']) ? htmlspecialchars($course['college_id']) : '';
+                  $courseName = isset($course['name']) ? htmlspecialchars($course['name']) : 'Unknown Course';
+                ?>
+                <div class="py-2 flex justify-between items-center" data-course-id="<?php echo $courseId; ?>" data-college-id="<?php echo $collegeId; ?>">
+                  <span><?php echo $courseName; ?></span>
+                  <div class="flex items-center space-x-2">
+                    <input type="number" min="0" max="1" value="<?php echo htmlspecialchars($course['max_year'] ?? 0); ?>" 
+                           class="w-16 px-2 py-1 text-center" 
+                           onchange="updateMaxYear(<?php echo $courseId; ?>, this.value)">
+                    <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="course" data-id="<?php echo $courseId; ?>" onclick="confirmRemove(this)">-</button>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <p>No courses available.</p>
+            <?php endif; ?>
           </div>
-
-          <script>
-            function enableSaveButton(courseId) {
-              const inputElement = document.getElementById('max_year_' + courseId);
-              const saveButton = document.getElementById('saveButton_' + courseId);
-
-              if (inputElement.value !== inputElement.dataset.originalValue) {
-                saveButton.disabled = false;
-              } else {
-                saveButton.disabled = true;
-              }
-            }
-
-            function saveMaxYear(courseId) {
-              const newValue = document.getElementById('max_year_' + courseId).value;
-              const saveButton = document.getElementById('saveButton_' + courseId);
-
-              // Disable the button during saving
-              saveButton.disabled = true;
-              saveButton.textContent = 'Saving...';
-
-              fetch('', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                  },
-                  body: 'save_max_year=true&course_id=' + courseId + '&new_value=' + newValue
-                })
-                .then(response => response.text())
-                .then(data => {
-                  console.log('Server response:', data);
-                  saveButton.textContent = 'Save'; // Revert button text
-                  const inputElement = document.getElementById('max_year_' + courseId);
-                  inputElement.dataset.originalValue = newValue; // Update original value
-                  saveButton.disabled = true; // Disable after successful save
-                  // Optionally update the UI to show success
-                })
-                .catch(error => {
-                  console.error('Error saving max year:', error);
-                  saveButton.textContent = 'Error'; // Show error on button
-                  saveButton.disabled = false; // Re-enable on error
-                  // Optionally update the UI to show an error
-                });
-            }
-          </script>
-
         </div>
       </div>
     </div>
@@ -312,32 +305,44 @@
 
   <div id="confirmationModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" style="z-index: 10001;">
     <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-96">
-      <p>Are you sure you want to remove this item?</p>
+      <p id="confirmationMessage">Are you sure you want to remove this item?</p>
       <div class="flex justify-end mt-4">
         <button id="confirmRemoveButton" class="bg-red-500 text-white px-4 py-2 rounded mr-2">Remove</button>
-        <button id="cancelRemoveButton" class="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+        <button id="cancelRemoveButton" class="bg-gray-400 text-white px-4 py-2 rounded" onclick="closeConfirmationModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duplication Error Popup -->
+  <div id="duplicationErrorPopup" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" style="z-index: 10001;">
+    <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold mb-4 text-red-500">Duplication Error</h2>
+      <p id="duplicationErrorMessage" class="text-gray-700"></p>
+      <div class="flex justify-end mt-4">
+        <button type="button" onclick="closeDuplicationErrorPopup()" class="bg-blue-500 text-white px-4 py-2 rounded">OK</button>
       </div>
     </div>
   </div>
 </div>
 
-<style>
-  /* ...existing styles... */
-  #popupContainer {
-    z-index: 9999;
-    /* Ensure the popup is above other elements like the sidebar */
-  }
-</style>
+<div id="message" class="text-center mb-4">
+  <?php
+  if (!empty($_GET['message'])): ?>
+    <p class="<?php echo $_GET['type'] === 'success' ? 'text-green-500' : 'text-red-500'; ?>">
+      <?php echo htmlspecialchars($_GET['message']); ?>
+    </p>
+  <?php endif; ?>
+</div>
 
 <!-- Program Popup -->
 <div id="popupContainer" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
   <div id="popupBox" class="bg-white p-6 rounded-lg shadow-lg w-80">
     <h2 class="text-xl font-bold mb-2">Add New Program</h2>
-    <form id="programForm" method="post" action="">
+    <form id="programForm" method="post" action="" class="ajax-form">
       <input type="text" name="newProgram" id="popupInput" class="w-full border rounded px-3 py-2 mb-4" placeholder="Enter Program Name" required>
       <div class="flex justify-end gap-2">
         <button type="button" onclick="closePopup(event)" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel</button>
-        <button type="button" onclick="submitProgramForm(event)" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Confirm</button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Confirm</button>
       </div>
     </form>
   </div>
@@ -347,11 +352,11 @@
 <div id="departmentPopupContainer" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
   <div id="departmentPopupBox" class="bg-white p-6 rounded-lg shadow-lg w-80">
     <h2 class="text-xl font-bold mb-2">Add New Department</h2>
-    <form id="departmentForm" method="post" action="">
+    <form id="departmentForm" method="post" action="" class="ajax-form">
       <input type="text" name="newDepartment" id="departmentPopupInput" class="w-full border rounded px-3 py-2 mb-4" placeholder="Enter Department Name" required>
       <div class="flex justify-end gap-2">
-        <button type="button" onclick="closeDepartmentPopup(event)" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel</button>
-        <button type="button" onclick="submitDepartmentForm(event)" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Confirm</button>
+        <button type="button" onclick="closeDepartmentPopup()" class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Confirm</button>
       </div>
     </form>
   </div>
@@ -359,36 +364,55 @@
 
 <!-- Course Popup -->
 <div id="coursePopupContainer" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-  <div id="coursePopupBox" class="bg-white p-6 rounded-lg shadow-lg w-80">
-    <h2 class="text-xl font-bold mb-2">Add New Course</h2>
-    <form id="courseForm" method="post" action="">
-      <div class="mb-4">
-        <label for="programId" class="block text-sm font-medium">Program</label>
-        <select name="programId" id="programId" class="w-full border rounded px-3 py-2" required>
-          <option value="" disabled selected>Select Program</option>
-          <?php foreach ($programs as $program): ?>
-            <option value="<?php echo $program['id']; ?>">
-              <?php echo htmlspecialchars($program['name']); ?>
+  <div id="coursePopupBox" class="bg-white p-6 rounded-lg shadow-lg w-96">
+    <h2 class="text-xl font-bold mb-4 text-center">Add New Course</h2>
+    <form id="courseForm" method="post" action="AddUser.php" class="space-y-4" onsubmit="closeCoursePopupAfterSubmit(event)">
+      <div>
+        <label for="programId" class="block text-sm font-medium text-gray-700">College:</label>
+        <select id="programId" name="programId" 
+                class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+          <option value="" disabled selected>Select College</option>
+          <?php foreach ($colleges as $college): ?>
+            <option value="<?php echo $college['id']; ?>">
+              <?php echo htmlspecialchars($college['name']); ?>
             </option>
           <?php endforeach; ?>
         </select>
       </div>
-      <input type="text" name="newCourse" id="coursePopupInput" class="w-full border rounded px-3 py-2 mb-4"
-        placeholder="Enter Course Name" required>
-      <div class="flex justify-end gap-2">
-        <button type="button" onclick="closeCoursePopup(event)"
-          class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel
-        </button>
-        <button type="button" onclick="submitCourseForm(event)"
-          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Confirm
-        </button>
+      <div>
+        <label for="newCourse" class="block text-sm font-medium text-gray-700">Course Name:</label>
+        <input type="text" id="newCourse" name="newCourse" 
+               class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
+               placeholder="Enter Course Name" required>
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button type="button" onclick="closeCoursePopup()" 
+                class="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500 transition">Cancel</button>
+        <button type="submit" 
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Add Course</button>
       </div>
     </form>
   </div>
 </div>
 
+<div id="feedbackPopup" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+  <div class="modal-content bg-white p-6 rounded-lg shadow-lg w-96">
+    <h2 id="feedbackTitle" class="text-xl font-bold mb-4"></h2>
+    <p id="feedbackMessage" class="text-gray-700"></p>
+    <div class="flex justify-end mt-4">
+      <button type="button" onclick="closeFeedbackPopup()" class="bg-blue-500 text-white px-4 py-2 rounded">OK</button>
+    </div>
+  </div>
+</div>
 
-
+<style>
+  /* ...existing styles... */
+  #popupContainer,
+  #departmentPopupContainer,
+  #coursePopupContainer {
+    z-index: 10001; /* Ensure the popups are above other elements */
+  }
+</style>
 
 <script>
   function toggleUserType() {
@@ -420,33 +444,36 @@
   window.onload = toggleUserType;
 
   function filterCourses() {
-    const selectedProgramId = document.getElementById("Program").value;
+    const selectedCollegeName = document.getElementById("college").value; // Get the selected college name
     const courseDropdown = document.getElementById("course");
-    const addCourseLink = document.getElementById("addCourseLink");
+    const yrLvlDropdown = document.getElementById("yrLVL");
 
     // Clear the course dropdown
     courseDropdown.innerHTML = "";
 
-    if (!selectedProgramId) {
-      // If no program is selected, show "Choose Program First"
+    // Clear the year level dropdown
+    yrLvlDropdown.innerHTML = "";
+
+    // Add a default "Select Year and Section" option
+    const defaultYrOption = document.createElement("option");
+    defaultYrOption.value = "";
+    defaultYrOption.textContent = "Select Year and Section";
+    defaultYrOption.disabled = true;
+    defaultYrOption.selected = true;
+    yrLvlDropdown.appendChild(defaultYrOption);
+
+    // If no college is selected, do not populate the course dropdown
+    if (!selectedCollegeName) {
       const defaultOption = document.createElement("option");
       defaultOption.value = "";
-      defaultOption.textContent = "Choose Program First";
+      defaultOption.textContent = "Select Course";
       defaultOption.disabled = true;
       defaultOption.selected = true;
       courseDropdown.appendChild(defaultOption);
-
-      // Disable the "Add Course" link
-      addCourseLink.classList.add("pointer-events-none", "text-gray-400");
-      addCourseLink.classList.remove("text-blue-600", "underline");
       return;
     }
 
-    // Enable the "Add Course" link
-    addCourseLink.classList.remove("pointer-events-none", "text-gray-400");
-    addCourseLink.classList.add("text-blue-600", "underline");
-
-    // Add a default "Select Course" option
+    // Populate the course dropdown based on the selected college
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
     defaultOption.textContent = "Select Course";
@@ -454,271 +481,105 @@
     defaultOption.selected = true;
     courseDropdown.appendChild(defaultOption);
 
-    // Show only courses that match the selected program
-    const courseOptions = document.querySelectorAll("#course-options option");
-    courseOptions.forEach(option => {
-      if (option.dataset.programId === selectedProgramId) {
-        courseDropdown.appendChild(option.cloneNode(true));
+    courses.forEach(course => {
+      if (course.college_name === selectedCollegeName) { // Match by college name
+        const option = document.createElement("option");
+        option.value = course.name; // Save course name instead of ID
+        option.textContent = course.name;
+        option.dataset.maxYear = course.max_year; // Store max_year as a data attribute
+        courseDropdown.appendChild(option);
       }
     });
   }
 
-  function openCoursePopup(event) {
-    const selectedProgramId = document.getElementById("Program").value;
-    if (!selectedProgramId) {
-      alert("Please select a program before adding a course.");
-      return;
-    }
-    if (event) event.preventDefault(); // Prevent default link behavior
-    document.getElementById("coursePopupContainer").classList.remove("hidden");
-  }
-</script>
-
-<script>
-  function openPopup(event) {
-    if (event) event.preventDefault(); // Prevent default link behavior
-    document.getElementById("popupContainer").classList.remove("hidden");
-  }
-
-  function closePopup(event) {
-    if (event) event.preventDefault(); // Prevent default button behavior
-    document.getElementById("popupContainer").classList.add("hidden");
-  }
-
-  function submitProgramForm(event) {
-    if (event) event.preventDefault(); // Prevent default form submission
-    document.getElementById("programForm").submit(); // Submit the form programmatically
-  }
-
-  function openDepartmentPopup(event) {
-    if (event) event.preventDefault(); // Prevent default link behavior
-    document.getElementById("departmentPopupContainer").classList.remove("hidden");
-  }
-
-  function closeDepartmentPopup(event) {
-    if (event) event.preventDefault(); // Prevent default button behavior
-    document.getElementById("departmentPopupContainer").classList.add("hidden");
-  }
-
-  function submitDepartmentForm(event) {
-    if (event) event.preventDefault(); // Prevent default form submission
-    document.getElementById("departmentForm").submit(); // Submit the form programmatically
-  }
-
-  function openCoursePopup(event) {
-    const selectedProgramId = document.getElementById("Program").value;
-    if (!selectedProgramId) {
-      alert("Please select a program before adding a course.");
-      return;
-    }
-    if (event) event.preventDefault(); // Prevent default link behavior
-    document.getElementById("coursePopupContainer").classList.remove("hidden");
-  }
-
-  function closeCoursePopup(event) {
-    if (event) event.preventDefault(); // Prevent default button behavior
-    document.getElementById("coursePopupContainer").classList.add("hidden");
-  }
-
-  function submitCourseForm(event) {
-    if (event) event.preventDefault(); // Prevent default form submission
-    document.getElementById("courseForm").submit(); // Submit the form programmatically
-  }
-
-  // Close program popup if clicked outside the box
-  document.getElementById("popupContainer").addEventListener("click", function(event) {
-    if (event.target === this) closePopup(event);
-  });
-
-  // Close department popup if clicked outside the box
-  document.getElementById("departmentPopupContainer").addEventListener("click", function(event) {
-    if (event.target === this) closeDepartmentPopup(event);
-  });
-
-  // Close course popup if clicked outside the box
-  document.getElementById("coursePopupContainer").addEventListener("click", function(event) {
-    if (event.target === this) closeCoursePopup(event);
-  });
-</script>
-
-<script>
-  function submitCourseForm(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    const form = document.getElementById('courseForm');
-    const formData = new FormData(form);
-
-    fetch(window.location.href, { // Send to the same page
-        method: 'POST',
-        body: formData,
-      })
-      .then(response => response.json()) // Expect JSON response
-      .then(data => {
-        if (data.status === 'success') {
-          const newCourse = data.course;
-          const filteredCoursesList = document.getElementById('filteredCoursesList');
-          const courseFilter = document.getElementById('courseFilter');
-          const selectedFilterProgramId = courseFilter.value;
-
-          // Create a new div for the added course
-          const courseDiv = document.createElement('div');
-          courseDiv.classList.add('border-b', 'py-2', 'flex', 'justify-between', 'items-center');
-          courseDiv.dataset.programId = newCourse.program_id;
-          courseDiv.innerHTML = `
-                              ${newCourse.name}
-                              <button class="bg-red-500 text-white px-2 py-1 rounded" data-type="course" data-id="${newCourse.id}" onclick="confirmRemove(this)">-</button>
-                          `;
-
-          // Add the new course to the displayed list if it matches the current filter
-          if (selectedFilterProgramId === '' || selectedFilterProgramId === String(newCourse.program_id)) {
-            filteredCoursesList.appendChild(courseDiv);
-          }
-
-          closeCoursePopup(event); // Close the popup
-          // Optionally, provide a success message to the user
-          console.log(data.message);
-        } else if (data.status === 'error') {
-          document.getElementById('duplicateErrorPopup').querySelector('.text-gray-700').textContent = data.message;
-          document.getElementById('duplicateErrorPopup').style.display = 'flex';
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while adding the course.');
-      });
-  }
-
-  function openCoursePopup(event) {
-    const selectedProgramId = document.getElementById("Program").value;
-    if (!selectedProgramId) {
-      alert("Please select a program before adding a course.");
-      return;
-    }
-    if (event) event.preventDefault(); // Prevent default link behavior
-
-    // Set the programId in the popup form to the currently selected program
-    document.getElementById('programId').value = selectedProgramId;
-
-    document.getElementById("coursePopupContainer").classList.remove("hidden");
-  }
-
-  function closeCoursePopup(event) {
-    document.getElementById("coursePopupContainer").classList.add("hidden");
-    // Optionally clear the course input field after closing
-    document.getElementById('coursePopupInput').value = '';
-  }
-
-  function filterCourses() {
-    const selectedProgramId = document.getElementById("Program").value;
+  function updateYearAndSection() {
     const courseDropdown = document.getElementById("course");
-    const addCourseLink = document.getElementById("addCourseLink");
-    const filteredCoursesList = document.getElementById('filteredCoursesList');
-    const allCourseDivs = filteredCoursesList.querySelectorAll('div');
+    const selectedCourse = courseDropdown.options[courseDropdown.selectedIndex];
+    const maxYear = selectedCourse ? parseInt(selectedCourse.dataset.maxYear) : 0;
+    const yrLvlDropdown = document.getElementById("yrLVL");
 
-    allCourseDivs.forEach(div => {
-      if (selectedProgramId === '' || div.dataset.programId === selectedProgramId) {
-        div.style.display = '';
-      } else {
-        div.style.display = 'none';
+    // Clear the year level dropdown
+    yrLvlDropdown.innerHTML = "";
+
+    // Add a default "Select Year and Section" option
+    const defaultYrOption = document.createElement("option");
+    defaultYrOption.value = "";
+    defaultYrOption.textContent = "Select Year and Section";
+    defaultYrOption.disabled = true;
+    defaultYrOption.selected = true;
+    yrLvlDropdown.appendChild(defaultYrOption);
+
+    // Populate year and section options based on max_year
+    if (!isNaN(maxYear)) {
+      const maxYearLevel = maxYear === 1 ? 5 : 4;
+      for (let year = 1; year <= maxYearLevel; year++) {
+        ["A", "B", "C", "D"].forEach(section => {
+          const option = document.createElement("option");
+          option.value = `${year} ${section}`;
+          option.textContent = `${year} ${section}`;
+          yrLvlDropdown.appendChild(option);
+        });
       }
-    });
+    }
   }
 
-  // Filter the displayed course list based on the selected program in the filter dropdown
-  document.getElementById('courseFilter').addEventListener('change', function() {
-    const selectedProgramId = this.value;
-    const courses = document.querySelectorAll('#filteredCoursesList > div');
+  // Attach event listeners
+  document.getElementById("college").addEventListener("change", filterCourses);
+  document.getElementById("course").addEventListener("change", updateYearAndSection);
 
-    courses.forEach(courseDiv => {
-      const divProgramId = courseDiv.dataset.programId;
-      if (selectedProgramId === '' || divProgramId === selectedProgramId) {
-        courseDiv.style.display = '';
-      } else {
-        courseDiv.style.display = 'none';
+  // Initial setup
+  document.addEventListener("DOMContentLoaded", filterCourses);
+
+  function openCoursePopup() {
+    const coursePopupContainer = document.getElementById("coursePopupContainer");
+    if (coursePopupContainer) {
+      coursePopupContainer.classList.remove("hidden");
+    }
+  }
+</script>
+
+<script>
+  // Show the modal for displaying added data
+  document.getElementById('displayDataButton').addEventListener('click', function() {
+    document.getElementById('displayDataModal').classList.remove('hidden');
+  });
+
+  // Close the modal when clicking outside the content
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', function(event) {
+      if (event.target === this) {
+        this.classList.add('hidden');
       }
     });
   });
 
-  // Initially filter the course list when the page loads
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('courseFilter').dispatchEvent(new Event('change'));
-  });
-
+  // Confirm removal of an item
   function confirmRemove(button) {
     const removeId = button.dataset.id;
     const removeType = button.dataset.type;
 
     if (confirm(`Are you sure you want to remove this ${removeType}?`)) {
+      const formData = new FormData();
+      formData.append('remove_id', removeId);
+      formData.append('remove_type', removeType);
+
       fetch(window.location.href, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: `remove_id=${removeId}&remove_type=${removeType}`,
-        })
-        .then(response => {
-          // Instead of trying to parse JSON, check if the redirect happened
-          if (response.redirected) {
-            window.location.reload(); // Force a page reload after the redirect
-          } else {
-            // If not redirected (which shouldn't happen with your PHP),
-            // you might want to handle potential errors differently.
-            console.error('Deletion might have failed or no redirect occurred.');
-            alert('Deletion might have failed.');
-          }
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.text())
+        .then(data => {
+          alert(data.trim());
+          window.location.reload(); // Reload to reflect changes
         })
         .catch(error => {
-          console.error('Fetch error:', error);
-          alert('An error occurred during the fetch.');
+          console.error('Error:', error);
+          alert('An error occurred while removing the item.');
         });
     }
   }
-</script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Display Data Modal (assuming this is still relevant in your full context)
-    const displayDataButton = document.getElementById('displayDataButton');
-    if (displayDataButton) {
-      displayDataButton.addEventListener('click', function() {
-        const displayDataModal = document.getElementById('displayDataModal');
-        if (displayDataModal) {
-          displayDataModal.classList.remove('hidden');
-        }
-      });
-    }
-
-    // Close Modal (using a generic class)
-    document.querySelectorAll('.modal').forEach(modal => {
-      modal.addEventListener('click', function(event) {
-        if (event.target.classList.contains('modal')) {
-          this.classList.add('hidden');
-        }
-      });
-    });
-
-    // Course Filter (already present above, but ensuring it's here)
-    const courseFilterElement = document.getElementById('courseFilter');
-    if (courseFilterElement) {
-      courseFilterElement.addEventListener('change', function() {
-        const selectedProgramId = this.value;
-        const courseDivs = document.querySelectorAll('#filteredCoursesList div');
-        courseDivs.forEach(div => {
-          const divProgramId = div.dataset.programId;
-          if (selectedProgramId === '' || divProgramId === selectedProgramId) {
-            div.style.display = '';
-          } else {
-            div.style.display = 'none';
-          }
-        });
-      });
-      // Initially filter on load
-      courseFilterElement.dispatchEvent(new Event('change'));
-    }
-  });
-</script>
-
-<script>
+  // Open the Program Popup
   function openProgramPopup(event) {
     if (event) event.preventDefault(); // Prevent default link behavior
     const popupContainer = document.getElementById("popupContainer");
@@ -727,6 +588,7 @@
     }
   }
 
+  // Close the Program Popup
   function closePopup(event) {
     if (event) event.preventDefault(); // Prevent default button behavior
     const popupContainer = document.getElementById("popupContainer");
@@ -735,15 +597,8 @@
     }
   }
 
-  function submitProgramForm(event) {
-    if (event) event.preventDefault(); // Prevent default form submission
-    const programForm = document.getElementById("programForm");
-    if (programForm) {
-      programForm.submit(); // Submit the form programmatically
-    }
-  }
-
-  function openDepartmeevntPopup(event) {
+  // Open the Department Popup
+  function openDepartmentPopup(event) {
     if (event) event.preventDefault(); // Prevent default link behavior
     const departmentPopupContainer = document.getElementById("departmentPopupContainer");
     if (departmentPopupContainer) {
@@ -751,6 +606,7 @@
     }
   }
 
+  // Close the Department Popup
   function closeDepartmentPopup(event) {
     if (event) event.preventDefault(); // Prevent default button behavior
     const departmentPopupContainer = document.getElementById("departmentPopupContainer");
@@ -759,28 +615,16 @@
     }
   }
 
-  function submitDepartmentForm(event) {
-    if (event) event.preventDefault(); // Prevent default form submission
-    const departmentForm = document.getElementById("departmentForm");
-    if (departmentForm) {
-      departmentForm.submit(); // Submit the form programmatically
-    }
-  }
-
-  function openCoursePopup(event) { // Declared twice, keeping the first one
-    const selectedProgramId = document.getElementById("Program").value;
-    if (!selectedProgramId) {
-      alert("Please select a program before adding a course.");
-      return;
-    }
-    if (event) event.preventDefault(); // Prevent default link behavior
+  // Open the Course Popup
+  function openCoursePopup(event) {
     const coursePopupContainer = document.getElementById("coursePopupContainer");
     if (coursePopupContainer) {
       coursePopupContainer.classList.remove("hidden");
     }
   }
 
-  function closeCoursePopup(event) { // Declared twice, keeping the first one
+  // Close the Course Popup
+  function closeCoursePopup(event) {
     if (event) event.preventDefault(); // Prevent default button behavior
     const coursePopupContainer = document.getElementById("coursePopupContainer");
     if (coursePopupContainer) {
@@ -788,119 +632,119 @@
     }
   }
 
-  function submitCourseForm(event) { // Declared twice, keeping the first one
-    if (event) event.preventDefault(); // Prevent default form submission
-    const courseForm = document.getElementById("courseForm");
-    if (courseForm) {
-      courseForm.submit(); // Submit the form programmatically
+  function closeCoursePopupAfterSubmit(event) {
+    event.preventDefault(); // Prevent default form submission
+    const coursePopupContainer = document.getElementById("coursePopupContainer");
+    if (coursePopupContainer) {
+      coursePopupContainer.classList.add("hidden"); // Hide the modal
     }
+    document.getElementById("courseForm").submit(); // Submit the form programmatically
   }
 
-  // Close program popup if clicked outside the box
-  const popupContainer = document.getElementById("popupContainer");
-  if (popupContainer) {
-    popupContainer.addEventListener("click", function(event) {
-      if (event.target === this) closePopup(event);
+  // Close popups when clicking outside the popup box
+  document.addEventListener("click", function(event) {
+    const popupContainers = [
+      document.getElementById("popupContainer"),
+      document.getElementById("departmentPopupContainer"),
+      document.getElementById("coursePopupContainer"),
+    ];
+    popupContainers.forEach(container => {
+      if (container && !container.classList.contains("hidden") && event.target === container) {
+        container.classList.add("hidden");
+      }
     });
+  });
+
+  function updateMaxYear(courseId, newValue) {
+    if (newValue < 0 || newValue > 1) {
+      alert("Max year must be either 0 or 1.");
+      return;
+    }
+
+    fetch(window.location.href, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `save_max_year=1&course_id=${courseId}&new_value=${newValue}`,
+    })
+      .then(response => response.text())
+      .then(data => {
+        alert(data.trim());
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error("Error updating max year:", error);
+        alert("An error occurred while updating the max year.");
+      });
   }
 
-  // Close department popup if clicked outside the box
-  const departmentPopupContainer = document.getElementById("departmentPopupContainer");
-  if (departmentPopupContainer) {
-    departmentPopupContainer.addEventListener("click", function(event) {
-      if (event.target === this) closeDepartmentPopup(event);
+  // Filter courses by selected college
+  document.getElementById('courseFilter').addEventListener('change', function() {
+    const selectedCollegeId = this.value;
+    const courses = document.querySelectorAll('#filteredCoursesList > div');
+
+    courses.forEach(courseDiv => {
+      const courseCollegeId = courseDiv.dataset.collegeId;
+      if (selectedCollegeId === '' || courseCollegeId === selectedCollegeId) {
+        courseDiv.style.display = '';
+      } else {
+        courseDiv.style.display = 'none';
+      }
     });
+  });
+
+  // Function to show duplication error popup
+  function showDuplicationErrorPopup(message) {
+    const popup = document.getElementById('duplicationErrorPopup');
+    const messageElement = document.getElementById('duplicationErrorMessage');
+    messageElement.textContent = message;
+    popup.classList.remove('hidden');
   }
 
-  // Close course popup if clicked outside the box
-  const coursePopupContainer = document.getElementById("coursePopupContainer");
-  if (coursePopupContainer) {
-    coursePopupContainer.addEventListener("click", function(event) {
-      if (event.target === this) closeCoursePopup(event);
-    });
+  // Function to close duplication error popup
+  function closeDuplicationErrorPopup() {
+    const popup = document.getElementById('duplicationErrorPopup');
+    popup.classList.add('hidden');
   }
+
+  // Example usage of duplication error popup
+  <?php if (!empty($_GET['message']) && $_GET['type'] === 'error'): ?>
+    showDuplicationErrorPopup("<?php echo htmlspecialchars($_GET['message']); ?>");
+  <?php endif; ?>
 </script>
 
 <script>
-  function toggleUserType() {
-    const userType = document.getElementById('U_Type').value;
-    const programGroup = document.getElementById('program-group');
-    const departmentGroup = document.getElementById('department-group');
-    const personnelGroup = document.getElementById('personnel-group');
-    const courseGroup = document.getElementById('course-group');
-    const yrLvlGroup = document.getElementById('yrLVL-group');
+  function showFeedbackPopup(title, message) {
+    document.getElementById('feedbackTitle').textContent = title;
+    document.getElementById('feedbackMessage').textContent = message;
+    document.getElementById('feedbackPopup').classList.remove('hidden');
+  }
 
-    if (userType === 'faculty') {
-      // Show Department and Personnel Type, hide Program, Course, and Year/Section
-      programGroup.style.display = 'none';
-      departmentGroup.style.display = 'block';
-      personnelGroup.style.display = 'block';
-      courseGroup.style.display = 'none';
-      yrLvlGroup.style.display = 'none';
+  function closeFeedbackPopup() {
+    document.getElementById('feedbackPopup').classList.add('hidden');
+  }
+
+  // Example usage: Show feedback popup on page load if a message is passed via PHP
+  <?php if (!empty($_GET['message'])): ?>
+    showFeedbackPopup(
+      "<?php echo $_GET['type'] === 'success' ? 'Success' : 'Error'; ?>",
+      "<?php echo htmlspecialchars($_GET['message']); ?>"
+    );
+  <?php endif; ?>
+</script>
+
+<script>
+  function togglePasswordVisibility(passwordFieldId, toggleIconId) {
+    const passwordField = document.getElementById(passwordFieldId);
+    const toggleIcon = document.getElementById(toggleIconId);
+
+    if (passwordField.type === "password") {
+      passwordField.type = "text";
+      toggleIcon.textContent = "🙈"; // Change icon to indicate visibility
     } else {
-      // Show Program, Course, and Year/Section, hide Department and Personnel Type
-      programGroup.style.display = 'block';
-      departmentGroup.style.display = 'none';
-      personnelGroup.style.display = 'none';
-      courseGroup.style.display = 'block';
-      yrLvlGroup.style.display = 'block';
+      passwordField.type = "password";
+      toggleIcon.textContent = "📚"; // Change icon back to indicate hidden
     }
-  }
-
-  // Initial check on page load
-  window.onload = toggleUserType;
-
-  function filterCourses() {
-    const selectedProgramId = document.getElementById("Program").value;
-    const courseDropdown = document.getElementById("course");
-    const addCourseLink = document.getElementById("addCourseLink");
-
-    // Clear the course dropdown
-    courseDropdown.innerHTML = "";
-
-    if (!selectedProgramId) {
-      // If no program is selected, show "Choose Program First"
-      const defaultOption = document.createElement("option");
-      defaultOption.value = "";
-      defaultOption.textContent = "Choose Program First";
-      defaultOption.disabled = true;
-      defaultOption.selected = true;
-      courseDropdown.appendChild(defaultOption);
-
-      // Disable the "Add Course" link
-      addCourseLink.classList.add("pointer-events-none", "text-gray-400");
-      addCourseLink.classList.remove("text-blue-600", "underline");
-      return;
-    }
-
-    // Enable the "Add Course" link
-    addCourseLink.classList.remove("pointer-events-none", "text-gray-400");
-    addCourseLink.classList.add("text-blue-600", "underline");
-
-    // Add a default "Select Course" option
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = "Select Course";
-    defaultOption.disabled = true;
-    defaultOption.selected = true;
-    courseDropdown.appendChild(defaultOption);
-
-    // Show only courses that match the selected program
-    const courseOptions = document.querySelectorAll("#course-options option");
-    courseOptions.forEach(option => {
-      if (option.dataset.programId === selectedProgramId) {
-        courseDropdown.appendChild(option.cloneNode(true));
-      }
-    });
-  }
-
-  function openCoursePopup(event) {
-    const selectedProgramId = document.getElementById("Program").value;
-    if (!selectedProgramId) {
-      alert("Please select a program before adding a course.");
-      return;
-    }
-    if (event) event.preventDefault(); // Prevent default link behavior
-    document.getElementById("coursePopupContainer").classList.remove("hidden");
   }
 </script>

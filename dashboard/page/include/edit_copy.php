@@ -49,8 +49,8 @@
             WHERE book_copy_ID = '" . $conn->real_escape_string($ID) . "'";
 
         if ($conn->query($update_sql) === TRUE) {
-            // Redirect to refresh the page after the update
-            header("Location: " . $_SERVER['PHP_SELF'] . "?book_copy_ID=" . urlencode($ID));
+            // After successful update, redirect to the viewcopy.php page
+            header("Location: ../viewcopy.php?book_copy_ID=" . urlencode($ID));
             exit(); // Always call exit after header redirection
         } else {
             // Handle update failure
@@ -93,41 +93,42 @@
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Call Number</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="callNumber" name="callNumber" value="<?php echo htmlspecialchars($copy_data['callNumber']); ?>" required>
+                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="callNumber" name="callNumber" value="<?php echo htmlspecialchars($copy_data['callNumber']); ?>" >
                         </td>
                     </tr>
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Status</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="status" name="status" required>
+                            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="status" name="status" >
                                 <option value="Available" <?php echo $copy_data['status'] == 'Available' ? 'selected' : ''; ?>>Available</option>
                                 <option value="Borrowed" <?php echo $copy_data['status'] == 'Borrowed' ? 'selected' : ''; ?>>Borrowed</option>
                                 <option value="Reserved" <?php echo $copy_data['status'] == 'Reserved' ? 'selected' : ''; ?>>Reserved</option>
+                                <option value="Weed" <?php echo $copy_data['status'] == 'Weed' ? 'selected' : ''; ?>>Weed</option>
                             </select>
                         </td>
                     </tr>
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Vendor</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="vendor" name="vendor" value="<?php echo htmlspecialchars($copy_data['vendor']); ?>" required>
+                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="vendor" name="vendor" value="<?php echo htmlspecialchars($copy_data['vendor']); ?>" >
                         </td>
                     </tr>
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Funding Source</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="fundingSource" name="fundingSource" value="<?php echo htmlspecialchars($copy_data['fundingSource']); ?>" required>
+                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="fundingSource" name="fundingSource" value="<?php echo htmlspecialchars($copy_data['fundingSource']); ?>" >
                         </td>
                     </tr>
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Sublocation</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="Sublocation" name="Sublocation" value="<?php echo htmlspecialchars($copy_data['Sublocation']); ?>" required>
+                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="Sublocation" name="Sublocation" value="<?php echo htmlspecialchars($copy_data['Sublocation']); ?>" >
                         </td>
                     </tr>
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Rating</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="rating" name="rating" required>
+                            <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="rating" name="rating" >
                                 <option value="0" <?php echo $copy_data['rating'] == '0' ? 'selected' : ''; ?>>0</option>
                                 <option value="1" <?php echo $copy_data['rating'] == '1' ? 'selected' : ''; ?>>1</option>
                                 <option value="2" <?php echo $copy_data['rating'] == '2' ? 'selected' : ''; ?>>2</option>
@@ -140,9 +141,8 @@
                 </tbody>
             </table>
             <div class="flex items-center justify-between mt-4">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Save Changes</button>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" onclick="return confirm('Are you sure you want to save the changes to this book copy?');">Save Changes</button>
             </div>
         </form>
-
         <?php endif; ?>
     </div>
