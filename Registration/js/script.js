@@ -113,6 +113,33 @@ nextBtn.addEventListener('click', () => {
         }
     });
 
+    // Check if IDno is valid only if it is part of the current step
+    const idField = formSteps[currentStep].querySelector('#IDno');
+    if (idField) {
+        const userType = document.getElementById('U_Type').value;
+        let idRegex;
+
+        if (userType === "student") {
+            // Student ID format: yyyy-xxxx-X
+            idRegex = /^\d{4}-\d{4}-[A-Za-z]{1}$/;
+        } else if (userType === "faculty") {
+            // Faculty ID format: flexible (e.g., xx-yyyy or any other format)
+            idRegex = /^[A-Za-z0-9-]+$/;
+        }
+
+        if (!idRegex || !idRegex.test(idField.value)) {
+            allFieldsValid = false;
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid ID Format',
+                text: userType === "student" ?
+                    'ID number must follow the format: yyyy-xxxx-X (year-code-letter)' :
+                    'ID number must be alphanumeric and can include dashes.',
+                confirmButtonText: 'OK'
+            });
+        }
+    }
+
     if (allFieldsValid) {
         if (currentStep < formSteps.length - 1) {
             formSteps[currentStep].classList.remove('form-step-active');
