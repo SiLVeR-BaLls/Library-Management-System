@@ -49,7 +49,8 @@
         <div>
           <label for="DOB" class="text-sm font-medium">Birthdate</label>
           <input id="DOB" name="DOB" type="date" class="w-full mt-1 border-gray-300 rounded-md shadow-sm" required
-            max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>">
+            max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" 
+            value="<?php echo date('Y-m-d', strtotime('-18 years')); ?>"> <!-- Set default date -->
         </div>
       </div>
     </fieldset>

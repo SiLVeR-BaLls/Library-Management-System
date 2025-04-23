@@ -1,4 +1,3 @@
-
 // Form validation on submit
 document
   .getElementById("registration-form")
@@ -99,12 +98,29 @@ const formSteps = document.querySelectorAll('.form-step');
 let currentStep = 0;
 
 nextBtn.addEventListener('click', () => {
-    if (currentStep < formSteps.length - 1) {
-        formSteps[currentStep].classList.remove('form-step-active');
-        currentStep++;
-        formSteps[currentStep].classList.add('form-step-active');
+    const currentStepFields = formSteps[currentStep].querySelectorAll('[required]');
+    let allFieldsValid = true;
+
+    currentStepFields.forEach(field => {
+        if (!field.value.trim()) {
+            allFieldsValid = false;
+            Swal.fire({
+                icon: 'error',
+                title: 'Field Missing',
+                text: `Please fill out the required field: ${field.previousElementSibling.textContent || field.name}`,
+                confirmButtonText: 'OK'
+            });
+        }
+    });
+
+    if (allFieldsValid) {
+        if (currentStep < formSteps.length - 1) {
+            formSteps[currentStep].classList.remove('form-step-active');
+            currentStep++;
+            formSteps[currentStep].classList.add('form-step-active');
+        }
+        updateButtons();
     }
-    updateButtons();
 });
 
 prevBtn.addEventListener('click', () => {

@@ -95,7 +95,7 @@ if ($result) {
               <p class="tile">Basic Information</p>
               <div class="text-group">
                 <label for="gender">Sex</label>
-                <select class="box" name="gender" id="gender">
+                <select class="box" name="gender" id="gender" required>
                   <option value="" disabled selected>Select Sex</option>
                   <option value="m">Male</option>
                   <option value="f">Female</option>
@@ -104,9 +104,9 @@ if ($result) {
               </div>
               <div class="text-group">
                 <label for="DOB">Birthdate</label>
-
                 <input id="DOB" name="DOB" type="date" class="box" required
-                  max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>">
+                  max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" 
+                  value="<?php echo date('Y-m-d', strtotime('-18 years')); ?>"> <!-- Set default date -->
                 <small style="color:gray;">Birthdate cannot be 18 - below!</small>
               </div>
               <div class="text-group">
@@ -140,13 +140,13 @@ if ($result) {
               <div class="text-group">
                 <label for="contact">Contact No.</label>
                 <input id="contact" name="contact" class="box" type="tel" placeholder="09*********"
-                  title="Please enter a valid 11-digit number" pattern="^09\d{9}$">
+                  title="Please enter a valid 11-digit number" pattern="^09\d{9}$" required>
                 <span id="contact-message"></span> <!-- Message for contact format validation -->
               </div>
 
               <div class="text-group">
                 <label for="email">Email</label>
-                <input id="email" name="email" class="box" type="email" placeholder="sample@gmail.com">
+                <input id="email" name="email" class="box" type="email" placeholder="sample@gmail.com" required>
                 <span id="email-message"></span> <!-- Message for email format validation -->
               </div>
 
@@ -191,7 +191,7 @@ if ($result) {
               <div id="program-group">
                 <label for="college">College</label>
                 <div class="text-group">
-                  <select id="college" name="college" class="box">
+                  <select id="college" name="college" class="box" >
                     <option value="" disabled selected>Select College</option>
                     <?php foreach ($colleges as $college): ?>
                       <option value="<?php echo htmlspecialchars($college['id']); ?>">
