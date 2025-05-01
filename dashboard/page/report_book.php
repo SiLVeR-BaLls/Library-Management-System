@@ -114,8 +114,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 
 <div class="flex">
-    <?php include $sidebars[$userType] ?? ''; ?>
-    <div class="flex flex-col w-screen">
+     <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?><div class="flex flex-col w-screen">
         <?php include 'include/header.php'; ?>
 
         <div class="">

@@ -85,12 +85,6 @@
             <option value="title">Title</option>
             <option value="author">Author</option>
             <option value="coauthor">Co-Author</option>
-            <option value="LCCN">LCCN</option>
-            <option value="ISBN">ISBN</option>
-            <option value="ISSN">ISSN</option>
-            <option value="MT">Material Type</option>
-            <option value="ST">Sub Type</option>
-            <option value="extent">Extent</option>
         </select>
     </div>
     <div>
@@ -362,55 +356,6 @@
                 </div>
             </div>
 
-            <div>
-                <h3 class="text-xl font-semibold mb-3" style="color: <?= $text2 ?>;">Filter by DDC Main Class</h3>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                    <div class="flex items-center">
-                        <input type="radio" id="ddcAll" name="ddcRange" value="" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddcAll" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">All DDC Classes</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc000" name="ddcRange" value="000-099" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc000" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">General Works & Computer Science (000-099)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc100" name="ddcRange" value="100-199" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc100" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">Philosophy & Psychology (100-199)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc200" name="ddcRange" value="200-299" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc200" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">Religion (200-299)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc300" name="ddcRange" value="300-399" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc300" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">Social Sciences (300-399)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc400" name="ddcRange" value="400-499" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc400" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">Language (400-499)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc500" name="ddcRange" value="500-599" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc500" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">Pure Sciences (500-599)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc600" name="ddcRange" value="600-699" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc600" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">Technology (Applied Sciences) (600-699)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc700" name="ddcRange" value="700-799" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc700" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">The Arts (700-799)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddc800" name="ddcRange" value="800-899" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddc800" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">Literature & Rhetoric (800-899)</label>
-                    </div>
-                    <div class="flex items-center">
-                        <input type="radio" id="ddcOther" name="ddcRange" value="?" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                        <label for="ddcOther" class="ml-2 text-sm font-medium" style="color: <?= $text2 ?>;">Other (?)</label>
-                    </div>
-                </div>
-            </div>
 
             <div class="flex gap-4 mt-3 justify-center">
                 <button type="button" id="filterApply" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Apply Filter</button>

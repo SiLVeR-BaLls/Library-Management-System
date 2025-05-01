@@ -14,8 +14,9 @@
 <div class="flex">
     <!-- Sidebar PHP Logic -->
     <div class="sidebar">
-        <?php include $sidebars[$userType] ?? ''; ?>
-    </div>
+         <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?></div>
     <!-- BrowseBook Content Section -->
     <div class="flex flex-col w-screen">
         <!-- Header at the Top -->

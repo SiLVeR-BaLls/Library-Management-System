@@ -3,8 +3,9 @@ include '../config.php';
 ?>
 <main class="flex  ">
     <!-- Sidebar Section -->
-            <?php include $sidebars[$userType] ?? ''; ?>
-    <!-- BrowseBook Content Section -->
+             <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?><!-- BrowseBook Content Section -->
     <div class="flex-grow ">
         <!-- Header at the Top -->
         <?php include 'include/header.php'; ?>

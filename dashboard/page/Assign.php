@@ -4,7 +4,7 @@
     // Fetch user data from the database where status_log is approved and U_Type is librarian or admin
     $sql = "SELECT u.IDno, u.Fname, u.Sname, u.U_Type 
                 FROM users_info u
-                WHERE u.status_log = 'approved' AND u.U_Type IN ('librarian', 'admin')";
+                WHERE u.status_log = 'approved' AND u.U_Type IN ('librarian', 'admin', 'faculty')";
 
     $result = $conn->query($sql);
 
@@ -59,8 +59,9 @@
 <!-- Main Content Area with Sidebar and BrowseBook Section -->
 <div class="flex">
     <!-- Sidebar Section -->
-    <?php include $sidebars[$userType] ?? ''; ?>
-    <!-- BrowseBook Content Section -->
+     <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?><!-- BrowseBook Content Section -->
     <div class="flex-grow ">
         <!-- Header at the Top -->
         <?php include 'include/header.php'; ?>

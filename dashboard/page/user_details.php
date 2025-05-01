@@ -41,8 +41,9 @@
 <div class="flex">
     <!-- Sidebar -->
     <div class="sidebar">
-        <?php include $sidebars[$userType] ?? ''; ?>
-    </div>
+         <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?></div>
 
     <!-- Main Content -->
     <div class="flex flex-col w-full">

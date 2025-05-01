@@ -122,8 +122,9 @@ function calculateOverdue($due_date)
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <div class="flex">
-    <?php include $sidebars[$userType] ?? ''; ?>
-    <div class="flex-grow">
+     <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?><div class="flex-grow">
         <?php include 'include/header.php'; ?>
 
         <div class="container mx-auto px-4 py-6">

@@ -107,7 +107,7 @@ if ($result) {
                 <input id="DOB" name="DOB" type="date" class="box" required
                   max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" 
                   value="<?php echo date('Y-m-d', strtotime('-18 years')); ?>"> <!-- Set default date -->
-                <small style="color:gray;">Birthdate cannot be 18 - below!</small>
+                <small style="color:gray;">Birthdate cannot be 18 & below!</small>
               </div>
               <div class="text-group">
                 <label for="Ename">Extension</label>

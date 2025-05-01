@@ -39,8 +39,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'fetch_pending_users') {
 ?>
 
 <div class="flex">
-    <?php include $sidebars[$userType] ?? ''; ?>
-    <div class="flex-grow">
+     <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?><div class="flex-grow">
         <?php include 'include/header.php'; ?>
         <div class="container mx-auto px-4 py-6">
 

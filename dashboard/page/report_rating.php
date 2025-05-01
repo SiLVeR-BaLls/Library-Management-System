@@ -8,8 +8,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <!-- Main Content Area with Sidebar and BrowseBook Section -->
     <main class="flex flex-grow">
         <!-- Sidebar Section -->
-        <?php include $sidebars[$userType] ?? ''; ?>
-        <!-- BrowseBook Content Section -->
+         <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?>    <!-- BrowseBook Content Section -->
         <div class="flex-grow ">
         <!-- Header at the Top -->
         <?php include 'include/header.php'; ?>

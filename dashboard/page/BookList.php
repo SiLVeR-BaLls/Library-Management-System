@@ -189,8 +189,9 @@
     }
 ?></title>
 <div class="flex">
-    <?php include $sidebars[$userType] ?? ''; ?>
-    <div class="flex-grow">
+     <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?><div class="flex-grow">
         <?php include 'include/header.php'; ?>
 
         <div class="container mx-auto px-4 py-6">
@@ -270,8 +271,10 @@
                                 } else {
                                     echo "<button class='bg-gray-500 text-white py-1 px-3 rounded' disabled style='margin-right: 8px;'>Reserved</button>";
                                 }
+                            } elseif ($row['status'] === 'Borrowed') {
+                                echo "<button class='bg-gray-500 text-white py-1 px-3 rounded' disabled style='margin-right: 8px;'>Borrowed</button>";
                             } else {
-                                echo "<button class='bg-gray-500 text-white py-1 px-3 rounded' disabled style='margin-right: 8px;'>Reserved</button>";
+                                echo "<button class='bg-gray-500 text-white py-1 px-3 rounded' disabled style='margin-right: 8px;'>Unavailable</button>";
                             }
                             echo "</td>
                                     </tr>";

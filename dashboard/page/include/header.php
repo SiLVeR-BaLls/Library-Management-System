@@ -101,7 +101,7 @@ ob_start();
 
             <?php else: ?>
                 <span class="text-sm font-medium">Hello, <strong>Guest</strong></span>
-                <a href="registration/log_in.php" class="btn  px-4 py-1 rounded-md hover:bg-blue-600 transition">
+                <a href="../../registration/log_in.php" class="btn  px-4 py-1 rounded-md hover:bg-blue-600 transition">
                     Log In
                 </a>
             <?php endif; ?>

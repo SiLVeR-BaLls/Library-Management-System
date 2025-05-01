@@ -10,10 +10,8 @@
         <nav class="flex-grow ">
             <ul class="space-y-1 py-4">
                 <!-- browse button -->
-                <li><a href="index.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (in_array(basename($_SERVER['PHP_SELF']), ['index.php', 'ViewBook.php', 'BookList.php', 'ViewCopy.php', 'AddBookCopy.php', 'edit_book.php'])) ? $button_active : $sidebar_hover ?>;">Browse</a></li>
-                <!-- search button -->
-                <li><a href="search.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (in_array(basename($_SERVER['PHP_SELF']), ['search.php'])) ? $button_active : $sidebar_hover ?>;">Search</a></li>
-                
+                <li><a href="index.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (in_array(basename($_SERVER['PHP_SELF']), ['index.php', 'ViewBook.php', 'search_results.php', 'BookList.php', 'ViewCopy.php', 'AddBookCopy.php', 'edit_book.php'])) ? $button_active : $sidebar_hover ?>;">Search</a></li>
+                 
                 <!-- Customize page button -->
                 <li><a href="custom.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'custom.php') ? $button_active : $sidebar_hover ?>;">Customize</a></li>
                 <!-- attendace button -->

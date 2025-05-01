@@ -18,8 +18,9 @@
 ?>
 
 <div class="flex">
-    <?php include $sidebars[$userType] ?? ''; ?>
-    <div class="flex flex-col w-screen">
+     <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+    include $sidebars[$userType]; 
+}?><div class="flex flex-col w-screen">
         <?php include 'include/header.php'; ?>
         <div class="">
             <div class="w-full h-auto mx-auto"> <div class="w-full h-16 flex sticky top-0 justify-evenly gap-4 p-2" style="background: <?= $sidebar ?>; color: <?= $text1 ?>;"> <div id="returnedSection" class="w-auto">

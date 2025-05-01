@@ -1,11 +1,4 @@
-<?php
-
-// Redirect to root if IDno is blank
-if ( $idno) {
-    header("Location: /lms");
-    exit();
-}
-?>
+<?php include 'config.php'; ?>
     <link rel="stylesheet" href="index.css">
 
 

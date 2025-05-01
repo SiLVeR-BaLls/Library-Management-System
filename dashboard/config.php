@@ -21,19 +21,25 @@
         }
     }
 
-    // Redirect if no valid user is logged in
-    if (!$idno) {
-        header("Location: /lms");
-        exit();
-    }
+
+// Sidebar definitions (existing)
+$sidebars = [
+    'admin' => 'include/side_ad.php',
+    'student' => 'include/side_stu.php',
+    'librarian' => 'include/side_lib.php',
+    'faculty' => 'include/side_fac.php'
+];
+
+// If user type is invalid or sidebar file doesn't exist, unset
+if (!empty($userType) && isset($sidebars[$userType]) && !file_exists($sidebars[$userType])) {
+    unset($sidebars[$userType]);
+}
+
+// Determine if user is logged in for JS
+$isLoggedIn = !empty($userType);
 
 
-    $sidebars = [
-        'admin' => 'include/side_ad.php',
-        'student' => 'include/side_stu.php',
-        'librarian' => 'include/side_lib.php', 
-        'faculty' => 'include/side_fac.php'
-    ];
+    
     
     // Verify if the ID exists in the database
     $query = "SELECT * FROM users_info WHERE IDno = ?";
