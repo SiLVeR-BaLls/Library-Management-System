@@ -6,10 +6,24 @@
     $message_type = "";
 
     // Get the copy ID from the URL
-    $ID = isset($_GET['book_copy_ID']) ? $_GET['book_copy_ID'] : '';
+    $book_copy_ID = isset($_GET['book_copy_ID']) ? $_GET['book_copy_ID'] : '';
 
-    // Fetch the current copy details from the database
-    $sql = "SELECT * FROM book_copies WHERE book_copy_ID = '" . $conn->real_escape_string($ID) . "'";
+    // Fetch data for dropdowns
+    $vendors_result = $conn->query("SELECT id, name FROM vendor");
+    $fund_result = $conn->query("SELECT id, name FROM fundingsource");
+    $sub_result = $conn->query("SELECT id, name FROM sublocation");
+
+    // Fetch the current copy details along with the names from related tables
+    $sql = "SELECT bc.*, b.B_title,
+                    v.name AS vendor_name,
+                    fs.name AS funding_source_name,
+                    sl.name AS sublocation_name
+            FROM book_copies bc
+            JOIN book b ON bc.book_ID = b.book_ID
+            LEFT JOIN vendor v ON bc.vendor = v.id
+            LEFT JOIN fundingsource fs ON bc.fundingSource = fs.id
+            LEFT JOIN sublocation sl ON bc.Sublocation = sl.id
+            WHERE bc.book_copy_ID = '" . $conn->real_escape_string($book_copy_ID) . "'";
     $result = $conn->query($sql);
 
     if (!$result) {
@@ -26,64 +40,94 @@
 
     // Handle form submission for updating
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'update') {
-        $B_title = isset($_POST['B_title']) ? $_POST['B_title'] : '';
         $copy_ID = isset($_POST['copy_ID']) ? $_POST['copy_ID'] : '';
-        $note = isset($_POST['note']) ? $_POST['note'] : '';  // Added note here
+        $note = isset($_POST['note']) ? $_POST['note'] : '';
         $callNumber = isset($_POST['callNumber']) ? $_POST['callNumber'] : '';
         $status = isset($_POST['status']) ? $_POST['status'] : '';
-        $vendor = isset($_POST['vendor']) ? $_POST['vendor'] : '';
-        $fundingSource = isset($_POST['fundingSource']) ? $_POST['fundingSource'] : '';
-        $Sublocation = isset($_POST['Sublocation']) ? $_POST['Sublocation'] : '';
+        $vendor_name = isset($_POST['vendor']) ? $_POST['vendor'] : ''; // Get the NAME from the select
+        $fundingSource_name = isset($_POST['fundingSource']) ? $_POST['fundingSource'] : ''; // Get the NAME
+        $Sublocation_name = isset($_POST['Sublocation']) ? $_POST['Sublocation'] : ''; // Get the NAME
         $rating = isset($_POST['rating']) ? $_POST['rating'] : '';
 
-        // Update the book copy in the database
-        $update_sql = "UPDATE book_copies SET 
-            copy_ID = '" . $conn->real_escape_string($copy_ID) . "',
-            note = '" . $conn->real_escape_string($note) . "', 
-            callNumber = '" . $conn->real_escape_string($callNumber) . "',
-            status = '" . $conn->real_escape_string($status) . "',
-            vendor = '" . $conn->real_escape_string($vendor) . "',
-            fundingSource = '" . $conn->real_escape_string($fundingSource) . "',
-            Sublocation = '" . $conn->real_escape_string($Sublocation) . "',
-            rating = '" . $conn->real_escape_string($rating) . "' 
-            WHERE book_copy_ID = '" . $conn->real_escape_string($ID) . "'";
+        // Prepare the update statement
+        $stmt = $conn->prepare("UPDATE book_copies SET
+            copy_id = ?,
+            note = ?,
+            callNumber = ?,
+            status = ?,
+            vendor = ?,
+            fundingSource = ?,
+            Sublocation = ?,
+            rating = ?
+            WHERE book_copy_ID = ?"
+        );
 
-        if ($conn->query($update_sql) === TRUE) {
-            // After successful update, redirect to the viewcopy.php page
-            header("Location: ../viewcopy.php?book_copy_ID=" . urlencode($ID));
-            exit(); // Always call exit after header redirection
+        $stmt->bind_param("sssssssss", // All are strings now
+            $copy_ID,
+            $note,
+            $callNumber,
+            $status,
+            $vendor_name,
+            $fundingSource_name,
+            $Sublocation_name,
+            $rating,
+            $book_copy_ID
+        );
+
+        if ($stmt->execute()) {
+            header("Location: ../viewcopy.php?book_copy_ID=" . urlencode($book_copy_ID));
+            exit();
         } else {
-            // Handle update failure
-            $message = "Error updating copy: " . $conn->error;
+            $message = "Error updating copy: " . $stmt->error;
             $message_type = "error";
         }
+
+        $stmt->close();
     }
 ?>
-<title>Edit Book</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Book Copy</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
+</head>
+<body class="bg-gray-100">
     <div class="container mx-auto mt-8 px-4">
-        <a href="../viewcopy.php?book_copy_ID=<?php echo urlencode($copy_data['book_copy_ID']); ?>"
-            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Return to Copy Details</a>
+        <a href="../viewcopy.php?book_copy_ID=<?php echo urlencode($book_copy_ID); ?>"
+            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 inline-block mb-4">Return to Copy Details</a>
 
-        <h2 class="text-2xl font-semibold mt-4 mb-4">Edit Copy</h2>
+        <h2 class="text-2xl font-semibold mb-4">Edit Book Copy</h2>
+
+        <?php if (!empty($message)): ?>
+            <div class="bg-<?php echo $message_type === 'error' ? 'red' : ($message_type === 'warning' ? 'yellow' : 'green'); ?>-100 border border-<?php echo $message_type === 'error' ? 'red' : ($message_type === 'warning' ? 'yellow' : 'green'); ?>-400 text-<?php echo $message_type === 'error' ? 'red' : ($message_type === 'warning' ? 'yellow' : 'green'); ?>-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold"><?php echo ucfirst($message_type); ?>!</strong>
+                <span class="block sm:inline"><?php echo $message; ?></span>
+            </div>
+        <?php endif; ?>
 
         <?php if (!empty($copy_data)): ?>
         <form method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8">
             <input type="hidden" name="action" value="update">
-            <!-- Book Title Displayed at the Top -->
             <div class="mb-4">
                 <h3 class="text-lg font-bold">Book Title: <?php echo htmlspecialchars($copy_data['B_title']); ?></h3>
             </div>
             <table class="table-auto w-full border-collapse border border-gray-300">
                 <tbody>
                     <tr>
+                        <td class="border border-gray-300 px-4 py-2 font-semibold">Book Copy ID</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <?php echo htmlspecialchars($copy_data['book_copy']); ?>
+                            <input type="hidden" name="book_copy" value="<?php echo htmlspecialchars($copy_data['book_copy']); ?>">
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Copy ID</td>
                         <td class="border border-gray-300 px-4 py-2">
                             <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="copy_ID" name="copy_ID" value="<?php echo htmlspecialchars($copy_data['copy_ID']); ?>" >
                         </td>
                     </tr>
-                    <!-- Added Note Field -->
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Note</td>
                         <td class="border border-gray-300 px-4 py-2">
@@ -110,19 +154,46 @@
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Vendor</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="vendor" name="vendor" value="<?php echo htmlspecialchars($copy_data['vendor']); ?>" >
+                            <select name="vendor" id="vendor" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
+                            <?php
+                                while ($vendor_row = $vendors_result->fetch_assoc()) {
+                                    $selected = ($vendor_row['vendor'] == $copy_data['vendor_name']) ? 'selected' : '';
+                                    echo "<option value='{$vendor_row['name']}' $selected>{$vendor_row['name']}</option>";
+                                }
+                                // Reset the result set pointer to the beginning for potential future use if needed
+                                if (isset($vendors_result)) $vendors_result->data_seek(0);
+                            ?>
+                            </select>
                         </td>
                     </tr>
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Funding Source</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="fundingSource" name="fundingSource" value="<?php echo htmlspecialchars($copy_data['fundingSource']); ?>" >
+                            <select name="fundingSource" id="fundingSource" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
+                            <?php
+                                while ($fund_row = $fund_result->fetch_assoc()) {
+                                    $selected = ($fund_row['fundingsource'] == $copy_data['funding_source_name']) ? 'selected' : '';
+                                    echo "<option value='{$fund_row['name']}' $selected>{$fund_row['name']}</option>";
+                                }
+                                // Reset the result set pointer
+                                if (isset($fund_result)) $fund_result->data_seek(0);
+                            ?>
+                            </select>
                         </td>
                     </tr>
                     <tr>
                         <td class="border border-gray-300 px-4 py-2 font-semibold">Sublocation</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" id="Sublocation" name="Sublocation" value="<?php echo htmlspecialchars($copy_data['Sublocation']); ?>" >
+                            <select name="Sublocation" id="Sublocation" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
+                            <?php
+                                while ($sub_row = $sub_result->fetch_assoc()) {
+                                    $selected = ($sub_row['Sublocation'] == $copy_data['sublocation_name']) ? 'selected' : '';
+                                    echo "<option value='{$sub_row['name']}' $selected>{$sub_row['name']}</option>";
+                                }
+                                // Reset the result set pointer
+                                if (isset($sub_result)) $sub_result->data_seek(0);
+                            ?>
+                            </select>
                         </td>
                     </tr>
                     <tr>
@@ -146,3 +217,9 @@
         </form>
         <?php endif; ?>
     </div>
+</body>
+</html>
+<?php
+    // Close the database connection
+    $conn->close();
+?>

@@ -327,8 +327,8 @@ $fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(
 
 
       <!-- Popup (Hidden by Default) -->
-      <div id="popupContainer" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div id="popupBox" class="bg-white p-6 rounded-lg shadow-lg w-80">
+      <div id="popupContainer" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
+      <div id="popupBox" class="bg-white p-6 rounded-lg shadow-lg w-80">
           <h2 class="text-xl font-bold mb-2">Add New Entry</h2>
           <input type="hidden" id="popupType">
           <input type="text" id="popupInput" class="w-full border rounded px-3 py-2 mb-4" placeholder="Type something...">
