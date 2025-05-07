@@ -47,33 +47,35 @@ if ($title) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $type = $_POST['type'] ?? '';
-    $name = $_POST['name'] ?? '';
+  $type = $_POST['type'] ?? '';
+  $name = $_POST['name'] ?? '';
 
-    if ($type && $name) {
-        $table = '';
-        if ($type === 'sublocation') $table = 'Sublocation';
-        elseif ($type === 'vendor') $table = 'Vendor';
-        elseif ($type === 'fundingSource') $table = 'FundingSource';
+  if ($type && $name) {
+    $table = '';
+    if ($type === 'sublocation') $table = 'Sublocation';
+    elseif ($type === 'vendor') $table = 'Vendor';
+    elseif ($type === 'fundingSource') $table = 'FundingSource';
 
-        if ($table) {
-            $stmt = $conn->prepare("INSERT INTO $table (name) VALUES (?)");
-            $stmt->bind_param("s", $name);
-            if ($stmt->execute()) {
-                echo json_encode(['success' => true, 'id' => $conn->insert_id, 'name' => $name]);
-            } else {
-                echo json_encode(['success' => false, 'error' => $stmt->error]);
-            }
-            $stmt->close();
-        }
+    if ($table) {
+      $stmt = $conn->prepare("INSERT INTO $table (name) VALUES (?)");
+      $stmt->bind_param("s", $name);
+      if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'id' => $conn->insert_id, 'name' => $name]);
+      } else {
+        echo json_encode(['success' => false, 'error' => $stmt->error]);
+      }
+      $stmt->close();
     }
-    exit;
+  }
+  exit;
 }
 
-// Fetch data for dropdowns
-$sublocations = $conn->query("SELECT id, name FROM Sublocation")->fetch_all(MYSQLI_ASSOC);
-$vendors = $conn->query("SELECT id, name FROM Vendor")->fetch_all(MYSQLI_ASSOC);
-$fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(MYSQLI_ASSOC);
+
+$vendors_result = $conn->query("SELECT id, name FROM vendor ");
+$fund_result = $conn->query("SELECT id, name FROM fundingsource ");
+$sub_result = $conn->query("SELECT id, name FROM sublocation ");
+
+
 ?>
 
 
@@ -202,7 +204,7 @@ $fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(
           <!-- Date Acquired -->
           <div class="w-full sm:w-1/2 lg:w-1/3 mb-4">
             <label for="dateAcquired" class="form-label">Date Acquired</label>
-            <input type="date" id="dateAcquired" name="dateAcquired" class="form-control w-full" required>
+            <input type="date" id="dateAcquired" name="dateAcquired" class="form-control w-full" value="<?php echo date('Y-m-d'); ?>" required>
           </div>
         </div>
 
@@ -220,9 +222,9 @@ $fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(
 
             <!-- Purchase Price -->
             <div class="w-full sm:w-1/2 lg:w-1/3 mb-4">
-  <label for="purchasePrice" class="form-label">Purchase Price</label>
-  <input type="number" step="0.01" min="0" id="purchasePrice" name="purchasePrice" class="form-control w-full" placeholder="0.00">
-</div>
+              <label for="purchasePrice" class="form-label">Purchase Price</label>
+              <input type="number" step="0.01" min="0" id="purchasePrice" name="purchasePrice" class="form-control w-full" placeholder="0.00">
+            </div>
 
             <!-- Copy Number -->
             <div class="w-full sm:w-1/2 lg:w-1/3 mb-4">
@@ -291,33 +293,51 @@ $fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(
           <!-- Sublocation -->
           <div class="w-full sm:w-1/4 lg:w-1/4 mb-4">
             <label for="sublocation" class="form-label">Sublocation</label>
-            <select id="sublocation" name="sublocation" class="form-select w-full">
-                <?php foreach ($sublocations as $sublocation): ?>
-                    <option value="<?php echo $sublocation['id']; ?>"><?php echo htmlspecialchars($sublocation['name']); ?></option>
-                <?php endforeach; ?>
-            </select>
+            <select name="Sublocation" id="Sublocation" class="form-select w-full">
+                            <?php
+                                while ($sub_row = $sub_result->fetch_assoc()) {
+                                    $selected = ($sub_row['name'] == $copy_data['Sublocation']) ? 'selected' : '';
+                                    echo "<option value='{$sub_row['name']}' $selected>{$sub_row['name']}</option>";
+                                }
+                                // Reset the result set pointer
+                                if (isset($sub_result)) $sub_result->data_seek(0);
+                            ?>
+                            </select>
             <a href="#" onclick="openPopup('sublocation', event)" class="text-blue-600 underline">Add</a>
           </div>
 
           <!-- Vendor -->
           <div class="w-full sm:w-1/4 lg:w-1/4 mb-4">
             <label for="vendor" class="form-label">Vendor</label>
-            <select id="vendor" name="vendor" class="form-select w-full">
-                <?php foreach ($vendors as $vendor): ?>
-                    <option value="<?php echo $vendor['id']; ?>"><?php echo htmlspecialchars($vendor['name']); ?></option>
-                <?php endforeach; ?>
+
+
+            <select name="vendor" id="vendor" class="form-select w-full">
+              <?php
+              while ($vendor_row = $vendors_result->fetch_assoc()) {
+                $selected = ($vendor_row['name'] == $copy_data['vendor']) ? 'selected' : '';
+                echo "<option value='{$vendor_row['name']}' $selected>{$vendor_row['name']}</option>";
+              }
+              // Reset the result set pointer to the beginning for potential future use if needed
+              if (isset($vendors_result)) $vendors_result->data_seek(0);
+              ?>
             </select>
             <a href="#" onclick="openPopup('vendor', event)" class="text-blue-600 underline">Add</a>
+
           </div>
 
           <!-- Funding Source -->
           <div class="w-full sm:w-1/4 lg:w-1/4 mb-4">
             <label for="fundingSource" class="form-label">Funding Source</label>
-            <select id="fundingSource" name="fundingSource" class="form-select w-full">
-                <?php foreach ($fundingSources as $fundingSource): ?>
-                    <option value="<?php echo $fundingSource['id']; ?>"><?php echo htmlspecialchars($fundingSource['name']); ?></option>
-                <?php endforeach; ?>
-            </select>
+            <select name="fundingSource" id="fundingSource" class="form-select w-full">
+                            <?php
+                                while ($fund_row = $fund_result->fetch_assoc()) {
+                                    $selected = ($fund_row['name'] == $copy_data['funding_source']) ? 'selected' : '';
+                                    echo "<option value='{$fund_row['name']}' $selected>{$fund_row['name']}</option>";
+                                }
+                                // Reset the result set pointer
+                                if (isset($fund_result)) $fund_result->data_seek(0);
+                            ?>
+                            </select>
             <a href="#" onclick="openPopup('fundingSource', event)" class="text-blue-600 underline">Add</a>
           </div>
         </div>
@@ -328,7 +348,7 @@ $fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(
 
       <!-- Popup (Hidden by Default) -->
       <div id="popupContainer" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center hidden">
-      <div id="popupBox" class="bg-white p-6 rounded-lg shadow-lg w-80">
+        <div id="popupBox" class="bg-white p-6 rounded-lg shadow-lg w-80">
           <h2 class="text-xl font-bold mb-2">Add New Entry</h2>
           <input type="hidden" id="popupType">
           <input type="text" id="popupInput" class="w-full border rounded px-3 py-2 mb-4" placeholder="Type something...">
@@ -341,52 +361,57 @@ $fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(
 
       <script>
         function openPopup(type, event) {
-            event.preventDefault(); // Prevent the default behavior of the <a> tag
-            document.getElementById("popupType").value = type;
-            document.getElementById("popupInput").value = '';
-            document.getElementById("popupContainer").classList.remove("hidden");
+          event.preventDefault(); // Prevent the default behavior of the <a> tag
+          document.getElementById("popupType").value = type;
+          document.getElementById("popupInput").value = '';
+          document.getElementById("popupContainer").classList.remove("hidden");
         }
 
         function closePopup(event) {
-            event.preventDefault(); // Prevent the default behavior of the <a> tag
-            document.getElementById("popupContainer").classList.add("hidden");
+          event.preventDefault(); // Prevent the default behavior of the <a> tag
+          document.getElementById("popupContainer").classList.add("hidden");
         }
 
         function confirmInput(event) {
-            event.preventDefault(); // Prevent the default behavior of the <a> tag
-            const type = document.getElementById("popupType").value;
-            const input = document.getElementById("popupInput").value.trim();
+          event.preventDefault(); // Prevent the default behavior of the <a> tag
+          const type = document.getElementById("popupType").value;
+          const input = document.getElementById("popupInput").value.trim();
 
-            if (!input) {
-                alert("Please enter a value.");
-                return;
-            }
+          if (!input) {
+            alert("Please enter a value.");
+            return;
+          }
 
-            fetch('AddBookCopy.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ type, name: input })
+          fetch('AddBookCopy.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: new URLSearchParams({
+                type,
+                name: input
+              })
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    const select = document.getElementById(type);
-                    const option = document.createElement('option');
-                    option.value = data.id;
-                    option.textContent = data.name;
-                    select.appendChild(option);
-                    select.value = data.id;
-                    closePopup(event);
-                    alert(`${type} added successfully.`);
-                } else {
-                    alert(`Error: ${data.error}`);
-                }
+              if (data.success) {
+                const select = document.getElementById(type);
+                const option = document.createElement('option');
+                option.value = data.id;
+                option.textContent = data.name;
+                select.appendChild(option);
+                select.value = data.id;
+                closePopup(event);
+                alert(`${type} added successfully.`);
+              } else {
+                alert(`Error: ${data.error}`);
+              }
             });
         }
 
         // Close popup if clicked outside the box
         document.getElementById("popupContainer").addEventListener("click", function(event) {
-            if (event.target === this) closePopup(event);
+          if (event.target === this) closePopup(event);
         });
       </script>
 
@@ -397,4 +422,4 @@ $fundingSources = $conn->query("SELECT id, name FROM FundingSource")->fetch_all(
     <footer>
       <?php include 'include/footer.php'; ?>
     </footer>
-    </di>
+  </div>

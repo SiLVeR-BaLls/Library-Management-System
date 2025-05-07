@@ -1,4 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
+<?php
 // Include the database connection
 include '../config.php';
 
@@ -43,9 +47,9 @@ if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$u
 ?>    </div>
     <div class="flex flex-col w-screen">
         <?php include 'include/header.php'; ?>
-        <div class="flex flex-row">
-            <div class="p-6 w-4/5">
-                <form id="searchForm" style="background: <?= $background ?>;" class="p-6 rounded-xl shadow-lg space-y-6 w-full">
+        <div class="flex flex-col">
+            <div class="p-6">
+                <form id="searchForm" style="background: <?= $background ?>;">
                     <div class="flex w-full items-center">
                         <input type="text" placeholder="Enter search term..." class="w-full py-2 px-4 rounded-lg" id="searchInput" />
                         <button type="button" id="searchButton" class="ml-4 px-6 search-btn block px-4 py-2 rounded-lg text-center cursor-pointer transition duration-300 py-2 rounded-lg font-semibold">Search</button>
@@ -137,48 +141,73 @@ if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$u
                 </form>
             </div>
 
-            <div class="top-borrowed-books m-6 p-3 bg-gray-100 rounded-lg shadow-md w-1/5">
-                <h3 class="text-lg font-semibold mb-3">Top 3 Most Borrowed Books</h3>
-                <ul>
-                    <?php
-                    // Query to fetch the top 3 most borrowed books WITH book_id
-                    $topBorrowedQuery = "
-                                    SELECT
-                                        book.book_id,
-                                        book.B_title,
-                                        COUNT(borrow_book.book_copy) AS borrow_count
-                                    FROM
-                                        book
-                                    INNER JOIN
-                                        book_copies ON book.book_id = book_copies.book_id
-                                    INNER JOIN
-                                        borrow_book ON book_copies.book_copy = borrow_book.book_copy
-                                    GROUP BY
-                                        book.book_id, book.B_title
-                                    ORDER BY
-                                        borrow_count DESC
-                                    LIMIT 3;
-                                ";
+            <div class="top-borrowed-books m-6 p-3 bg-gray-100 rounded-lg shadow-md">
+    <h3 class="text-lg font-semibold mb-3">Top 10 Most Borrowed Books</h3>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-300 rounded-md">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="text-left px-4 py-2 border-b">count</th>
+                    <th class="text-left px-4 py-2 border-b">Book Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $topBorrowedQuery = "
+                    SELECT
+                        book.book_id,
+                        book.B_title,
+                        COUNT(borrow_book.book_copy) AS borrow_count
+                    FROM
+                        book
+                    INNER JOIN
+                        book_copies ON book.book_id = book_copies.book_id
+                    INNER JOIN
+                        borrow_book ON book_copies.book_copy = borrow_book.book_copy
+                    GROUP BY
+                        book.book_id, book.B_title
+                    ORDER BY
+                        borrow_count DESC
+                    LIMIT 10;
+                ";
 
-                    $topBorrowedResult = $conn->query($topBorrowedQuery);
+                $topBorrowedResult = $conn->query($topBorrowedQuery);
 
-                    if ($topBorrowedResult && $topBorrowedResult->num_rows > 0):
-                        while ($topBook = $topBorrowedResult->fetch_assoc()):
-                    ?>
-                            <li class="mb-2">
-                                <a href="ViewBook.php?title=<?php echo htmlspecialchars($topBook['book_id']); ?>" class="hover:underline">
-                                    <span class="font-medium"><?php echo htmlspecialchars($topBook['B_title']); ?></span>
-                                </a> -
-                                <span class="text-gray-600"><?php echo $topBook['borrow_count']; ?> times borrowed</span>
-                            </li>
-                    <?php
-                        endwhile;
-                    else:
-                    ?>
-                        <li class="text-gray-600">No data available.</li>
-                    <?php endif; ?>
-                </ul>
-            </div>
+                if ($topBorrowedResult && $topBorrowedResult->num_rows > 0):
+                    while ($topBook = $topBorrowedResult->fetch_assoc()):
+                ?>
+                  <tr
+    class="hover:bg-gray-50 cursor-pointer"
+    onclick="createRowClickHandler('<?php echo htmlspecialchars($topBook['book_id']); ?>')()">
+    <td class="px-4 py-2 border-b"><?php echo $topBook['borrow_count']; ?></td>
+    <td class="px-4 py-2 border-b text-gray-900"><?php echo htmlspecialchars($topBook['B_title']); ?></td>
+</tr>
+<script>
+    const isLoggedIn = <?= json_encode($isLoggedIn); ?>;
+
+    function createRowClickHandler(bookId) {
+        return function () {
+            if (!isLoggedIn) {
+                alert("Log in first");
+            } else {
+                window.location.href = 'ViewBook.php?title=' + encodeURIComponent(bookId);
+            }
+        };
+    }
+</script>
+
+                <?php
+                    endwhile;
+                else:
+                ?>
+                    <tr>
+                        <td colspan="2" class="px-4 py-2 text-center text-gray-600">No data available.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
         </div>
         <footer class="mt-auto">
