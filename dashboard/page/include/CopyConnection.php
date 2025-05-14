@@ -25,7 +25,7 @@ if ($conn->connect_error) {
      $number1 = $_POST['number1'] ?? '';
      $number2 = $_POST['number2'] ?? '';
      $number3 = $_POST['number3'] ?? '';
-     $sublocation = $_POST['Sublocation'] ?? '';
+     $sublocation = $_POST['sublocation'] ?? '';
      $vendor = $_POST['vendor'] ?? '';
      $fundingSource = $_POST['fundingSource'] ?? '';
      $rating = $_POST['rating'] ?? '';
@@ -42,7 +42,7 @@ if ($conn->connect_error) {
         $conn->begin_transaction();
         try {
             // Prepare the insert statement, including B_title and book_copy.  B_title is already included.
-            $sql = "INSERT INTO book_copies (book_copy, status, callNumber, circulationType, dateAcquired, description1, description2, description3, number1, number2, number3, Sublocation, vendor, fundingSource, rating, note, B_title, book_id) 
+            $sql = "INSERT INTO book_copies (book_copy, status, callNumber, circulationType, dateAcquired, description1, description2, description3, number1, number2, number3, sublocation, vendor, fundingSource, rating, note, B_title, book_id) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             $stmt = $conn->prepare($sql);

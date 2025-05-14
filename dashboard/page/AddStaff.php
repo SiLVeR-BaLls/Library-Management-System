@@ -70,7 +70,7 @@ if ($conn->connect_error) {
         $A_LVL = '3';
         $status_details = 'active';
         $status_log = 'approved';
-        $U_Type = 'librarian';
+        $U_Type = 'staff';
         $photo = ''; // Optional, depending on form
 
         // Check if IDno already exists

@@ -124,7 +124,7 @@ CREATE TABLE `book_copies` (
   `number1` int(11) DEFAULT NULL,
   `number2` int(11) DEFAULT NULL,
   `number3` int(11) DEFAULT NULL,
-  `Sublocation` varchar(100) DEFAULT NULL,
+  `sublocation` varchar(100) DEFAULT NULL,
   `vendor` varchar(100) DEFAULT NULL,
   `fundingSource` varchar(100) DEFAULT NULL,
   `rating` int(11) NOT NULL DEFAULT 0,
@@ -135,7 +135,7 @@ CREATE TABLE `book_copies` (
 -- Dumping data for table `book_copies`
 --
 
-INSERT INTO `book_copies` (`book_copy_ID`, `book_id`, `book_copy`, `copy_ID`, `B_title`, `status`, `callNumber`, `circulationType`, `dateAcquired`, `description1`, `description2`, `description3`, `number1`, `number2`, `number3`, `Sublocation`, `vendor`, `fundingSource`, `rating`, `note`) VALUES
+INSERT INTO `book_copies` (`book_copy_ID`, `book_id`, `book_copy`, `copy_ID`, `B_title`, `status`, `callNumber`, `circulationType`, `dateAcquired`, `description1`, `description2`, `description3`, `number1`, `number2`, `number3`, `sublocation`, `vendor`, `fundingSource`, `rating`, `note`) VALUES
 (807, 10, 'BOOK0000001', 'BOOK000001', 'Algorithms ', 'Borrowed', '004 C712 2024', 'General Circulation', '2024-12-27', '', '', '', 0, 0, 0, '1', '1', '2', 3, ''),
 (808, 319, 'BOOK0000002', '', 'Iloilo Science and Technology University Cafeteria online menu and reservation system', 'Borrowed', 'Fil-R 0840 D331 2024', 'General Circulation', '2024-10-15', '', '', '', 0, 0, 0, '1', '1', '2', 2, ''),
 (809, 318, 'BOOK0000003', '', 'An Introduction to Cyber Security', 'Borrowed', '005 8 M543 2024', 'General Circulation', '2024-03-12', '', '', '', 0, 0, 0, '1', '1', '2', 5, ''),

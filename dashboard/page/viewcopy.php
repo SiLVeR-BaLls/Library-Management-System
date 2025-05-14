@@ -134,9 +134,9 @@ if (isset($_GET['confirm_delete']) && $_GET['confirm_delete'] === 'true' && $ID)
                                 </div>
 
                                 <div class="flex">
-                                    <div class="font-semibold text-lg w-32">Sublocation:</div>
+                                    <div class="font-semibold text-lg w-32">sublocation:</div>
                                     <div class="text-gray-700 flex-grow">
-                                        <?php echo htmlspecialchars($copy_data['Sublocation']); ?>
+                                        <?php echo htmlspecialchars($copy_data['sublocation']); ?>
                                     </div>
                                 </div>
 

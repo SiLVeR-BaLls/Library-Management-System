@@ -30,7 +30,7 @@
     $book_title = isset($_GET['title']) ? $_GET['title'] : '';
 
     // Use prepared statements to fetch filtered book copies
-    $sql = "SELECT book_copy, status, B_title, book_copy_ID, callNumber, vendor, fundingSource, Sublocation, rating FROM book_copies"; // Added required fields
+    $sql = "SELECT book_copy, status, B_title, book_copy_ID, callNumber, vendor, fundingSource, sublocation, rating FROM book_copies"; // Added required fields
     if (!empty($book_title)) {
       $sql .= " WHERE book_id = ?";
     }
@@ -285,9 +285,58 @@
                     ?>
                 </tbody>
             </table>
+              <div class="flex justify-center items-center space-x-2 my-3 flex-col md:flex-row md:space-x-4">
+                <button id="prevBtn" onclick="prevPage()" class="btn-pagination px-4 py-1 bg-gray-800 text-white rounded-lg cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-300 hover:bg-gray-600" disabled>Previous</button>
+                <span id="pageInfo" class="text-sm text-gray-600 font-medium">Page 1 of X</span>
+                <button id="nextBtn" onclick="nextPage()" class="btn-pagination px-4 py-1 bg-gray-800 text-white rounded-lg cursor-pointer transition duration-300 hover:bg-gray-600">Next</button>
+            </div>
         </div>
+        
         <footer>
             <?php include 'include/footer.php'; ?>
         </footer>
     </div>
 </div>
+
+<script>
+  const table = document.querySelector('table tbody');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const pageInfo = document.getElementById('pageInfo');
+  const rowsPerPage = 10; // You can adjust the number of rows per page
+  let currentPage = 1;
+  let rows = Array.from(table.querySelectorAll('tr'));
+  let numPages = Math.ceil(rows.length / rowsPerPage);
+
+  function displayRows(page) {
+    table.innerHTML = ''; // Clear the table body
+    const startIndex = (page - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    const rowsToShow = rows.slice(startIndex, endIndex);
+
+    rowsToShow.forEach(row => {
+      table.appendChild(row);
+    });
+
+    pageInfo.textContent = `Page ${page} of ${numPages}`;
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === numPages;
+  }
+
+  function nextPage() {
+    if (currentPage < numPages) {
+      currentPage++;
+      displayRows(currentPage);
+    }
+  }
+
+  function prevPage() {
+    if (currentPage > 1) {
+      currentPage--;
+      displayRows(currentPage);
+    }
+  }
+
+  // Initial display
+  displayRows(currentPage);
+</script>

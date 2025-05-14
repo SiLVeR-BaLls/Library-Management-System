@@ -74,6 +74,7 @@
                 <table class="w-full border-collapse">
                     <thead>
                         <tr class="bg-gray-800 text-white">
+                            <th class="p-4 text-left">Photo</th>
                             <th class="p-4 text-left">Title</th>
                             <th class="p-4 text-left">Author</th>
                             <th class="p-4 text-center">Material Type</th>
@@ -170,17 +171,23 @@
                 
                 row.addEventListener('click', createRowClickHandler(book.book_id));
 
-                row.innerHTML = `
-                    <td class="p-4">${book.title}</td>
-                    <td class="p-4">${book.author || 'N/A'}</td>
-                    <td class="p-4 text-center">${book.MT || 'N/A'}</td>
-                    <td class="p-4 text-center">${book.ST || 'N/A'}</td>
-                    <td class="p-4 text-center">
-                        ${book.available_copies > 0 ? 
-                            '<div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">✔</div>' :
-                            '<div class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center">✖</div>'}
-                    </td>
-                `;
+              row.innerHTML = `
+    <td class="p-4">
+        ${book.photo ? 
+            `<img src="../../pic/Book/${book.photo}" alt="Book Cover" class="w-16 h-auto">` : 
+            `<img src="../../pic/default/book.jpg" alt="Default Book Cover" class="w-16 h-auto">`
+        }
+    </td>
+    <td class="p-4">${book.title}</td>
+    <td class="p-4">${book.author || 'N/A'}</td>
+    <td class="p-4 text-center">${book.MT || 'N/A'}</td>
+    <td class="p-4 text-center">${book.ST || 'N/A'}</td>
+    <td class="p-4 text-center">
+        ${book.available_copies > 0 ?
+            '<div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">✔</div>' :
+            '<div class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center">✖</div>'}
+    </td>
+`;
                 tableBody.appendChild(row);
             });
 

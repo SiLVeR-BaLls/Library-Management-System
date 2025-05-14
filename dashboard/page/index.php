@@ -1,50 +1,50 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-?>
-<?php
-// Include the database connection
-include '../config.php';
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ?>
+    <?php
+    // Include the database connection
+    include '../config.php';
 
-// Determine User Type
-$userTypes = ['admin', 'student', 'librarian', 'faculty'];
-$userType = null;
-$idno = null;
+    // Determine User Type
+    $userTypes = ['admin', 'student', 'librarian', 'faculty'];
+    $userType = null;
+    $idno = null;
 
-foreach ($userTypes as $type) {
-    if (!empty($_SESSION[$type]['IDno'])) {
-        $userType = $type;
-        $idno = $_SESSION[$type]['IDno'];
-        break;
+    foreach ($userTypes as $type) {
+        if (!empty($_SESSION[$type]['IDno'])) {
+            $userType = $type;
+            $idno = $_SESSION[$type]['IDno'];
+            break;
+        }
     }
-}
 
-// Define the main DDC ranges for the dropdown
-$mainDDCClasses = [
-    'all' => 'Display All Books',
-    'other' => 'Books Other',
-    '000-099' => 'General Works & Computer Science',
-    '100-199' => 'Philosophy & Psychology',
-    '200-299' => 'Religion',
-    '300-399' => 'Social Sciences',
-    '400-499' => 'Language',
-    '500-599' => 'Pure Sciences',
-    '600-699' => 'Technology (Applied Sciences)',
-    '700-799' => 'The Arts',
-    '800-899' => 'Literature & Rhetoric',
-    '900-999' => 'History & Geography'
-];
+    // Define the main DDC ranges for the dropdown
+    $mainDDCClasses = [
+        'all' => 'Display All Books',
+        'other' => 'Books Other',
+        '000-099' => 'General Works & Computer Science',
+        '100-199' => 'Philosophy & Psychology',
+        '200-299' => 'Religion',
+        '300-399' => 'Social Sciences',
+        '400-499' => 'Language',
+        '500-599' => 'Pure Sciences',
+        '600-699' => 'Technology (Applied Sciences)',
+        '700-799' => 'The Arts',
+        '800-899' => 'Literature & Rhetoric',
+        '900-999' => 'History & Geography'
+    ];
 
 ?>
 
 <div class="flex">
     <div class="sidebar">
-    <?php
-// Only include sidebar if a valid user type and the file exists
-if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
-    include $sidebars[$userType];
-}
-?>    </div>
+        <?php
+        // Only include sidebar if a valid user type and the file exists
+        if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+            include $sidebars[$userType];
+        }
+        ?> </div>
     <div class="flex flex-col w-screen">
         <?php include 'include/header.php'; ?>
         <div class="flex flex-col">
@@ -84,22 +84,15 @@ if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$u
                             <h3 class="text-xl font-semibold mb-3" style="color: <?= $text ?>">Select Material Type</h3>
                             <select id="materialType" class="w-full p-2 border rounded">
                                 <option value="all">All</option>
-                                <option value="Book">Book</option>
-                                <option value="Kit">Kit</option>
-                                <option value="Journal">Journal</option>
-                                <option value="Thesis">Thesis</option>
-                                <option value="Music Printed">Music Printed</option>
-                                <option value="Non-Musical Sound Recording">Non-Musical Sound Recording</option>
-                                <option value="Computer File">Computer File</option>
-                                <option value="Manuscript Language Material">Manuscript Language Material</option>
-                                <option value="Map">Map</option>
-                                <option value="Series">Series</option>
-                                <option value="Equipment">Equipment</option>
-                                <option value="Mixed Materials">Mixed Materials</option>
-                                <option value="Musical Sound Recordings">Musical Sound Recordings</option>
-                                <option value="Article">Article</option>
-                                <option value="Magazine">Magazine</option>
-                                <option value="Newspaper">Newspaper</option>
+                                 <option selected value="">Select Material Type</option>
+            <option value="Book">Book</option>
+            <option value="Computer File">Computer File</option>
+            <option value="Electronic Book">Electronic Book (E-Book)</option>
+            <option value="Map">Map</option>
+            <option value="Picture">Picture</option>
+            <option value="Serial">Serial</option>
+            <option value="Video">Video</option>
+            <option value="Journal">Journal</option>
                             </select>
                         </div>
 
@@ -142,18 +135,18 @@ if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$u
             </div>
 
             <div class="top-borrowed-books m-6 p-3 bg-gray-100 rounded-lg shadow-md">
-    <h3 class="text-lg font-semibold mb-3">Top 10 Most Borrowed Books</h3>
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-300 rounded-md">
-            <thead class="bg-gray-200">
-                <tr>
-                    <th class="text-left px-4 py-2 border-b">count</th>
-                    <th class="text-left px-4 py-2 border-b">Book Title</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $topBorrowedQuery = "
+                <h3 class="text-lg font-semibold mb-3">Top 10 Most Borrowed Books</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-300 rounded-md">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="text-left px-4 py-2 border-b">count</th>
+                                <th class="text-left px-4 py-2 border-b">Book Title</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            $topBorrowedQuery = "
                     SELECT
                         book.book_id,
                         book.B_title,
@@ -171,43 +164,43 @@ if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$u
                     LIMIT 10;
                 ";
 
-                $topBorrowedResult = $conn->query($topBorrowedQuery);
+                            $topBorrowedResult = $conn->query($topBorrowedQuery);
 
-                if ($topBorrowedResult && $topBorrowedResult->num_rows > 0):
-                    while ($topBook = $topBorrowedResult->fetch_assoc()):
-                ?>
-                  <tr
-    class="hover:bg-gray-50 cursor-pointer"
-    onclick="createRowClickHandler('<?php echo htmlspecialchars($topBook['book_id']); ?>')()">
-    <td class="px-4 py-2 border-b"><?php echo $topBook['borrow_count']; ?></td>
-    <td class="px-4 py-2 border-b text-gray-900"><?php echo htmlspecialchars($topBook['B_title']); ?></td>
-</tr>
-<script>
-    const isLoggedIn = <?= json_encode($isLoggedIn); ?>;
+                            if ($topBorrowedResult && $topBorrowedResult->num_rows > 0):
+                                while ($topBook = $topBorrowedResult->fetch_assoc()):
+                            ?>
+                                    <tr
+                                        class="hover:bg-gray-50 cursor-pointer"
+                                        onclick="createRowClickHandler('<?php echo htmlspecialchars($topBook['book_id']); ?>')()">
+                                        <td class="px-4 py-2 border-b"><?php echo $topBook['borrow_count']; ?></td>
+                                        <td class="px-4 py-2 border-b text-gray-900"><?php echo htmlspecialchars($topBook['B_title']); ?></td>
+                                    </tr>
+                                    <script>
+                                        const isLoggedIn = <?= json_encode($isLoggedIn); ?>;
 
-    function createRowClickHandler(bookId) {
-        return function () {
-            if (!isLoggedIn) {
-                alert("Log in first");
-            } else {
-                window.location.href = 'ViewBook.php?title=' + encodeURIComponent(bookId);
-            }
-        };
-    }
-</script>
+                                        function createRowClickHandler(bookId) {
+                                            return function() {
+                                                if (!isLoggedIn) {
+                                                    alert("Log in first");
+                                                } else {
+                                                    window.location.href = 'ViewBook.php?title=' + encodeURIComponent(bookId);
+                                                }
+                                            };
+                                        }
+                                    </script>
 
-                <?php
-                    endwhile;
-                else:
-                ?>
-                    <tr>
-                        <td colspan="2" class="px-4 py-2 text-center text-gray-600">No data available.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+                                <?php
+                                endwhile;
+                            else:
+                                ?>
+                                <tr>
+                                    <td colspan="2" class="px-4 py-2 text-center text-gray-600">No data available.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
         </div>
         <footer class="mt-auto">
@@ -217,7 +210,7 @@ if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$u
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Load saved filters from localStorage
         const savedFilters = JSON.parse(localStorage.getItem('searchFilters')) || {};
         document.getElementById('searchInput').value = savedFilters.searchTerm || '';
@@ -229,7 +222,7 @@ if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$u
         document.querySelector(`input[name="searchByOption"][value="${searchByOption}"]`).checked = true;
 
         // Save filters to localStorage and redirect to search_results.php
-        document.getElementById('searchButton').addEventListener('click', function () {
+        document.getElementById('searchButton').addEventListener('click', function() {
             const filters = {
                 searchTerm: document.getElementById('searchInput').value,
                 searchByOption: document.querySelector('input[name="searchByOption"]:checked').value,
@@ -242,7 +235,7 @@ if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$u
         });
 
         // Reset filters and clear localStorage
-        document.getElementById('resetButton').addEventListener('click', function () {
+        document.getElementById('resetButton').addEventListener('click', function() {
             localStorage.removeItem('searchFilters');
             document.getElementById('searchInput').value = '';
             document.getElementById('materialType').value = 'all';

@@ -1,7 +1,9 @@
 
 
 <?php
-    session_start();
+   session_start();
+// Determine if it's localhost
+$is_localhost = (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost');
 
     // Database Connection
     $conn = new mysqli('localhost', 'root', '', 'lms');
@@ -68,5 +70,4 @@ $sidebar_active = $settings['sidebar_active_color'] ?? '';
 $header = $settings['header_color'] ?? '';
 $footer = $settings['footer_color'] ?? '';
 $sidebar = $settings['sidebar_color'] ?? '';
-$logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : 'default-logo.png';
-
+$logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : '../../pic/scr/logo_wu.png';

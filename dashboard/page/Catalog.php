@@ -1,7 +1,7 @@
 <?php
 include '../config.php';
 ?>
-<main class="flex  ">
+<div class="flex  ">
     <!-- Sidebar Section -->
              <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
     include $sidebars[$userType]; 
@@ -17,4 +17,4 @@ include '../config.php';
         <footer>
             <?php include 'include/footer.php'; ?>
         </footer>
-</main>
+</div>

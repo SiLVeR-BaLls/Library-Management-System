@@ -23,8 +23,9 @@
                         Books ▼
                     </button>
                     <ul id="booksDropdown" class="absolute overflow-hidden overflow-y-auto z-10 left-0 hidden mt-1 w-48   rounded-md shadow-lg">
-                        <li><a href="Borrow.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Borrow.php') ? $button_active : $sidebar_hover ?>;">Borrow</a></li>
-                        <li><a href="BorrowDisplay.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'BorrowDisplay.php') ? $button_active : $sidebar_hover ?>;">Book Cycle</a></li>
+                        <li><a href="ListOfBooks.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'ListOfBooks.php') ? $button_active : $sidebar_hover ?>;">Book List</a></li>
+                        <li><a href="Borrow.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Borrow.php') ? $button_active : $sidebar_hover ?>;">Check Out</a></li>
+                        <li><a href="BorrowDisplay.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'BorrowDisplay.php') ? $button_active : $sidebar_hover ?>;">Check In</a></li>
                         <li><a href="Catalog.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Catalog.php') ? $button_active : $sidebar_hover ?>;">Catalog</a></li>
                         <li><a href="CopyList.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'CopyList.php') ? $button_active : $sidebar_hover ?>;">Copy List</a></li>
                         <li><a href="Report.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (in_array(strtolower(basename($_SERVER['PHP_SELF'])), array_map('strtolower', ['Report.php', 'report_book_count.php', 'report_borrow.php', 'report_rating.php', 'report_return.php', 'Report_book_count.php', 'Report_book.php', 'Sub_range_filter.php', 'Range_details.php']))) ? $button_active : $sidebar_hover ?>;">Report</a></li>                    </ul>
@@ -37,6 +38,7 @@
                     </button>
                     <ul id="usersDropdown" class="absolute overflow-hidden overflow-y-auto z-10 left-0 hidden mt-1 w-48   rounded-md shadow-lg">
                         <li><a href="Assign.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'Assign.php') ? $button_active : $sidebar_hover ?>;">Assign User</a></li>
+                        <li><a href="BorrowOfUser.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'BorrowOfUser.php') ? $button_active : $sidebar_hover ?>;">Borrow Of User</a></li>
                         <li><a href="AddUser.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'AddUser.php') ? $button_active : $sidebar_hover ?>;">Add User</a></li>
                         <li><a href="AddStaff.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (basename($_SERVER['PHP_SELF']) == 'AddStaff.php') ? $button_active : $sidebar_hover ?>;">Add Staff</a></li>
                         <li><a href="BrowseUser.php" class="btn block py-2 px-4" style="color: <?= $text1 ?>; background-color: <?= (in_array(basename($_SERVER['PHP_SELF']), ['BrowseUser.php', 'user_details.php'])) ? $button_active : $sidebar_hover ?>;">Browse Users</a></li>

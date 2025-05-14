@@ -22,7 +22,7 @@
             JOIN book b ON bc.book_ID = b.book_ID
             LEFT JOIN vendor v ON bc.vendor = v.id
             LEFT JOIN fundingsource fs ON bc.fundingSource = fs.id
-            LEFT JOIN sublocation sl ON bc.Sublocation = sl.id
+            LEFT JOIN sublocation sl ON bc.sublocation = sl.id
             WHERE bc.book_copy_ID = '" . $conn->real_escape_string($book_copy_ID) . "'";
     $result = $conn->query($sql);
 
@@ -46,7 +46,7 @@
         $status = isset($_POST['status']) ? $_POST['status'] : '';
         $vendor_name = isset($_POST['vendor']) ? $_POST['vendor'] : ''; // Get the NAME from the select
         $fundingSource_name = isset($_POST['fundingSource']) ? $_POST['fundingSource'] : ''; // Get the NAME
-        $Sublocation_name = isset($_POST['Sublocation']) ? $_POST['Sublocation'] : ''; // Get the NAME
+        $sublocation_name = isset($_POST['sublocation']) ? $_POST['sublocation'] : ''; // Get the NAME
         $rating = isset($_POST['rating']) ? $_POST['rating'] : '';
 
         // Prepare the update statement
@@ -57,7 +57,7 @@
             status = ?,
             vendor = ?,
             fundingSource = ?,
-            Sublocation = ?,
+            sublocation = ?,
             rating = ?
             WHERE book_copy_ID = ?"
         );
@@ -69,7 +69,7 @@
             $status,
             $vendor_name,
             $fundingSource_name,
-            $Sublocation_name,
+            $sublocation_name,
             $rating,
             $book_copy_ID
         );
@@ -182,12 +182,12 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="border border-gray-300 px-4 py-2 font-semibold">Sublocation</td>
+                        <td class="border border-gray-300 px-4 py-2 font-semibold">sublocation</td>
                         <td class="border border-gray-300 px-4 py-2">
-                            <select name="Sublocation" id="Sublocation" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
+                            <select name="sublocation" id="sublocation" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline">
                             <?php
                                 while ($sub_row = $sub_result->fetch_assoc()) {
-                                    $selected = ($sub_row['Sublocation'] == $copy_data['sublocation_name']) ? 'selected' : '';
+                                    $selected = ($sub_row['sublocation'] == $copy_data['sublocation_name']) ? 'selected' : '';
                                     echo "<option value='{$sub_row['name']}' $selected>{$sub_row['name']}</option>";
                                 }
                                 // Reset the result set pointer

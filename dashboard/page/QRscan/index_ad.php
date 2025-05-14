@@ -8,8 +8,14 @@
     FROM attendance a
     JOIN users_info u ON a.IDno = u.IDno
     ORDER BY a.LOGDATE DESC, a.TIMEIN DESC";
+    $query = $conn->query($attendanceQuery);
 
-    $query = $conn->query($attendanceQuery);$query = $conn->query($attendanceQuery);
+      $deleteQuery = "DELETE FROM attendance WHERE LOGDATE < NOW() - INTERVAL 3 MONTH";
+
+    // Execute the query
+    $conn->query($deleteQuery);
+
+    
 ?>
 
 <!DOCTYPE html>
@@ -77,14 +83,7 @@
 </head>
 
 <body class="bg-gray-50 place-content-center">
-    <!-- Header Section -->
-    <div class="flex items-center justify-center bg-gray-200 p-4 shadow-md">
-        <a href="../index.php">
-            <img src="../../../Registration/pic/logo wu.png" alt="Logo" class="h-12 w-12 mr-4">
-        </a>
-        <strong class="text-lg font-semibold text-gray-800">Digital Library Management System</strong>
-    </div>
-
+   
     <!-- Main Content Area -->
     <div class="container mx-auto">
         <div class="flex justify-center items-center flex-wrap min-h-[80vh] pt-8">
@@ -118,28 +117,24 @@
         <h2 class="text-xl font-medium text-gray-600 mb-4">Attendance Records</h2>
 
 <div class="flex justify-center items-center w-full md:w-auto mb-4">
-    <div class="radio-input flex rounded-lg border-2 border-gray-200 bg-gray-100 overflow-hidden ">
-        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
-            <input type="radio" name="userType" value="all" id="allRadio" class="hidden" checked>
-            <span>All</span>
-        </label>
-        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
-            <input type="radio" name="userType" value="admin" id="adminRadio" class="hidden">
-            <span>Admin</span>
-        </label>
-        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
-            <input type="radio" name="userType" value="student" id="studentRadio" class="hidden">
-            <span>Student</span>
-        </label>
-        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
-            <input type="radio" name="userType" value="librarian" id="librarianRadio" class="hidden">
-            <span>Librarian</span>
-        </label>
-        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
-            <input type="radio" name="userType" value="faculty" id="facultyRadio" class="hidden">
-            <span>Faculty</span>
-        </label>
-    </div>
+  <div class="radio-input flex rounded-lg border-2 border-gray-200 bg-gray-100 overflow-hidden ">
+    <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
+        <input type="radio" name="userType" value="all" id="allRadio" class="hidden" checked>
+        <span>All</span>
+    </label>
+    <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
+        <input type="radio" name="userType" value="staff" id="staffRadio" class="hidden">
+        <span>Staff</span>
+    </label>
+    <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
+        <input type="radio" name="userType" value="student" id="studentRadio" class="hidden">
+        <span>Student</span>
+    </label>
+    <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
+        <input type="radio" name="userType" value="faculty" id="facultyRadio" class="hidden">
+        <span>Faculty</span>
+    </label>
+</div>
 </div>
 
 <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
@@ -195,7 +190,7 @@
     <!-- Overlay to close sidebar when clicked outside -->
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
     <!-- JavaScript for exporting data -->
-    <script>
+   <script>
         function Export() {
             if (confirm("Confirm to export attendance as Excel file?")) {
                 window.open("export.php", '_blank');
@@ -224,11 +219,18 @@
                 const sName = cells[2].textContent.toLowerCase();
                 const logDateText = cells[4].textContent;
                 const logDateParts = logDateText.split('/'); // format is dd/mm/yyyy
-                const logDate = `${logDateParts[2]}-${logDateParts[1]}-${logDateParts[0]}`; // convert to yyyy-mm-dd for comparison
+                const logDate = `${logDateParts[2]}-${logDateParts[1]}-${logDateParts[0]}`; // convert to YYYY-MM-DD for comparison
 
-                let matchesUserType = (userType === "all" || rowUserType === userType);
+                let matchesUserType = false;
+                if (userType === "all") {
+                    matchesUserType = true;
+                } else if (userType === "staff") {
+                    matchesUserType = (rowUserType === "admin" || rowUserType === "librarian");
+                } else {
+                    matchesUserType = (rowUserType === userType);
+                }
+
                 let matchesSearch = true;
-
                 if (searchValue) {
                     if (searchCategory === "IDno") {
                         matchesSearch = idNo.includes(searchValue);
@@ -281,6 +283,7 @@
 
         renderTable();
     </script>
+
 
     <!-- JavaScript -->
     <script>

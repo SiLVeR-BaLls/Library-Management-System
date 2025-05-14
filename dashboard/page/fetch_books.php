@@ -15,6 +15,7 @@ $sql = "SELECT
     b.author,
     b.MT,
     b.ST,
+    b.photo,
     GROUP_CONCAT(DISTINCT ca.Co_Name SEPARATOR ', ') AS coauthor,
     (SELECT COUNT(bc_inner.book_copy_ID) FROM book_copies bc_inner WHERE bc_inner.book_id = b.book_id) AS total_copies,
     (SELECT COUNT(bc_avail.book_copy_ID) FROM book_copies bc_avail WHERE bc_avail.book_id = b.book_id AND bc_avail.status = 'Available') AS available_copies

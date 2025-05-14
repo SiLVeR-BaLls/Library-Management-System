@@ -117,7 +117,7 @@ CREATE TABLE `book_copies` (
   `number1` int(11) DEFAULT NULL,
   `number2` int(11) DEFAULT NULL,
   `number3` int(11) DEFAULT NULL,
-  `Sublocation` varchar(100) DEFAULT NULL,
+  `sublocation` varchar(100) DEFAULT NULL,
   `vendor` varchar(100) DEFAULT NULL,
   `fundingSource` varchar(100) DEFAULT NULL,
   `rating` int(11) NOT NULL DEFAULT 0,
@@ -128,7 +128,7 @@ CREATE TABLE `book_copies` (
 -- Dumping data for table `book_copies`
 --
 
-INSERT INTO `book_copies` (`book_copy_ID`, `book_id`, `book_copy`, `copy_ID`, `B_title`, `status`, `callNumber`, `circulationType`, `dateAcquired`, `description1`, `description2`, `description3`, `number1`, `number2`, `number3`, `Sublocation`, `vendor`, `fundingSource`, `rating`, `note`) VALUES
+INSERT INTO `book_copies` (`book_copy_ID`, `book_id`, `book_copy`, `copy_ID`, `B_title`, `status`, `callNumber`, `circulationType`, `dateAcquired`, `description1`, `description2`, `description3`, `number1`, `number2`, `number3`, `sublocation`, `vendor`, `fundingSource`, `rating`, `note`) VALUES
 (768, 1, 'BOOK0000005', '1', 'adarna ', 'Available', '1', 'General Circulation', '2025-01-21', '', '', '', 0, 0, 0, 'Technical Section', 'DTFOS Bookstore', 'Purchased', 3, ''),
 (770, 1, 'BOOK0000007', '1', 'adarna ', 'Borrowed', '1222222', 'General Circulation', '2025-01-21', '', '', '', 0, 0, 0, 'Technical Section2', 'DTFOS Bookstore1', 'Purchased1', 2, 'helloqwe2'),
 (771, 1, 'BOOK0000008', '1', 'adarna ', 'Borrowed', '1', 'General Circulation', '2025-01-21', '', '', '', 0, 0, 0, 'Technical Section', 'DTFOS Bookstore', 'Purchased', 2, ''),

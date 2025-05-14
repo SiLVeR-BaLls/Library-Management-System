@@ -81,16 +81,9 @@
             <option value="Book">Book</option>
             <option value="Computer File">Computer File</option>
             <option value="Electronic Book">Electronic Book (E-Book)</option>
-            <option value="Equipment">Equipment</option>
-            <option value="Kit">Kit</option>
-            <option value="Manuscript Language Material">Manuscript Language Material</option>
             <option value="Map">Map</option>
-            <option value="Mixed Material">Mixed Material</option>
-            <option value="Music">Music (Printed)</option>
             <option value="Picture">Picture</option>
             <option value="Serial">Serial</option>
-            <option value="Musical Sound Recording">Musical Sound Recording</option>
-            <option value="NonMusical Sound Recording">NonMusical Sound Recording</option>
             <option value="Video">Video</option>
             <option value="Journal">Journal</option>
           </select>
@@ -166,13 +159,13 @@
               class="w-full px-4 py-2 border rounded-md">
           </div>
 
-          <!-- Comment Section -->
+          <!-- note Section -->
           <div class="mt-6">
-            <h1 class="text-2xl font-semibold mb-4">Add a Comment</h1>
+            <h1 class="text-2xl font-semibold mb-4">Add a note</h1>
 
-            <!-- Comment Input Field -->
+            <!-- note Input Field -->
             <input id="note" class="w-full px-4 py-2 border rounded-md" name="note"
-              placeholder="Write your comment..." />
+              placeholder="Write your note..." />
           </div>
 
 
@@ -193,7 +186,7 @@
                     <label for="Sub_Head" class="block text-sm text-gray-700">Subject Heading</label>
                     <select id="Sub_Head" name="Sub_Head[]"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-                      <option value="Tropical Heading" selected>Tropical Heading</option>
+                      <option value="Topic Heading" selected>Topic Heading</option>
                       <option value="Personal Heading">Personal Heading</option>
                       <option value="Geographic Heading">Geographic Heading</option>
                       <option value="Local Heading">Local Heading</option>
@@ -242,7 +235,7 @@
                     subjectsContainer.appendChild(newSubjectEntry);
 
                     // Clear input fields after adding
-                    document.querySelector('#Sub_Head').value = 'Tropical Heading'; // Reset to default
+                    document.querySelector('#Sub_Head').value = 'Topic Heading'; // Reset to default
                     document.querySelector('#Sub_Head_input').value = ''; // Clear input field
                   } else {
                     alert('Please fill out both fields.');

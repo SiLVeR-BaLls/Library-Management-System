@@ -3,7 +3,7 @@ include '../../config.php';
 
 $idno = $_SESSION['librarian']['IDno'];
 
-$attendanceQuery = "    SELECT a.ID, a.IDno, u.Fname, u.Sname, a.TIMEIN, a.TIMEOUT, a.LOGDATE, a.STATUS , u.U_type
+$attendanceQuery = "   SELECT a.ID, a.IDno, u.Fname, u.Sname, a.TIMEIN, a.TIMEOUT, a.LOGDATE, a.STATUS , u.U_type
     FROM attendance a
     JOIN users_info u ON a.IDno = u.IDno
     ORDER BY a.LOGDATE DESC, a.TIMEIN DESC";
@@ -49,16 +49,12 @@ $query = $conn->query($attendanceQuery);
                             <span>All</span>
                         </label>
                         <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
-                            <input type="radio" name="userType" value="admin" id="adminRadio" class="hidden">
-                            <span>Admin</span>
+                            <input type="radio" name="userType" value="staff" id="staffRadio" class="hidden">
+                            <span>Staff</span>
                         </label>
                         <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
                             <input type="radio" name="userType" value="student" id="studentRadio" class="hidden">
                             <span>Student</span>
-                        </label>
-                        <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
-                            <input type="radio" name="userType" value="librarian" id="librarianRadio" class="hidden">
-                            <span>Librarian</span>
                         </label>
                         <label class="flex-1 text-center px-4 py-2 font-semibold text-black cursor-pointer transition-all hover:bg-blue-300">
                             <input type="radio" name="userType" value="faculty" id="facultyRadio" class="hidden">
@@ -145,11 +141,18 @@ $query = $conn->query($attendanceQuery);
                 const sName = cells[2].textContent.toLowerCase();
                 const logDateText = cells[4].textContent;
                 const logDateParts = logDateText.split('/'); // format is dd/mm/yyyy
-                const logDate = `${logDateParts[2]}-${logDateParts[1]}-${logDateParts[0]}`; // convert to yyyy-mm-dd for comparison
+                const logDate = `${logDateParts[2]}-${logDateParts[1]}-${logDateParts[0]}`; // convert to YYYY-MM-DD for comparison
 
-                let matchesUserType = (userType === "all" || rowUserType === userType);
+                let matchesUserType = false;
+                if (userType === "all") {
+                    matchesUserType = true;
+                } else if (userType === "staff") {
+                    matchesUserType = (rowUserType === "admin" || rowUserType === "librarian");
+                } else {
+                    matchesUserType = (rowUserType === userType);
+                }
+
                 let matchesSearch = true;
-
                 if (searchValue) {
                     if (searchCategory === "IDno") {
                         matchesSearch = idNo.includes(searchValue);

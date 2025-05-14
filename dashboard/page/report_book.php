@@ -16,6 +16,7 @@ $totalMonth = 0;
 $totalYear = 0;
 $otherRangeData = null; // Store data for the "Other" range
 
+
 // Fetch all book copies and group them by DDC/Local Range
 $sqlBookCopies = "SELECT callNumber, book_id FROM book_copies";
 $resultBookCopies = $conn->query($sqlBookCopies);
