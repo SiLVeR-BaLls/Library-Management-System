@@ -33,9 +33,10 @@
 
 <div class="flex">
     <div class="sidebar">
-         <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
-    include $sidebars[$userType]; 
-}?></div>
+        <?php if (!empty($userType) && isset($sidebars[$userType]) && file_exists($sidebars[$userType])) {
+            include $sidebars[$userType]; }
+        ?>
+</div>
 
     <div class="flex flex-col w-screen">
         <?php include 'include/header.php'; ?>
@@ -89,14 +90,12 @@
 
                 
             </div>
-            <div class="flex justify-center items-center space-x-2 my-3 flex-col md:flex-row md:space-x-4">
+            <div class="flex justify-center items-center space-x-2 mt-3 flex-col md:flex-row md:space-x-4">
                 <button id="prevBtn" onclick="prevPage()" class="btn-pagination px-4 py-1 bg-gray-800 text-white rounded-lg cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-300 hover:bg-gray-600" disabled>Previous</button>
                 <span id="pageInfo" class="text-sm text-gray-600 font-medium">Page 1 of X</span>
                 <button id="nextBtn" onclick="nextPage()" class="btn-pagination px-4 py-1 bg-gray-800 text-white rounded-lg cursor-pointer transition duration-300 hover:bg-gray-600">Next</button>
             </div>
-            <div id="pagination" class="flex justify-center mt-4 gap-2">
-                <!-- Pagination buttons will be dynamically added here -->
-            </div>
+          
         </div>
 
         <div class="mt-auto">
@@ -187,7 +186,7 @@
             '<div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center">✔</div>' :
             '<div class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center">✖</div>'}
     </td>
-`;
+        `;
                 tableBody.appendChild(row);
             });
 
@@ -268,16 +267,16 @@
 
 <script>
     // Prevent click if user not logged in
-const isLoggedIn = <?= json_encode($isLoggedIn); ?>;
+    const isLoggedIn = <?= json_encode($isLoggedIn); ?>;
 
-function createRowClickHandler(bookId) {
-    return function () {
-        if (!isLoggedIn) {
-            alert("Log in first");
-        } else {
-            window.location.href = 'ViewBook.php?title=' + encodeURIComponent(bookId);
-        }
-    };
-}
+    function createRowClickHandler(bookId) {
+        return function () {
+            if (!isLoggedIn) {
+                alert("Log in first");
+            } else {
+                window.location.href = 'ViewBook.php?title=' + encodeURIComponent(bookId);
+            }
+        };
+    }
 
 </script>

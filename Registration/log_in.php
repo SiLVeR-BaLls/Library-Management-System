@@ -113,12 +113,13 @@
         $result = $conn->query("SELECT * FROM settings ORDER BY id DESC LIMIT 1");
         $settings = $result->fetch_assoc();
         
-        $logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : 'default-logo.png';
+$logo = !empty($settings['logo']) ? '../../../pic/scr/' . $settings['logo'] : '../pic/scr/logo_wu.png';
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="css/log_in.css">
     <title>Log In</title>
 </head>
@@ -150,15 +151,17 @@
                     <span class="user">Username</span>
                 </div>
 
-                <div class="inputBox">
-                <div class="flex-end">
-                    <input id="password" name="password" type="password" required="required" <?php echo $disable_input; ?>>
-                    <span>Password</span>
-                    
-                </div>
+                <div class="flex flex-row relative">
+                    <div class="inputBox">
+                        <input id="password" name="password" type="password" required="required" <?php echo $disable_input; ?> class="w-full">
+                        <span>Password</span>
+                    </div>
+                    <span class="toggle-password absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer" onclick="togglePasswordVisibility()">
+                        <i id="passwordIcon" class="fa fa-eye"></i>
+                    </span>
                 </div>
 
-                <div class="inputBox">          
+                <div class="">          
                     <button type="submit" name="submit" class="enter" <?php echo $disable_input; ?>>Enter</button>
                     <p>Already have an account? <a href="sign_up.php">Sign up</a></p>
                 </div>
@@ -168,17 +171,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
-        // Password visibility toggle function
-        function togglePasswordVisibility(passwordId, buttonId) {
-            const passwordField = document.getElementById(passwordId);
-            const button = document.getElementById(buttonId);
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                button.textContent = "Hide"; // Change button text to "Hide"
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
             } else {
-                passwordField.type = "password";
-                button.textContent = "Show"; // Change button text to "Show"
+                passwordField.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
             }
         }
 
@@ -211,5 +215,11 @@
         }, 1000);
         <?php endif; ?>
     </script>
+
+    <style>
+        .toggle-password {
+            z-index: 10; /* Ensure it is on the top layer */
+        }
+    </style>
 </body>
 </html>
