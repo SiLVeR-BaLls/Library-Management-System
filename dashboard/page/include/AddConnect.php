@@ -132,7 +132,7 @@ function executeStatement($conn, $sql, $types, ...$params)
         title: 'Success!',
         text: message,
         didClose: () => {
-          window.location.href = '../index.php'; // Redirect to the index page
+          window.location.href = '../../index.php'; // Redirect to the index page
         }
       });
     } else {

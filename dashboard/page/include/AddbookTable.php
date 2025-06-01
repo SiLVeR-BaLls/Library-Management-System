@@ -1,5 +1,5 @@
 <div class="m-6">
-<form action="include/AddConnect.php" class="p-3 rounded-lg bg-white" method="post">
+<form action="page/include/AddConnect.php" class="p-3 rounded-lg bg-white" method="post">
   
 <!-- Title Section -->
 

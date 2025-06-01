@@ -97,7 +97,7 @@ mysqli_close($conn);
         <button onclick="downloadIDCard()" class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
             Download ID Card
         </button>
-        <a href="page/profile.php" class="px-4 py-2 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200">
+        <a href="profile.php" class="px-4 py-2 bg-gray-300 text-black font-semibold rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200">
             Return
         </a>
     </div>

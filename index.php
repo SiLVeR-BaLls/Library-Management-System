@@ -15,7 +15,7 @@ foreach ($userTypes as $type) {
 
 // If no valid user is logged in, redirect to the dashboard page (index.php)
 if (!$userType) {
-    header("Location: dashboard/page/index.php");
+    header("Location: dashboard/index.php");
     exit();
 }
 ?>

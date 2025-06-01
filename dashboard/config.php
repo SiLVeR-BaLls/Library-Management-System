@@ -26,10 +26,10 @@ $is_localhost = (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'loca
 
 // Sidebar definitions (existing)
 $sidebars = [
-    'admin' => 'include/side_ad.php',
-    'student' => 'include/side_stu.php',
-    'librarian' => 'include/side_lib.php',
-    'faculty' => 'include/side_fac.php'
+    'admin' => 'page/include/side_ad.php',
+    'student' => 'page/include/side_stu.php',
+    'librarian' => 'page/include/side_lib.php',
+    'faculty' => 'page/include/side_fac.php'
 ];
 
 // If user type is invalid or sidebar file doesn't exist, unset

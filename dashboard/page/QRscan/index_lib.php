@@ -31,7 +31,7 @@ $query = $conn->query($attendanceQuery);
 <body class="bg-gray-50">
 
     <div class="flex items-center justify-center bg-gray-200 p-4 shadow-md">
-        <a href="../index.php">
+        <a href="../../index.php">
             <img src="../../../Registration/pic/logo wu.png" alt="Logo" class="h-12 w-12 mr-4">
         </a>
         <strong class="text-lg font-semibold text-gray-800">Digital Library Management System</strong>

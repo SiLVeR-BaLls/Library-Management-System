@@ -106,8 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
 <script src="https://cdn.tailwindcss.com"></script>
 
 <div class="container mx-auto p-6">
-    <a href="../profile.php?title=<?php echo urlencode($user['IDno']); ?>" class="btn btn-primary text-white bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
-        List
+    <a href="../../profile.php?title=<?php echo urlencode($user['IDno']); ?>" class="btn btn-primary text-white bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
+        return to Profile
     </a>
 
     <h2 class="text-2xl font-bold mt-6 mb-4">Edit Profile for

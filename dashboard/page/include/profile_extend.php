@@ -5,9 +5,9 @@
         <!-- Profile Picture -->
         <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300">
             <?php if (!empty($userData['photo'])): ?>
-                <img class="w-full h-full object-cover" src="../../pic/User/<?php echo htmlspecialchars($userData['photo']); ?>" alt="User Photo">
+                <img class="w-full h-full object-cover" src="../pic/User/<?php echo htmlspecialchars($userData['photo']); ?>" alt="User Photo">
             <?php else: ?>
-                <img class="w-full h-full object-cover" src="../../pic/default/user.jpg" alt="Default User Photo">
+                <img class="w-full h-full object-cover" src="../pic/default/user.jpg" alt="Default User Photo">
             <?php endif; ?>
         </div>
         <!-- User Info -->
@@ -22,8 +22,8 @@
                      $_SESSION['librarian']['IDno'] ??
                      $_SESSION['student']['IDno'];
                 ?>
-                <a href="../ID_card.php?id=<?php echo htmlspecialchars($userID); ?>" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">View ID</a>
-                <a href="include/edit_user.php?id=<?php echo htmlspecialchars($userID); ?>" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">Edit Profile</a>
+                <a href="ID_card.php?id=<?php echo htmlspecialchars($userID); ?>" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">View ID</a>
+                <a href="page/include/edit_user.php?id=<?php echo htmlspecialchars($userID); ?>" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">Edit Profile</a>
             </div>
         </div>
     </div>

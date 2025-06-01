@@ -3,7 +3,7 @@
 
         // Redirect to dashboard if already logged in
         if (isset($_SESSION['admin']) || isset($_SESSION['student']) || isset($_SESSION['librarian']) || isset($_SESSION['faculty'])) {
-            header("Location: ../dashboard/page/index.php");
+            header("Location: ../dashboard/index.php");
             exit();
         }
 
@@ -80,8 +80,8 @@
                                 $_SESSION[$row['U_Type']] = $row;
                                 $_SESSION['IDno'] = $row['IDno']; // Store the IDno in the session
 
-                                // Redirect to the dashboard/page/index.php after successful login
-                                header("Location: ../dashboard/page/index.php");
+                                // Redirect to the dashboard/index.php after successful login
+                                header("Location: ../dashboard/index.php");
                                 exit();
                             } elseif ($row['status_details'] == 'inactive') {
                                 $_SESSION['status_message'] = "Your account is inactive.";
